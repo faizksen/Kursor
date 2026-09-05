@@ -11,9 +11,7 @@ class KursorAndroidLibraryConventionPlugin: Plugin<Project> {
         target.pluginManager.apply("com.android.library")
         target.extensions.configure<LibraryExtension> {
             compileSdk {
-                version = release(36) {
-                    minorApiLevel = 1
-                }
+                version = release(37)
             }
 
             defaultConfig {
