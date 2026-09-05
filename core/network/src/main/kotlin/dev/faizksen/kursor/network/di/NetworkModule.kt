@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
 import dev.faizksen.kursor.network.ApiInterfaceFrankfurter
+import dev.faizksen.kursor.network.util.JsonCreator
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
 import okhttp3.Interceptor
@@ -48,9 +49,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun json(): Json = Json {
-        ignoreUnknownKeys = true
-    }
+    fun json(): Json = JsonCreator.create()
 
     @Provides
     @Singleton

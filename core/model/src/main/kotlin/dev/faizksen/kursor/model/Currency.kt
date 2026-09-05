@@ -1,7 +1,11 @@
 package dev.faizksen.kursor.model
 
 @JvmInline
-value class CurrencyCode(val code: String) // "EUR", "RUB", "BTC
+value class CurrencyCode(val code: String) {  // "EUR", "RUB", "BTC
+    init {
+        require(code.isNotBlank()) { "Currency code must not be blank" }
+    }
+}
 
 enum class CurrencyType {
     FIAT,
