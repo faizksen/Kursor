@@ -65,5 +65,31 @@ class WatchedPairsDaoTest {
         val results = watchedPairsDao.observeAll().first()
         assertThat(results).hasSize(1)
         assertThat(results[0].addedAt).isEqualTo(1_000L)
+
+        val resultsUNotOrdered = watchedPairsDao.getAll()
+        assertThat(resultsUNotOrdered).hasSize(1)
+        assertThat(resultsUNotOrdered[0].addedAt).isEqualTo(1_000L)
+    }
+
+    @Test
+    fun getAllReturnsSamePairsAsObserveAll() = runTest {
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", addedAt = 1_000L)
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "PLN", addedAt = 2_000L)
+
+        val results = watchedPairsDao.observeAll().first()
+        val resultsNotOrdered = watchedPairsDao.getAll()
+
+        assertThat(resultsNotOrdered).containsExactlyElementsIn(results)
+    }
+
+    @Test
+    fun getAllReturnsActualPairs() = runTest {
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", addedAt = 1_000L)
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "PLN", addedAt = 2_000L)
+
+        val results = watchedPairsDao.getAll()
+
+        assertThat(results.map { it.base to it.quote })
+            .containsExactly("EUR" to "USD", "EUR" to "PLN")
     }
 }

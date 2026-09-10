@@ -9,6 +9,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WatchedPairsDao {
     @Query("""
+        SELECT * FROM watched_pair
+    """)
+    suspend fun getAll(): List<WatchedPairEntity>
+
+    @Query("""
         SELECT * FROM watched_pair ORDER BY position ASC
     """)
     fun observeAll(): Flow<List<WatchedPairEntity>>

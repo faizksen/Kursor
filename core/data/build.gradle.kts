@@ -13,6 +13,12 @@ dependencies {
     implementation(project(":core:database"))
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit.core)
 
-    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.room.testing)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }

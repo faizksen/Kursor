@@ -15,7 +15,7 @@ interface RatesDao {
       SELECT * FROM rate r 
       WHERE r.date = ( 
           SELECT MAX(date) FROM rate 
-          WHERE base = r.base AND quote = r.quote 
+          WHERE base = r.base AND quote = r.quote AND sourceId = r.sourceId
       )
   """)
     fun observeLatestRates(): Flow<List<RateEntity>>

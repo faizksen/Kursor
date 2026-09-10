@@ -17,4 +17,8 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp.core)
     debugImplementation(libs.okhttp.interceptor.logging)
+
+    testImplementation(platform(libs.okhttp.bom))
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

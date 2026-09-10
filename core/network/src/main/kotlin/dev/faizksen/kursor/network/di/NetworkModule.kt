@@ -1,12 +1,14 @@
 package dev.faizksen.kursor.network.di
 
 import android.content.Context
+import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
+import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.ApiInterfaceFrankfurter
 import dev.faizksen.kursor.network.util.JsonCreator
 import kotlinx.serialization.json.Json
