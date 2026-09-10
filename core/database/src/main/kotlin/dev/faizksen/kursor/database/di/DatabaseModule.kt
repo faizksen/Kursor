@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.faizksen.kursor.database.KursorDatabase
+import dev.faizksen.kursor.database.SeedWatchedPairs
 import javax.inject.Singleton
 
 @Module
@@ -20,7 +21,9 @@ object DatabaseModule {
         context = context,
         klass = KursorDatabase::class.java,
         name = "kursor"
-    ).build()
+    )
+        .addCallback(SeedWatchedPairs(nowMillis = System::currentTimeMillis))
+        .build()
 
     @Provides
     fun watchedPairsDao(database: KursorDatabase) = database.watchedPairsDao
