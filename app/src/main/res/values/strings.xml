@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Kursor</string>
+    <string name="top_level_rates">Rates</string>
+    <string name="top_level_converter">Converter</string>
+    <string name="top_level_alerts">Alerts</string>
+    <string name="top_level_more">More</string>
 </resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="top_level_rates">Курсы</string>
+    <string name="top_level_converter">Конвертер</string>
+    <string name="top_level_alerts">Алерты</string>
+    <string name="top_level_more">Ещё</string>
+</resources>
