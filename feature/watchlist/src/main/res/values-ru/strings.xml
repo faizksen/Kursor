@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watchlist_title">Курсы</string>
+    <string name="watchlist_empty_title">Пока ничего не отслеживается</string>
+</resources>
