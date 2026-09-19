@@ -22,5 +22,13 @@ gradlePlugin {
             id = "kursor.android.hilt"
             implementationClass = "dev.faizksen.kursor.build_logic.KursorAndroidHiltConventionPlugin"
         }
+        register("kursorCompose") {
+            id = "kursor.compose"
+            implementationClass = "dev.faizksen.kursor.build_logic.KursorJetpackComposeConventionPlugin"
+        }
+        register("kursorFeature") {
+            id = "kursor.feature"
+            implementationClass = "dev.faizksen.kursor.build_logic.KursorFeatureConventionPlugin"
+        }
     }
 }
