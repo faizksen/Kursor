@@ -36,4 +36,8 @@ abstract class BaseMviViewModel<State : UiState, Action : UiAction, Effect : UiE
     protected fun updateState(reducer: State.() -> State) {
         _stateFlow.update { it.reducer() }
     }
+
+    protected fun sendEffect(effect: Effect) {
+        _effect.trySend(effect)
+    }
 }
