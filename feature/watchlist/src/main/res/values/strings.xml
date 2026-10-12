@@ -2,4 +2,52 @@
 <resources>
     <string name="watchlist_title">Rates</string>
     <string name="watchlist_empty_title">Nothing is being tracked yet</string>
+    <string name="watchlist_empty_subtitle">Add a currency pair to follow its rate</string>
+
+    <string name="watchlist_updated_just_now">Updated just now</string>
+    <plurals name="watchlist_updated_minutes_ago">
+        <item quantity="one">Updated %d minute ago</item>
+        <item quantity="other">Updated %d minutes ago</item>
+    </plurals>
+    <plurals name="watchlist_updated_hours_ago">
+        <item quantity="one">Updated %d hour ago</item>
+        <item quantity="other">Updated %d hours ago</item>
+    </plurals>
+    <string name="watchlist_updated_at">Updated at %1$s</string>
+    <string name="watchlist_never_updated">Not updated yet</string>
+
+    <plurals name="watchlist_next_sync_in_hours">
+        <item quantity="one">next sync in %d hour</item>
+        <item quantity="other">next sync in %d hours</item>
+    </plurals>
+    <plurals name="watchlist_next_sync_in_minutes">
+        <item quantity="one">next sync in %d minute</item>
+        <item quantity="other">next sync in %d minutes</item>
+    </plurals>
+    <string name="watchlist_freshness_with_next_sync">%1$s · %2$s</string>
+
+    <string name="watchlist_syncing">Updating…</string>
+    <string name="watchlist_syncing_progress">Updating… %1$d%%</string>
+
+    <string name="watchlist_sync_failed">Couldn\'t update</string>
+    <plurals name="watchlist_sync_failed_attempts">
+        <item quantity="one">%1$d attempt · last at %2$s</item>
+        <item quantity="other">%1$d attempts · last at %2$s</item>
+    </plurals>
+    <string name="watchlist_retry">Retry</string>
+
+    <string name="watchlist_offline">You are offline. Showing rates cached at %1$s — they will refresh once the network is back.</string>
+
+    <string name="watchlist_action_refresh">Refresh</string>
+    <string name="watchlist_action_more">More</string>
+    <string name="watchlist_add_pair">Add pair</string>
+
+    <string name="watchlist_pair">%1$s → %2$s</string>
+    <string name="watchlist_rate_meta">%1$s · %2$s</string>
+    <string name="watchlist_rate_unavailable">No data yet</string>
+    <string name="watchlist_rate_placeholder">—</string>
+
+    <string name="source_frankfurter">Frankfurter</string>
+    <string name="source_coingecko">CoinGecko</string>
+    <string name="source_cbr">CBR</string>
 </resources>

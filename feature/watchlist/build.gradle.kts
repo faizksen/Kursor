@@ -5,7 +5,3 @@ plugins {
 android {
     namespace = "dev.faizksen.kursor.watchlist"
 }
-
-dependencies {
-
-}

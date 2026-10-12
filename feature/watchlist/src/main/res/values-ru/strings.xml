@@ -2,4 +2,62 @@
 <resources>
     <string name="watchlist_title">Курсы</string>
     <string name="watchlist_empty_title">Пока ничего не отслеживается</string>
+    <string name="watchlist_empty_subtitle">Добавьте валютную пару, чтобы следить за курсом</string>
+
+    <string name="watchlist_updated_just_now">Только что обновлено</string>
+    <plurals name="watchlist_updated_minutes_ago">
+        <item quantity="one">Обновлено %d минуту назад</item>
+        <item quantity="few">Обновлено %d минуты назад</item>
+        <item quantity="many">Обновлено %d минут назад</item>
+        <item quantity="other">Обновлено %d минуты назад</item>
+    </plurals>
+    <plurals name="watchlist_updated_hours_ago">
+        <item quantity="one">Обновлено %d час назад</item>
+        <item quantity="few">Обновлено %d часа назад</item>
+        <item quantity="many">Обновлено %d часов назад</item>
+        <item quantity="other">Обновлено %d часа назад</item>
+    </plurals>
+    <string name="watchlist_updated_at">Обновлено в %1$s</string>
+    <string name="watchlist_never_updated">Ещё не обновлялось</string>
+
+    <plurals name="watchlist_next_sync_in_hours">
+        <item quantity="one">следующая синхронизация через %d ч</item>
+        <item quantity="few">следующая синхронизация через %d ч</item>
+        <item quantity="many">следующая синхронизация через %d ч</item>
+        <item quantity="other">следующая синхронизация через %d ч</item>
+    </plurals>
+    <plurals name="watchlist_next_sync_in_minutes">
+        <item quantity="one">следующая синхронизация через %d мин</item>
+        <item quantity="few">следующая синхронизация через %d мин</item>
+        <item quantity="many">следующая синхронизация через %d мин</item>
+        <item quantity="other">следующая синхронизация через %d мин</item>
+    </plurals>
+    <string name="watchlist_freshness_with_next_sync">%1$s · %2$s</string>
+
+    <string name="watchlist_syncing">Обновляем…</string>
+    <string name="watchlist_syncing_progress">Обновляем… %1$d%%</string>
+
+    <string name="watchlist_sync_failed">Не удалось обновить</string>
+    <plurals name="watchlist_sync_failed_attempts">
+        <item quantity="one">%1$d попытка · последняя %2$s</item>
+        <item quantity="few">%1$d попытки · последняя %2$s</item>
+        <item quantity="many">%1$d попыток · последняя %2$s</item>
+        <item quantity="other">%1$d попытки · последняя %2$s</item>
+    </plurals>
+    <string name="watchlist_retry">Повторить</string>
+
+    <string name="watchlist_offline">Нет сети. Показаны курсы на %1$s — обновим, как только связь вернётся.</string>
+
+    <string name="watchlist_action_refresh">Обновить</string>
+    <string name="watchlist_action_more">Ещё</string>
+    <string name="watchlist_add_pair">Добавить пару</string>
+
+    <string name="watchlist_pair">%1$s → %2$s</string>
+    <string name="watchlist_rate_meta">%1$s · %2$s</string>
+    <string name="watchlist_rate_unavailable">Нет данных</string>
+    <string name="watchlist_rate_placeholder">—</string>
+
+    <string name="source_frankfurter">Frankfurter</string>
+    <string name="source_coingecko">CoinGecko</string>
+    <string name="source_cbr">ЦБ РФ</string>
 </resources>
