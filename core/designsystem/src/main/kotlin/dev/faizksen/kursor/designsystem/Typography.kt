@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.designsystem
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -30,4 +31,9 @@ internal val KursorTypography = Typography().run {
         labelMedium = labelMedium.copy(fontSize = 11.5.sp, fontWeight = FontWeight.Normal),
         labelSmall = labelSmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Normal),
     )
+}
+
+object KursorTextStyles {
+    val button = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+    val buttonSmall = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
 }

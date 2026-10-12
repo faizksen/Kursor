@@ -7,6 +7,10 @@ object KursorDimens {
     val listItemSpacing = 8.dp
     val sectionSpacing = 16.dp
 
+    val bannerPaddingVertical = 12.dp
+    val bannerPaddingHorizontal = 14.dp
+    val bannerContentSpacing = 10.dp
+
     val cardPaddingVertical = 14.dp
     val cardPaddingHorizontal = 16.dp
 
@@ -33,9 +37,10 @@ object KursorDimens {
 object KursorRadius {
     val listCard = 16.dp
     val button = 16.dp
+    val smallButton = 12.dp
     val chartCard = 18.dp
     val textField = 18.dp
-    val smallCard = 14.dp
+    val banner = 14.dp
     val periodChip = 10.dp
     val deltaBadge = 6.dp
     val bottomSheetTop = 28.dp
