@@ -4,9 +4,9 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
-import dev.faizksen.kursor.data.model.PermanentKind
-import dev.faizksen.kursor.data.model.SyncOutcome
-import dev.faizksen.kursor.data.model.TransientKind
+import dev.faizksen.kursor.model.PermanentKind
+import dev.faizksen.kursor.model.SyncOutcome
+import dev.faizksen.kursor.model.TransientKind
 import dev.faizksen.kursor.database.KursorDatabase
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao

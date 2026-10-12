@@ -1,9 +1,9 @@
 package dev.faizksen.kursor.data
 
 import com.google.common.truth.Truth.assertThat
-import dev.faizksen.kursor.data.model.PermanentKind
-import dev.faizksen.kursor.data.model.SyncOutcome
-import dev.faizksen.kursor.data.model.TransientKind
+import dev.faizksen.kursor.model.PermanentKind
+import dev.faizksen.kursor.model.SyncOutcome
+import dev.faizksen.kursor.model.TransientKind
 import kotlinx.serialization.SerializationException
 import okhttp3.Headers
 import okhttp3.Protocol

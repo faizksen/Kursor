@@ -1,8 +1,8 @@
 package dev.faizksen.kursor.data
 
-import dev.faizksen.kursor.data.model.PermanentKind
-import dev.faizksen.kursor.data.model.SyncOutcome
-import dev.faizksen.kursor.data.model.TransientKind
+import dev.faizksen.kursor.model.PermanentKind
+import dev.faizksen.kursor.model.SyncOutcome
+import dev.faizksen.kursor.model.TransientKind
 import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import java.io.IOException

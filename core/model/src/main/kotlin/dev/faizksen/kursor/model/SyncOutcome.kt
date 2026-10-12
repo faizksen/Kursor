@@ -1,4 +1,4 @@
-package dev.faizksen.kursor.data.model
+package dev.faizksen.kursor.model
 
 import java.time.Duration
 
