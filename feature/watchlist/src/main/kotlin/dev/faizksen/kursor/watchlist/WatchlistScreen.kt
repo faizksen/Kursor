@@ -34,9 +34,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -66,10 +69,10 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.time.Clock
-import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 
 private val CardColumnMinWidth = 320.dp
 private val CardContentSpacing = 12.dp
@@ -78,8 +81,6 @@ private val ProgressIndicatorSize = 16.dp
 private val ProgressIndicatorStroke = 2.dp
 private val EmptyPlaceholderSize = 72.dp
 private val EmptyContentSpacing = 12.dp
-private const val MinutesInHour = 60L
-private const val MinutesBeforeAbsoluteTime = 12 * MinutesInHour
 
 @Composable
 fun WatchlistScreen(
@@ -462,33 +463,44 @@ private fun freshnessText(lastUpdate: LastUpdate): String = when (lastUpdate) {
 private fun rememberUpdatedAtText(
     updatedAt: Instant,
     clock: Clock = Clock.systemDefaultZone(),
-): String {
-    val absoluteText = rememberShortDateTimeText(updatedAt, clock)
-    val minutesAgo = remember(updatedAt, clock) {
-        Duration.between(updatedAt, clock.instant()).toMinutes().coerceAtLeast(0L)
+): String = when (val freshness = rememberFreshness(updatedAt, clock)) {
+    Freshness.JustNow -> stringResource(R.string.watchlist_updated_just_now)
+
+    is Freshness.Minutes -> pluralStringResource(
+        R.plurals.watchlist_updated_minutes_ago,
+        freshness.value,
+        freshness.value,
+    )
+
+    is Freshness.Hours -> pluralStringResource(
+        R.plurals.watchlist_updated_hours_ago,
+        freshness.value,
+        freshness.value,
+    )
+
+    is Freshness.At -> stringResource(
+        R.string.watchlist_updated_at,
+        rememberShortDateTimeText(freshness.instant, clock),
+    )
+}
+
+@Composable
+private fun rememberFreshness(updatedAt: Instant, clock: Clock): Freshness {
+    var freshness by remember(updatedAt, clock) {
+        mutableStateOf(freshnessOf(updatedAt, clock.instant()))
     }
 
-    return when {
-        minutesAgo < 1L -> stringResource(R.string.watchlist_updated_just_now)
+    LaunchedEffect(updatedAt, clock) {
+        var delayUntilChange = delayUntilFreshnessChanges(updatedAt, clock.instant())
 
-        minutesAgo < MinutesInHour -> pluralStringResource(
-            R.plurals.watchlist_updated_minutes_ago,
-            minutesAgo.toInt(),
-            minutesAgo.toInt(),
-        )
-
-        minutesAgo < MinutesBeforeAbsoluteTime -> {
-            val hoursAgo = (minutesAgo / MinutesInHour).toInt()
-
-            pluralStringResource(
-                R.plurals.watchlist_updated_hours_ago,
-                hoursAgo,
-                hoursAgo,
-            )
+        while (delayUntilChange != null) {
+            delay(delayUntilChange.toMillis())
+            freshness = freshnessOf(updatedAt, clock.instant())
+            delayUntilChange = delayUntilFreshnessChanges(updatedAt, clock.instant())
         }
-
-        else -> stringResource(R.string.watchlist_updated_at, absoluteText)
     }
+
+    return freshness
 }
 
 @Composable
