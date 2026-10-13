@@ -306,6 +306,12 @@ private fun FreshnessRow(
     }
 }
 
+private fun failedTitleRes(lastUpdate: LastUpdate.Failed): Int = if (lastUpdate.willRetry) {
+    R.string.watchlist_sync_will_retry
+} else {
+    R.string.watchlist_sync_failed
+}
+
 @Composable
 private fun FreshnessRowFailed(
     lastUpdate: LastUpdate.Failed,
@@ -317,8 +323,16 @@ private fun FreshnessRowFailed(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(KursorRadius.banner),
-        color = KursorTheme.colorScheme.errorContainer,
-        contentColor = KursorTheme.colorScheme.onErrorContainer,
+        color = if (lastUpdate.willRetry) {
+            KursorTheme.colorScheme.tertiaryContainer
+        } else {
+            KursorTheme.colorScheme.errorContainer
+        },
+        contentColor = if (lastUpdate.willRetry) {
+            KursorTheme.colorScheme.onTertiaryContainer
+        } else {
+            KursorTheme.colorScheme.onErrorContainer
+        },
     ) {
         Row(
             modifier = Modifier.padding(
@@ -330,7 +344,7 @@ private fun FreshnessRowFailed(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stringResource(R.string.watchlist_sync_failed),
+                    text = stringResource(failedTitleRes(lastUpdate)),
                     style = KursorTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                     ),
@@ -348,8 +362,16 @@ private fun FreshnessRowFailed(
             KursorSmallButton(
                 text = stringResource(R.string.watchlist_retry),
                 onClick = onTryAgainClick,
-                containerColor = KursorTheme.colorScheme.error,
-                contentColor = KursorTheme.colorScheme.onError,
+                containerColor = if (lastUpdate.willRetry) {
+                    KursorTheme.colorScheme.tertiary
+                } else {
+                    KursorTheme.colorScheme.error
+                },
+                contentColor = if (lastUpdate.willRetry) {
+                    KursorTheme.colorScheme.onTertiary
+                } else {
+                    KursorTheme.colorScheme.onError
+                },
             )
         }
     }
@@ -425,7 +447,7 @@ private fun rateValueText(rate: RatePoint?): String = if (rate == null) {
 private fun freshnessText(lastUpdate: LastUpdate): String = when (lastUpdate) {
     LastUpdate.Empty -> stringResource(R.string.watchlist_never_updated)
 
-    is LastUpdate.Failed -> stringResource(R.string.watchlist_sync_failed)
+    is LastUpdate.Failed -> stringResource(failedTitleRes(lastUpdate))
 
     is LastUpdate.Success -> rememberUpdatedAtText(lastUpdate.updatedAt)
 
@@ -565,6 +587,7 @@ private fun FreshnessRowFailedPreview() {
             lastUpdate = LastUpdate.Failed(
                 failedAttempts = 5,
                 lastTryAt = Instant.parse("2026-09-20T06:12:00Z"),
+                willRetry = false,
             ),
             onTryAgainClick = {},
         )

@@ -30,6 +30,7 @@
     <string name="watchlist_syncing_progress">Updating… %1$d%%</string>
 
     <string name="watchlist_sync_failed">Couldn\'t update</string>
+    <string name="watchlist_sync_will_retry">Update failed, retrying</string>
     <plurals name="watchlist_sync_failed_attempts">
         <item quantity="one">%1$d attempt · last at %2$s</item>
         <item quantity="other">%1$d attempts · last at %2$s</item>

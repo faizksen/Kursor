@@ -38,6 +38,7 @@
     <string name="watchlist_syncing_progress">Обновляем… %1$d%%</string>
 
     <string name="watchlist_sync_failed">Не удалось обновить</string>
+    <string name="watchlist_sync_will_retry">Не удалось, повторим</string>
     <plurals name="watchlist_sync_failed_attempts">
         <item quantity="one">%1$d попытка · последняя %2$s</item>
         <item quantity="few">%1$d попытки · последняя %2$s</item>

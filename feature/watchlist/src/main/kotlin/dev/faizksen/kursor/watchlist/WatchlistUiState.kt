@@ -20,7 +20,8 @@ sealed interface LastUpdate {
     data class Success(val updatedAt: Instant): LastUpdate
     data class Failed(
         val failedAttempts: Int,
-        val lastTryAt: Instant
+        val lastTryAt: Instant,
+        val willRetry: Boolean,
     ): LastUpdate
     data class Progress(
         val percents: Int
