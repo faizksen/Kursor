@@ -7,6 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.faizksen.kursor.data.RatesRepository
 import dev.faizksen.kursor.data.RatesRepositoryImpl
+import dev.faizksen.kursor.data.SyncLogRepository
+import dev.faizksen.kursor.data.SyncLogRepositoryImpl
 import java.time.Clock
 import javax.inject.Singleton
 
@@ -16,6 +18,9 @@ interface DataModule {
 
     @Binds
     fun bindRatesRepository(impl: RatesRepositoryImpl): RatesRepository
+
+    @Binds
+    fun bindSyncLogRepository(impl: SyncLogRepositoryImpl): SyncLogRepository
 }
 
 @Module

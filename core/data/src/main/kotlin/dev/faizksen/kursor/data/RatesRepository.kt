@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.data
 
-import dev.faizksen.kursor.database.consts.SourceIdColumn
+import dev.faizksen.kursor.data.mappers.toColumn
+import dev.faizksen.kursor.data.mappers.toSourceId
 import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.database.dao.RatesDao
@@ -90,19 +91,6 @@ internal fun RemoteRate.toRateEntity(sourceId: SourceId, fetchedAt: Long) = Rate
     value = value.toPlainString(),
     fetchedAt = fetchedAt
 )
-
-internal fun SourceId.toColumn() = when(this) {
-    SourceId.FRANKFURTER -> SourceIdColumn.Frankfurter
-    SourceId.COINGECKO -> SourceIdColumn.CoinGecko
-    SourceId.CBR -> SourceIdColumn.CBR
-}
-
-internal fun SourceIdColumn.toSourceId() = when(this) {
-    SourceIdColumn.Frankfurter -> SourceId.FRANKFURTER
-    SourceIdColumn.CoinGecko -> SourceId.COINGECKO
-    SourceIdColumn.CBR -> SourceId.CBR
-    is SourceIdColumn.Unrecognized -> null
-}
 
 internal fun WatchedPairEntity.toWatchedPair() = WatchedPair(
     id = id,
