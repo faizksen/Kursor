@@ -41,20 +41,21 @@ fun SyncOutcome.toSyncRun(
     startedAt: Instant,
     finishedAt: Instant,
     attempt: Int,
+    canRetry: Boolean,
 ): SyncRun = SyncRun(
     sourceId = sourceId,
     trigger = trigger,
     startedAt = startedAt,
     finishedAt = finishedAt,
-    result = toSyncResult(),
+    result = toSyncResult(canRetry),
     errorKind = toSyncErrorKind(),
     updatedCount = (this as? SyncOutcome.Success)?.updatedCount,
     attempt = attempt,
 )
 
-private fun SyncOutcome.toSyncResult(): SyncResult = when (this) {
+private fun SyncOutcome.toSyncResult(canRetry: Boolean): SyncResult = when (this) {
     is SyncOutcome.Success -> SyncResult.Success
-    is SyncOutcome.Transient -> SyncResult.Retry
+    is SyncOutcome.Transient -> if (canRetry) SyncResult.Retry else SyncResult.Failed
     is SyncOutcome.Permanent -> SyncResult.Failed
 }
 

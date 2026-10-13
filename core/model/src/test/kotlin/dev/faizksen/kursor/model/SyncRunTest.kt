@@ -71,6 +71,21 @@ class SyncRunTest {
     }
 
     @Test
+    fun `transient outcome on the last attempt is recorded as failed`() {
+        val run = SyncOutcome.Transient(TransientKind.NoNetwork).toRun(canRetry = false)
+
+        assertThat(run.result).isEqualTo(SyncResult.Failed)
+        assertThat(run.errorKind).isEqualTo(SyncErrorKind.NoNetwork)
+    }
+
+    @Test
+    fun `successful outcome is not affected by the attempt limit`() {
+        val run = SyncOutcome.Success(updatedCount = 1).toRun(canRetry = false)
+
+        assertThat(run.result).isEqualTo(SyncResult.Success)
+    }
+
+    @Test
     fun `rate limited loses its retry after`() {
         val withDelay = SyncOutcome.Transient(TransientKind.RateLimited(Duration.ofSeconds(30)))
         val withoutDelay = SyncOutcome.Transient(TransientKind.RateLimited(null))
@@ -95,11 +110,12 @@ class SyncRunTest {
             .isEqualTo(SyncRun.NOT_STORED)
     }
 
-    private fun SyncOutcome.toRun(): SyncRun = toSyncRun(
+    private fun SyncOutcome.toRun(canRetry: Boolean = true): SyncRun = toSyncRun(
         sourceId = SourceId.FRANKFURTER,
         trigger = SyncTrigger.Manual,
         startedAt = startedAt,
         finishedAt = finishedAt,
         attempt = 2,
+        canRetry = canRetry,
     )
 }

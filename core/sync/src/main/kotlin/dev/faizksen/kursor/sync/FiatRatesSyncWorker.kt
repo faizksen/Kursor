@@ -22,24 +22,31 @@ class FiatRatesSyncWorker @AssistedInject constructor(
 
     companion object {
         const val KEY_TRIGGER = "sync_trigger"
+        private const val MAX_ATTEMPTS = 3
         private val FALLBACK_TRIGGER = SyncTrigger.Periodic
     }
 
-    override suspend fun doWork(): Result = syncLogger.log(
-        sourceId = SourceId.FRANKFURTER,
-        trigger = inputData.syncTrigger(),
-        attempt = runAttemptCount + 1,
-    ) {
-        refreshRates()
-    }.toWorkerResult()
+    override suspend fun doWork(): Result {
+        val attempt = runAttemptCount + 1
+        val canRetry = attempt < MAX_ATTEMPTS
+
+        return syncLogger.log(
+            sourceId = SourceId.FRANKFURTER,
+            trigger = inputData.syncTrigger(),
+            attempt = attempt,
+            canRetry = canRetry,
+        ) {
+            refreshRates()
+        }.toWorkerResult(canRetry)
+    }
 
     private fun Data.syncTrigger(): SyncTrigger = getString(KEY_TRIGGER)
         ?.let { name -> SyncTrigger.entries.firstOrNull { it.name == name } }
         ?: FALLBACK_TRIGGER
 
-    private fun SyncOutcome.toWorkerResult(): Result = when (this) {
+    private fun SyncOutcome.toWorkerResult(canRetry: Boolean): Result = when (this) {
         is SyncOutcome.Success -> Result.success()
-        is SyncOutcome.Transient -> Result.retry()
+        is SyncOutcome.Transient -> if (canRetry) Result.retry() else Result.failure()
         is SyncOutcome.Permanent -> Result.failure()
     }
 }

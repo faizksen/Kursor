@@ -18,6 +18,7 @@ class SyncLogger @Inject constructor(
         sourceId: SourceId,
         trigger: SyncTrigger,
         attempt: Int,
+        canRetry: Boolean,
         block: suspend () -> SyncOutcome,
     ): SyncOutcome {
         val startedAt = clock.instant()
@@ -30,6 +31,7 @@ class SyncLogger @Inject constructor(
                 startedAt = startedAt,
                 finishedAt = clock.instant(),
                 attempt = attempt,
+                canRetry = canRetry,
             )
         )
 
