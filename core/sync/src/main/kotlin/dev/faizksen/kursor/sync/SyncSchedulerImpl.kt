@@ -57,11 +57,7 @@ class SyncSchedulerImpl @Inject constructor(
             existingWorkPolicy = ExistingWorkPolicy.KEEP,
             request = OneTimeWorkRequestBuilder<FiatRatesSyncWorker>()
                 .setInputData(triggerData(SyncTrigger.Manual))
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                ).build()
+                .build()
         )
     }
 
