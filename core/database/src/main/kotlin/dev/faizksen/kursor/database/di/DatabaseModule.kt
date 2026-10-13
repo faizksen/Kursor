@@ -30,4 +30,7 @@ object DatabaseModule {
 
     @Provides
     fun ratesDao(database: KursorDatabase) = database.ratesDao
+
+    @Provides
+    fun syncLogDao(database: KursorDatabase) = database.syncLogDao
 }

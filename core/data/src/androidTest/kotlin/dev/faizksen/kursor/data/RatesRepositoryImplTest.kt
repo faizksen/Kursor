@@ -8,6 +8,7 @@ import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.TransientKind
 import dev.faizksen.kursor.database.KursorDatabase
+import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
 import dev.faizksen.kursor.database.entities.RateEntity
@@ -97,7 +98,7 @@ class RatesRepositoryImplTest {
                     base = EUR,
                     quote = USD,
                     date = DATE,
-                    sourceId = SourceId.FRANKFURTER.name,
+                    sourceId = SourceIdColumn.Frankfurter,
                     value = RATE_EUR_USD,
                     fetchedAt = fetchedAt
                 ),
@@ -105,7 +106,7 @@ class RatesRepositoryImplTest {
                     base = USD,
                     quote = PLN,
                     date = DATE,
-                    sourceId = SourceId.FRANKFURTER.name,
+                    sourceId = SourceIdColumn.Frankfurter,
                     value = RATE_USD_PLN,
                     fetchedAt = fetchedAt
                 ),
@@ -224,7 +225,7 @@ class RatesRepositoryImplTest {
                     base = EUR,
                     quote = USD,
                     date = DATE,
-                    sourceId = "UNKNOWN_SOURCE",
+                    sourceId = SourceIdColumn.Unrecognized("UNKNOWN_SOURCE"),
                     value = RATE_EUR_USD,
                     fetchedAt = clock.millis()
                 )

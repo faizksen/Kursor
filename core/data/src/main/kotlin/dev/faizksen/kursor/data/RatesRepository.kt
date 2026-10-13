@@ -1,5 +1,6 @@
 package dev.faizksen.kursor.data
 
+import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.database.dao.RatesDao
@@ -73,11 +74,11 @@ class RatesRepositoryImpl @Inject constructor(
 
 internal fun List<RatePoint>.pickPreferred(): RatePoint? = minByOrNull { it.sourceId.ordinal }
 
-internal fun RateEntity.toRatePoint() = sourceId.toSourceId()?.let { source ->
+internal fun RateEntity.toRatePoint() = sourceId.toSourceId()?.let { sourceId ->
     RatePoint(
         date = LocalDate.parse(date),
         value = BigDecimal(value),
-        sourceId = source
+        sourceId = sourceId
     )
 }
 
@@ -85,12 +86,23 @@ internal fun RemoteRate.toRateEntity(sourceId: SourceId, fetchedAt: Long) = Rate
     base = base.code,
     quote = quote.code,
     date = date.toString(),
-    sourceId = sourceId.name,
+    sourceId = sourceId.toColumn(),
     value = value.toPlainString(),
     fetchedAt = fetchedAt
 )
 
-internal fun String.toSourceId() = SourceId.entries.find { it.name == this }
+internal fun SourceId.toColumn() = when(this) {
+    SourceId.FRANKFURTER -> SourceIdColumn.Frankfurter
+    SourceId.COINGECKO -> SourceIdColumn.CoinGecko
+    SourceId.CBR -> SourceIdColumn.CBR
+}
+
+internal fun SourceIdColumn.toSourceId() = when(this) {
+    SourceIdColumn.Frankfurter -> SourceId.FRANKFURTER
+    SourceIdColumn.CoinGecko -> SourceId.COINGECKO
+    SourceIdColumn.CBR -> SourceId.CBR
+    is SourceIdColumn.Unrecognized -> null
+}
 
 internal fun WatchedPairEntity.toWatchedPair() = WatchedPair(
     id = id,

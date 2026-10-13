@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
+import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.entities.RateEntity
 import kotlinx.coroutines.flow.first
@@ -39,7 +40,7 @@ class RatesDaoTest {
             base = "EUR",
             quote = "PLN",
             date = "2026-09-06",
-            sourceId = "FRANKFURTER",
+            sourceId = SourceIdColumn.Frankfurter,
             value = "4.3244",
             fetchedAt = 1_000L,
         )
