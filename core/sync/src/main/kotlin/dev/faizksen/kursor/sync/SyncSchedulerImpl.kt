@@ -9,6 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.workDataOf
 import dev.faizksen.kursor.domain.SyncScheduler
 import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
@@ -38,6 +39,8 @@ class SyncSchedulerImpl @Inject constructor(
     private fun periodicRequest() = PeriodicWorkRequestBuilder<FiatRatesSyncWorker>(
         repeatInterval = 6, repeatIntervalTimeUnit = TimeUnit.HOURS,
         flexTimeInterval = 1, flexTimeIntervalUnit = TimeUnit.HOURS
+    ).setInputData(
+        triggerData(SyncTrigger.Periodic)
     ).setConstraints(
         Constraints.Builder()
             .setRequiredNetworkType(NetworkType.NOT_ROAMING)
@@ -53,6 +56,7 @@ class SyncSchedulerImpl @Inject constructor(
             uniqueWorkName = FIAT_IMMEDIATE_SYNC_NAME,
             existingWorkPolicy = ExistingWorkPolicy.KEEP,
             request = OneTimeWorkRequestBuilder<FiatRatesSyncWorker>()
+                .setInputData(triggerData(SyncTrigger.Manual))
                 .setConstraints(
                     Constraints.Builder()
                         .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -60,6 +64,9 @@ class SyncSchedulerImpl @Inject constructor(
                 ).build()
         )
     }
+
+    private fun triggerData(trigger: SyncTrigger) =
+        workDataOf(FiatRatesSyncWorker.KEY_TRIGGER to trigger.name)
 
     override fun observeSyncState(trigger: SyncTrigger): Flow<SyncState> =
         workManager.getWorkInfosForUniqueWorkFlow(trigger.uniqueWorkName())
