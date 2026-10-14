@@ -11,11 +11,13 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import dev.faizksen.kursor.domain.SyncScheduler
+import dev.faizksen.kursor.model.SyncQueue
 import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -64,15 +66,29 @@ class SyncSchedulerImpl @Inject constructor(
     private fun triggerData(trigger: SyncTrigger) =
         workDataOf(FiatRatesSyncWorker.KEY_TRIGGER to trigger.name)
 
-    override fun observeSyncState(trigger: SyncTrigger): Flow<SyncState> =
+    override fun observeSyncQueue(trigger: SyncTrigger): Flow<SyncQueue> =
         workManager.getWorkInfosForUniqueWorkFlow(trigger.uniqueWorkName())
-            .map { infos -> infos.firstOrNull().toSyncState() }
+            .map { infos -> infos.firstOrNull().toSyncQueue() }
             .distinctUntilChanged()
 
     private fun SyncTrigger.uniqueWorkName(): String = when (this) {
         SyncTrigger.Periodic -> FIAT_PERIODIC_SYNC_NAME
         SyncTrigger.Manual -> FIAT_IMMEDIATE_SYNC_NAME
     }
+
+    private fun WorkInfo?.toSyncQueue(): SyncQueue = if (this == null) {
+        SyncQueue.Idle
+    } else {
+        SyncQueue(
+            state = toSyncState(),
+            nextRunAt = nextRunAt(),
+            attemptCount = runAttemptCount,
+        )
+    }
+
+    private fun WorkInfo.nextRunAt(): Instant? = nextScheduleTimeMillis
+        .takeIf { state == WorkInfo.State.ENQUEUED && it != Long.MAX_VALUE }
+        ?.let(Instant::ofEpochMilli)
 
     private fun WorkInfo?.toSyncState(): SyncState = when (this?.state) {
         WorkInfo.State.RUNNING -> SyncState.Running
