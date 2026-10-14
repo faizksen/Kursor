@@ -205,7 +205,7 @@ private fun WatchlistEmpty(
     ) {
         DashedPlaceholder(
             size = EmptyPlaceholderSize,
-            cornerRadius = KursorRadius.listCard,
+            cornerRadius = KursorRadius.card,
         )
         Column(
             modifier = Modifier.padding(vertical = KursorDimens.sectionSpacing),
@@ -281,7 +281,7 @@ private fun FreshnessRow(
 
         is LastUpdate.Progress -> Row(
             modifier = modifier.padding(bottom = KursorDimens.sectionHeaderPaddingBottom),
-            horizontalArrangement = Arrangement.spacedBy(KursorDimens.bannerContentSpacing),
+            horizontalArrangement = Arrangement.spacedBy(KursorDimens.cardContentSpacing),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CircularProgressIndicator(
@@ -323,7 +323,7 @@ private fun FreshnessRowFailed(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(KursorRadius.banner),
+        shape = RoundedCornerShape(KursorRadius.cardCompact),
         color = if (lastUpdate.willRetry) {
             KursorTheme.colorScheme.tertiaryContainer
         } else {
@@ -337,10 +337,10 @@ private fun FreshnessRowFailed(
     ) {
         Row(
             modifier = Modifier.padding(
-                horizontal = KursorDimens.bannerPaddingHorizontal,
-                vertical = KursorDimens.bannerPaddingVertical,
+                horizontal = KursorDimens.cardCompactPaddingHorizontal,
+                vertical = KursorDimens.cardCompactPaddingVertical,
             ),
-            horizontalArrangement = Arrangement.spacedBy(KursorDimens.bannerContentSpacing),
+            horizontalArrangement = Arrangement.spacedBy(KursorDimens.cardContentSpacing),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -388,7 +388,7 @@ private fun RateCard(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(KursorRadius.listCard),
+        shape = RoundedCornerShape(KursorRadius.card),
         color = KursorTheme.colorScheme.surface,
         contentColor = KursorTheme.colorScheme.onSurface,
         border = BorderStroke(CardBorderWidth, KursorTheme.colorScheme.outlineVariant),
