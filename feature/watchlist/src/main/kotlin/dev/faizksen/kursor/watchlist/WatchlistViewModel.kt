@@ -42,12 +42,7 @@ class WatchlistViewModel @Inject constructor(
     override fun handleActions(action: WatchlistUiAction) {
         when(action) {
             WatchlistUiAction.RefreshClicked -> requestManualSync()
-            WatchlistUiAction.MenuClicked -> showMenu()
         }
-    }
-
-    private fun showMenu() {
-
     }
 
     private fun List<WatchedPairWithRate>.toUiState(lastUpdate: LastUpdate): WatchlistUiState =

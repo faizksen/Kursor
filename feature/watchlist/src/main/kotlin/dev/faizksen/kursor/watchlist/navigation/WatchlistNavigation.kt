@@ -15,11 +15,13 @@ fun NavController.navigateToWatchlist(navOptions: NavOptions) = navigate(Watchli
 fun NavGraphBuilder.watchlistScreen(
     onPairClick: (Long) -> Unit,
     onAddPairClick: () -> Unit,
+    onSyncStatusClick: () -> Unit,
 ) {
     composable<WatchlistRoute> {
         WatchlistScreen(
             onPairClick = onPairClick,
             onAddPairClick = onAddPairClick,
+            onSyncStatusClick = onSyncStatusClick,
         )
     }
 }

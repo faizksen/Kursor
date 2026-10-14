@@ -30,7 +30,6 @@ sealed interface LastUpdate {
 
 sealed interface WatchlistUiAction: UiAction {
     data object RefreshClicked: WatchlistUiAction
-    data object MenuClicked: WatchlistUiAction
 }
 
 sealed interface WatchlistUiEffect: UiEffect {

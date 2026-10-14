@@ -31,7 +31,11 @@ fun KursorApp(
                 )
             }
         },
-        layoutType = navigationTypeFor(windowAdaptiveInfo)
+        layoutType = if (currentDestination == null) {
+            NavigationSuiteType.None
+        } else {
+            navigationTypeFor(windowAdaptiveInfo)
+        }
     ) {
         KursorNavHost(appState = appState)
     }

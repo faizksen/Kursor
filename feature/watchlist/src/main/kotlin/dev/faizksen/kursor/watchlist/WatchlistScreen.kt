@@ -86,6 +86,7 @@ private val EmptyContentSpacing = 12.dp
 fun WatchlistScreen(
     onAddPairClick: () -> Unit,
     onPairClick: (Long) -> Unit,
+    onSyncStatusClick: () -> Unit,
     viewModel: WatchlistViewModel = hiltViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
@@ -93,6 +94,7 @@ fun WatchlistScreen(
         state = state,
         onAddPairClick = onAddPairClick,
         onPairClick = onPairClick,
+        onSyncStatusClick = onSyncStatusClick,
         onAction = viewModel::obtainAction,
     )
 }
@@ -102,6 +104,7 @@ fun WatchlistContent(
     state: WatchlistUiState,
     onAddPairClick: () -> Unit,
     onPairClick: (Long) -> Unit,
+    onSyncStatusClick: () -> Unit,
     onAction: (WatchlistUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -141,7 +144,7 @@ fun WatchlistContent(
                         TopAppBarButton(
                             icon = Icons.Default.MoreVert,
                             contentDescription = stringResource(R.string.watchlist_action_more),
-                            onClick = { onAction(WatchlistUiAction.MenuClicked) },
+                            onClick = onSyncStatusClick,
                         )
                     }
                 },
@@ -570,6 +573,7 @@ private fun WatchlistResultsPreview() {
                 ),
             ),
             onAddPairClick = {},
+            onSyncStatusClick = {},
             onPairClick = {},
             onAction = {},
         )
@@ -584,6 +588,7 @@ private fun WatchlistEmptyPreview() {
         WatchlistContent(
             state = WatchlistUiState.Empty,
             onAddPairClick = {},
+            onSyncStatusClick = {},
             onPairClick = {},
             onAction = {},
         )

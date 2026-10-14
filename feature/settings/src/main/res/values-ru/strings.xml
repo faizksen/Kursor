@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sync_status_title">Журнал синхронизаций</string>
+
+    <string name="sync_status_now_title">Сейчас</string>
+    <string name="sync_status_trigger_periodic">Периодическая</string>
+    <string name="sync_status_trigger_manual">Ручная</string>
+
+    <string name="sync_status_next_run_in">Следующая проверка не раньше чем через %1$s</string>
+    <string name="sync_status_next_run_awaiting">Ожидает запуска</string>
+    <string name="sync_status_retry_in">Повтор не раньше чем через %1$s</string>
+    <string name="sync_status_retry_awaiting">Повтор ожидается</string>
+    <string name="sync_status_countdown_minutes">%1$d мин</string>
+    <string name="sync_status_countdown_hours">%1$d ч %2$d мин</string>
+
+    <string name="sync_state_idle">Простаивает</string>
+    <string name="sync_state_scheduled">Запланирована</string>
+    <string name="sync_state_running">Выполняется</string>
+    <string name="sync_state_succeeded">Успешно</string>
+    <string name="sync_state_failed">Не удалось</string>
+
+    <string name="sync_status_history_title">История прогонов</string>
+    <string name="sync_status_history_empty">Синхронизаций пока не было</string>
+    <string name="sync_status_run_now">Запустить сейчас</string>
+
+    <string name="sync_result_success">Успех</string>
+    <string name="sync_result_retry">Повтор</string>
+    <string name="sync_result_failed">Ошибка</string>
+
+    <string name="sync_status_meta_separator">%1$s · %2$s</string>
+    <string name="sync_status_duration_millis">%1$d мс</string>
+    <string name="sync_status_duration_seconds">%1$s с</string>
+    <string name="sync_status_attempt">попытка %1$d</string>
+    <plurals name="sync_status_updated_count">
+        <item quantity="one">%1$d курс</item>
+        <item quantity="few">%1$d курса</item>
+        <item quantity="many">%1$d курсов</item>
+        <item quantity="other">%1$d курса</item>
+    </plurals>
+
+    <string name="sync_status_source_frankfurter">Frankfurter</string>
+    <string name="sync_status_source_coingecko">CoinGecko</string>
+    <string name="sync_status_source_cbr">CBR</string>
+
+    <string name="sync_error_no_network">Нет сети</string>
+    <string name="sync_error_timeout">Таймаут</string>
+    <string name="sync_error_server">Ошибка сервера</string>
+    <string name="sync_error_rate_limited">Лимит запросов</string>
+    <string name="sync_error_invalid_currency">Неверная валюта</string>
+    <string name="sync_error_parse">Непонятный ответ</string>
+    <string name="sync_error_unknown_source">Неизвестный источник</string>
+    <string name="sync_error_unknown">Неизвестная ошибка</string>
+</resources>

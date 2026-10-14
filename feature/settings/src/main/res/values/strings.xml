@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sync_status_title">Sync diagnostics</string>
+
+    <string name="sync_status_now_title">Right now</string>
+    <string name="sync_status_trigger_periodic">Periodic</string>
+    <string name="sync_status_trigger_manual">Manual</string>
+
+    <string name="sync_status_next_run_in">Next check no sooner than in %1$s</string>
+    <string name="sync_status_next_run_awaiting">Awaiting a run</string>
+    <string name="sync_status_retry_in">Retry no sooner than in %1$s</string>
+    <string name="sync_status_retry_awaiting">Awaiting a retry</string>
+    <string name="sync_status_countdown_minutes">%1$d min</string>
+    <string name="sync_status_countdown_hours">%1$d h %2$d min</string>
+
+    <string name="sync_state_idle">Idle</string>
+    <string name="sync_state_scheduled">Scheduled</string>
+    <string name="sync_state_running">Running</string>
+    <string name="sync_state_succeeded">Succeeded</string>
+    <string name="sync_state_failed">Failed</string>
+
+    <string name="sync_status_history_title">History</string>
+    <string name="sync_status_history_empty">No syncs yet</string>
+    <string name="sync_status_run_now">Run sync now</string>
+
+    <string name="sync_result_success">Success</string>
+    <string name="sync_result_retry">Retry</string>
+    <string name="sync_result_failed">Failed</string>
+
+    <string name="sync_status_meta_separator">%1$s · %2$s</string>
+    <string name="sync_status_duration_millis">%1$d ms</string>
+    <string name="sync_status_duration_seconds">%1$s s</string>
+    <string name="sync_status_attempt">attempt %1$d</string>
+    <plurals name="sync_status_updated_count">
+        <item quantity="one">%1$d rate</item>
+        <item quantity="other">%1$d rates</item>
+    </plurals>
+
+    <string name="sync_status_source_frankfurter">Frankfurter</string>
+    <string name="sync_status_source_coingecko">CoinGecko</string>
+    <string name="sync_status_source_cbr">CBR</string>
+
+    <string name="sync_error_no_network">No network</string>
+    <string name="sync_error_timeout">Timeout</string>
+    <string name="sync_error_server">Server error</string>
+    <string name="sync_error_rate_limited">Rate limited</string>
+    <string name="sync_error_invalid_currency">Invalid currency</string>
+    <string name="sync_error_parse">Malformed response</string>
+    <string name="sync_error_unknown_source">Unknown source</string>
+    <string name="sync_error_unknown">Unknown error</string>
+</resources>
