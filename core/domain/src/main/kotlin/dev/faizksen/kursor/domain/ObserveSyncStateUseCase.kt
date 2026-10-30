@@ -7,10 +7,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class ObserveSyncStateUseCase @Inject constructor(
+fun interface ObserveSyncStateUseCase {
+    operator fun invoke(trigger: SyncTrigger): Flow<SyncState>
+}
+
+internal class ObserveSyncStateUseCaseImpl @Inject constructor(
     private val syncScheduler: SyncScheduler,
-) {
-    operator fun invoke(trigger: SyncTrigger): Flow<SyncState> =
+): ObserveSyncStateUseCase {
+    override operator fun invoke(trigger: SyncTrigger): Flow<SyncState> =
         syncScheduler.observeSyncQueue(trigger)
             .map { queue -> queue.state }
             .distinctUntilChanged()

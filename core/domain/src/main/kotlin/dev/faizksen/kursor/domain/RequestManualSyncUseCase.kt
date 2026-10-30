@@ -2,8 +2,12 @@ package dev.faizksen.kursor.domain
 
 import javax.inject.Inject
 
-class RequestManualSyncUseCase @Inject constructor(
+fun interface RequestManualSyncUseCase {
+    operator fun invoke()
+}
+
+internal class RequestManualSyncUseCaseImpl @Inject constructor(
     private val syncScheduler: SyncScheduler,
-) {
-    operator fun invoke() = syncScheduler.requestImmediateSync()
+): RequestManualSyncUseCase {
+    override operator fun invoke() = syncScheduler.requestImmediateSync()
 }

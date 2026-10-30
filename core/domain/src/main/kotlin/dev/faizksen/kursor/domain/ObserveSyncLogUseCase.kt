@@ -5,8 +5,12 @@ import dev.faizksen.kursor.model.SyncRun
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ObserveSyncLogUseCase @Inject constructor(
+fun interface ObserveSyncLogUseCase {
+    operator fun invoke(limit: Int): Flow<List<SyncRun>>
+}
+
+internal class ObserveSyncLogUseCaseImpl @Inject constructor(
     private val syncLogRepository: SyncLogRepository,
-) {
-    operator fun invoke(limit: Int): Flow<List<SyncRun>> = syncLogRepository.observeRecent(limit)
+): ObserveSyncLogUseCase {
+    override operator fun invoke(limit: Int): Flow<List<SyncRun>> = syncLogRepository.observeRecent(limit)
 }

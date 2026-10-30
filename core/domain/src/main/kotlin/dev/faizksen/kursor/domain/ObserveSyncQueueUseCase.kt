@@ -5,9 +5,13 @@ import dev.faizksen.kursor.model.SyncTrigger
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ObserveSyncQueueUseCase @Inject constructor(
+fun interface ObserveSyncQueueUseCase {
+    operator fun invoke(trigger: SyncTrigger): Flow<SyncQueue>
+}
+
+internal class ObserveSyncQueueUseCaseImpl @Inject constructor(
     private val syncScheduler: SyncScheduler,
-) {
-    operator fun invoke(trigger: SyncTrigger): Flow<SyncQueue> =
+): ObserveSyncQueueUseCase {
+    override operator fun invoke(trigger: SyncTrigger): Flow<SyncQueue> =
         syncScheduler.observeSyncQueue(trigger)
 }
