@@ -7,7 +7,7 @@ import dev.faizksen.kursor.ui.UiState
 import java.time.Instant
 
 sealed interface WatchlistUiState: UiState {
-    data object Initial: WatchlistUiState
+    data object Loading: WatchlistUiState
     data object Empty: WatchlistUiState
     data class Results(
         val lastUpdate: LastUpdate,

@@ -169,7 +169,7 @@ fun WatchlistContent(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (state) {
-                WatchlistUiState.Initial -> WatchlistLoading()
+                WatchlistUiState.Loading -> WatchlistLoading()
 
                 WatchlistUiState.Empty -> WatchlistEmpty(onAddPairClick = onAddPairClick)
 

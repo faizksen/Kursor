@@ -25,7 +25,7 @@ class WatchlistViewModel @Inject constructor(
     observeSyncState: ObserveSyncStateUseCase,
     observeSyncLog: ObserveSyncLogUseCase,
 ): BaseMviViewModel<WatchlistUiState, WatchlistUiAction, WatchlistUiEffect>(
-    WatchlistUiState.Initial
+    WatchlistUiState.Loading
 ) {
     init {
         combine(
