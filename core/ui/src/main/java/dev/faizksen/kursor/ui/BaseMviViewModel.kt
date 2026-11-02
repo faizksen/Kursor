@@ -30,7 +30,11 @@ abstract class BaseMviViewModel<State : UiState, Action : UiAction, Effect : UiE
     }
 
     fun obtainAction(action: Action) {
-        handleActions(action)
+        try {
+            handleActions(action)
+        } catch (e: Exception) {
+            onHandleActionsError(action, e)
+        }
     }
 
     protected fun updateState(reducer: State.() -> State) {
