@@ -10,14 +10,14 @@ import dev.faizksen.kursor.model.SyncErrorKind
 import dev.faizksen.kursor.model.SyncResult
 import dev.faizksen.kursor.model.SyncRun
 import dev.faizksen.kursor.model.SyncTrigger
-import java.time.Instant
+import kotlin.time.Instant
 
 internal fun SyncRun.toSyncLogEntity() = SyncLogEntity(
     id = id,
     sourceId = sourceId.toColumn(),
     trigger = trigger.toColumn(),
-    startedAt = startedAt.toEpochMilli(),
-    finishedAt = finishedAt.toEpochMilli(),
+    startedAt = startedAt.toEpochMilliseconds(),
+    finishedAt = finishedAt.toEpochMilliseconds(),
     result = result.toColumn(),
     errorKind = errorKind?.toColumn(),
     updatedCount = updatedCount,
@@ -33,8 +33,8 @@ internal fun SyncLogEntity.toSyncRun(): SyncRun? {
         id = id,
         sourceId = source,
         trigger = syncTrigger,
-        startedAt = Instant.ofEpochMilli(startedAt),
-        finishedAt = Instant.ofEpochMilli(finishedAt),
+        startedAt = Instant.fromEpochMilliseconds(startedAt),
+        finishedAt = Instant.fromEpochMilliseconds(finishedAt),
         result = syncResult,
         errorKind = errorKind?.toSyncErrorKind(),
         updatedCount = updatedCount,

@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
+    implementation(libs.kotlinx.datetime)
     implementation(project(":core:network"))
     implementation(project(":core:database"))
 

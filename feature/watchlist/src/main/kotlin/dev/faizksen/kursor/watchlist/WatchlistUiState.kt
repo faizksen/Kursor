@@ -4,7 +4,7 @@ import dev.faizksen.kursor.model.WatchedPairWithRate
 import dev.faizksen.kursor.ui.UiAction
 import dev.faizksen.kursor.ui.UiEffect
 import dev.faizksen.kursor.ui.UiState
-import java.time.Instant
+import kotlin.time.Instant
 
 sealed interface WatchlistUiState: UiState {
     data object Loading: WatchlistUiState

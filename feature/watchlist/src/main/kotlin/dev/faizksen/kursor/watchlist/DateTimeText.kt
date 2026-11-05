@@ -4,31 +4,33 @@ import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
-import java.time.Clock
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Composable
 fun rememberShortDateTimeText(
     instant: Instant,
-    clock: Clock = Clock.systemDefaultZone(),
+    clock: Clock = Clock.System,
+    zone: TimeZone = TimeZone.currentSystemDefault(),
 ): String {
     val configuration = LocalConfiguration.current
 
-    return remember(instant, configuration, clock) {
-        val zone = clock.zone
+    return remember(instant, configuration, clock, zone) {
         val locale = configuration.locales[0]
 
         formatShortDateTime(
             instant = instant,
             zone = zone,
             locale = locale,
-            today = LocalDate.now(clock),
+            today = clock.todayIn(zone),
             datePattern = DateFormat.getBestDateTimePattern(locale, "d MMM"),
         )
     }
@@ -36,18 +38,18 @@ fun rememberShortDateTimeText(
 
 internal fun formatShortDateTime(
     instant: Instant,
-    zone: ZoneId,
+    zone: TimeZone,
     locale: Locale,
     today: LocalDate,
     datePattern: String,
 ): String {
-    val dateTime = LocalDateTime.ofInstant(instant, zone)
+    val dateTime = instant.toLocalDateTime(zone)
 
-    val formatter = if (dateTime.toLocalDate() == today) {
+    val formatter = if (dateTime.date == today) {
         DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale)
     } else {
         DateTimeFormatter.ofPattern(datePattern, locale)
     }
 
-    return formatter.format(dateTime)
+    return formatter.format(dateTime.toJavaLocalDateTime())
 }

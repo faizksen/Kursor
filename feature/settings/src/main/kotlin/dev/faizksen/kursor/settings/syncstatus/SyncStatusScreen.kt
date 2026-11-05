@@ -62,12 +62,13 @@ import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
 import dev.faizksen.kursor.settings.R
 import java.text.NumberFormat
-import java.time.Clock
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlinx.coroutines.delay
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 
 private val TwoPaneMaxHeight = 480.dp
 private val PaneSpacing = 10.dp
@@ -356,19 +357,19 @@ private fun scheduleInText(waitingForRetry: Boolean, countdown: String): String 
 @Composable
 private fun rememberCountdown(
     target: Instant,
-    clock: Clock = Clock.systemDefaultZone(),
+    clock: Clock = Clock.System,
 ): Countdown {
     var countdown by remember(target, clock) {
-        mutableStateOf(countdownTo(target, clock.instant()))
+        mutableStateOf(countdownTo(target, clock.now()))
     }
 
     LaunchedEffect(target, clock) {
-        var delayUntilChange = delayUntilCountdownChanges(target, clock.instant())
+        var delayUntilChange = delayUntilCountdownChanges(target, clock.now())
 
         while (delayUntilChange != null) {
-            delay(delayUntilChange.toMillis())
-            countdown = countdownTo(target, clock.instant())
-            delayUntilChange = delayUntilCountdownChanges(target, clock.instant())
+            delay(delayUntilChange)
+            countdown = countdownTo(target, clock.now())
+            delayUntilChange = delayUntilCountdownChanges(target, clock.now())
         }
     }
 
@@ -553,17 +554,22 @@ private fun runDetailText(run: SyncRun): String {
 @Composable
 private fun rememberRunTimeText(
     instant: Instant,
-    clock: Clock = Clock.systemDefaultZone(),
+    clock: Clock = Clock.System,
 ): String {
     val configuration = LocalConfiguration.current
+    val zone = TimeZone.currentSystemDefault()
 
-    return remember(instant, configuration, clock) {
+    return remember(instant, configuration, clock, zone) {
         val locale = configuration.locales[0]
-        val finishedOn = instant.atZone(clock.zone).toLocalDate()
-        val skeleton = if (finishedOn == LocalDate.now(clock)) TimeSkeleton else DateTimeSkeleton
-        val pattern = DateFormat.getBestDateTimePattern(locale, skeleton)
 
-        DateTimeFormatter.ofPattern(pattern, locale).withZone(clock.zone).format(instant)
+        formatRunTime(
+            instant = instant,
+            zone = zone,
+            locale = locale,
+            today = clock.todayIn(zone),
+            timePattern = DateFormat.getBestDateTimePattern(locale, TimeSkeleton),
+            dateTimePattern = DateFormat.getBestDateTimePattern(locale, DateTimeSkeleton),
+        )
     }
 }
 
@@ -571,7 +577,7 @@ private fun rememberRunTimeText(
 private fun rememberDurationText(startedAt: Instant, finishedAt: Instant): String {
     val configuration = LocalConfiguration.current
     val millis = remember(startedAt, finishedAt) {
-        Duration.between(startedAt, finishedAt).toMillis()
+        (finishedAt - startedAt).inWholeMilliseconds
     }
 
     if (millis < MillisInSecond) {
@@ -668,12 +674,12 @@ private fun SyncResult.badgeContentColor(): Color = when (this) {
 private fun previewContent(): SyncStatusUiState.Content = SyncStatusUiState.Content(
     periodic = SyncQueue(
         state = SyncState.Scheduled,
-        nextRunAt = Instant.now().plusSeconds(252 * 60),
+        nextRunAt = Clock.System.now() + 252.minutes,
         attemptCount = 0,
     ),
     manual = SyncQueue(
         state = SyncState.Scheduled,
-        nextRunAt = Instant.now().plusSeconds(120),
+        nextRunAt = Clock.System.now() + 2.minutes,
         attemptCount = 2,
     ),
     runs = listOf(
@@ -704,12 +710,12 @@ private fun previewRun(
     errorKind: SyncErrorKind? = null,
     attempt: Int = 1,
 ): SyncRun {
-    val finishedAt = Instant.parse("2026-10-14T09:38:00Z").minusSeconds(minutesAgo * 60)
+    val finishedAt = Instant.parse("2026-10-14T09:38:00Z") - minutesAgo.minutes
 
     return SyncRun(
         sourceId = SourceId.FRANKFURTER,
         trigger = SyncTrigger.Periodic,
-        startedAt = finishedAt.minusMillis(1_200),
+        startedAt = finishedAt - 1_200.milliseconds,
         finishedAt = finishedAt,
         result = result,
         errorKind = errorKind,

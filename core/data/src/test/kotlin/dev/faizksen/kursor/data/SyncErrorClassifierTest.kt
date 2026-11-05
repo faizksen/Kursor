@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.TransientKind
+import dev.faizksen.kursor.network.model.RemoteRateFormatException
 import kotlinx.serialization.SerializationException
 import okhttp3.Headers
 import okhttp3.Protocol
@@ -15,8 +16,7 @@ import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.time.Duration
-import java.time.format.DateTimeParseException
+import kotlin.time.Duration.Companion.seconds
 
 class SyncErrorClassifierTest {
 
@@ -42,8 +42,8 @@ class SyncErrorClassifierTest {
     }
 
     @Test
-    fun dateTimeParseExceptionIsPermanentParseError() {
-        val exception = DateTimeParseException("", "", 0)
+    fun remoteRateFormatExceptionIsPermanentParseError() {
+        val exception = RemoteRateFormatException(IllegalArgumentException())
         val result = exception.toSyncOutcome()
         assertThat(result).isEqualTo(SyncOutcome.Permanent(PermanentKind.ParseError))
     }
@@ -68,7 +68,7 @@ class SyncErrorClassifierTest {
         val result = exception.toSyncOutcome()
         assertThat(result).isEqualTo(
             SyncOutcome.Transient(
-                TransientKind.RateLimited(Duration.ofSeconds(3600))
+                TransientKind.RateLimited(3600.seconds)
             )
         )
     }

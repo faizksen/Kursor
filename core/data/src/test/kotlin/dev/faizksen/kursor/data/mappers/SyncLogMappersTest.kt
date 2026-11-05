@@ -13,7 +13,7 @@ import dev.faizksen.kursor.model.SyncResult
 import dev.faizksen.kursor.model.SyncRun
 import dev.faizksen.kursor.model.SyncTrigger
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Instant
 
 class SyncLogMappersTest {
 
@@ -81,8 +81,8 @@ class SyncLogMappersTest {
 
         val entity = run.toSyncLogEntity()
 
-        assertThat(entity.startedAt).isEqualTo(run.startedAt.toEpochMilli())
-        assertThat(entity.finishedAt).isEqualTo(run.finishedAt.toEpochMilli())
+        assertThat(entity.startedAt).isEqualTo(run.startedAt.toEpochMilliseconds())
+        assertThat(entity.finishedAt).isEqualTo(run.finishedAt.toEpochMilliseconds())
     }
 
     @Test

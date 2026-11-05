@@ -9,7 +9,7 @@ import dev.faizksen.kursor.model.SyncRun
 import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Instant
 
 class LastUpdateTest {
 

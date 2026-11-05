@@ -17,7 +17,7 @@ import dev.faizksen.kursor.model.SyncTrigger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import java.time.Instant
+import kotlin.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -88,7 +88,7 @@ class SyncSchedulerImpl @Inject constructor(
 
     private fun WorkInfo.nextRunAt(): Instant? = nextScheduleTimeMillis
         .takeIf { state == WorkInfo.State.ENQUEUED && it != Long.MAX_VALUE }
-        ?.let(Instant::ofEpochMilli)
+        ?.let { Instant.fromEpochMilliseconds(it) }
 
     private fun WorkInfo?.toSyncState(): SyncState = when (this?.state) {
         WorkInfo.State.RUNNING -> SyncState.Running

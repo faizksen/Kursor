@@ -1,6 +1,6 @@
 package dev.faizksen.kursor.model
 
-import java.time.Duration
+import kotlin.time.Duration
 
 sealed interface SyncOutcome {
     data class Success(val updatedCount: Int) : SyncOutcome

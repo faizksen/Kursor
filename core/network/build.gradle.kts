@@ -10,6 +10,7 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlinx.serialization)

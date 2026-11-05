@@ -2,12 +2,12 @@ package dev.faizksen.kursor.network
 
 import com.google.common.truth.Truth.assertThat
 import dev.faizksen.kursor.model.CurrencyCode
+import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.network.dto.FrankfurterRateDto
+import dev.faizksen.kursor.network.model.RemoteRateFormatException
 import dev.faizksen.kursor.network.util.JsonCreator
+import kotlinx.datetime.LocalDate
 import org.junit.Test
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
 
 class FrankfurterMapperTest {
     companion object {
@@ -24,11 +24,11 @@ class FrankfurterMapperTest {
         assertThat(realJson).hasSize(2)
         assertThat(realJson[0].base).isEqualTo(CurrencyCode("EUR"))
         assertThat(realJson[0].quote).isEqualTo(CurrencyCode("PLN"))
-        assertThat(realJson[0].date).isEqualTo(LocalDate.of(2026,9,5))
-        assertThat(realJson[0].value).isEqualTo(BigDecimal("4.3244"))
+        assertThat(realJson[0].date).isEqualTo(LocalDate(2026, 9, 5))
+        assertThat(realJson[0].value).isEqualTo(Rate.parse("4.3244"))
     }
 
-    @Test(expected = DateTimeParseException::class)
+    @Test(expected = RemoteRateFormatException::class)
     fun `fails on malformed date`() {
         FrankfurterRateDto(
             date = "05.09.2026",

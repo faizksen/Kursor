@@ -10,6 +10,7 @@ import dev.faizksen.kursor.database.entities.RateEntity
 import dev.faizksen.kursor.database.entities.WatchedPairEntity
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.WatchedPair
@@ -19,9 +20,8 @@ import dev.faizksen.kursor.network.model.RemoteRate
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import java.math.BigDecimal
-import java.time.Clock
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlin.time.Clock
 import javax.inject.Inject
 
 interface RatesRepository {
@@ -61,7 +61,7 @@ class RatesRepositoryImpl @Inject constructor(
         }
         return try {
             val results = source.latest(pairs)
-            val fetchedAt = clock.millis()
+            val fetchedAt = clock.now().toEpochMilliseconds()
             val rateEntities = results.map { it.toRateEntity(sourceId, fetchedAt) }
             ratesDao.upsertAll(rateEntities)
             SyncOutcome.Success(rateEntities.size)
@@ -75,11 +75,14 @@ class RatesRepositoryImpl @Inject constructor(
 
 internal fun List<RatePoint>.pickPreferred(): RatePoint? = minByOrNull { it.sourceId.ordinal }
 
-internal fun RateEntity.toRatePoint() = sourceId.toSourceId()?.let { sourceId ->
-    RatePoint(
+internal fun RateEntity.toRatePoint(): RatePoint? {
+    val source = sourceId.toSourceId() ?: return null
+    val parsed = Rate.parse(value) ?: return null
+
+    return RatePoint(
         date = LocalDate.parse(date),
-        value = BigDecimal(value),
-        sourceId = sourceId
+        value = parsed,
+        sourceId = source
     )
 }
 

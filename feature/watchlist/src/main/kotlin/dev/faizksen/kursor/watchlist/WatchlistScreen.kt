@@ -61,18 +61,19 @@ import dev.faizksen.kursor.designsystem.components.RootTopBar
 import dev.faizksen.kursor.designsystem.components.TopAppBarButton
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.WatchedPair
 import dev.faizksen.kursor.model.WatchedPairWithRate
-import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
-import java.time.Clock
-import java.time.Instant
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 private val CardColumnMinWidth = 320.dp
 private val CardContentSpacing = 12.dp
@@ -465,7 +466,7 @@ private fun freshnessText(lastUpdate: LastUpdate): String = when (lastUpdate) {
 @Composable
 private fun rememberUpdatedAtText(
     updatedAt: Instant,
-    clock: Clock = Clock.systemDefaultZone(),
+    clock: Clock = Clock.System,
 ): String = when (val freshness = rememberFreshness(updatedAt, clock)) {
     Freshness.JustNow -> stringResource(R.string.watchlist_updated_just_now)
 
@@ -490,16 +491,16 @@ private fun rememberUpdatedAtText(
 @Composable
 private fun rememberFreshness(updatedAt: Instant, clock: Clock): Freshness {
     var freshness by remember(updatedAt, clock) {
-        mutableStateOf(freshnessOf(updatedAt, clock.instant()))
+        mutableStateOf(freshnessOf(updatedAt, clock.now()))
     }
 
     LaunchedEffect(updatedAt, clock) {
-        var delayUntilChange = delayUntilFreshnessChanges(updatedAt, clock.instant())
+        var delayUntilChange = delayUntilFreshnessChanges(updatedAt, clock.now())
 
         while (delayUntilChange != null) {
-            delay(delayUntilChange.toMillis())
-            freshness = freshnessOf(updatedAt, clock.instant())
-            delayUntilChange = delayUntilFreshnessChanges(updatedAt, clock.instant())
+            delay(delayUntilChange)
+            freshness = freshnessOf(updatedAt, clock.now())
+            delayUntilChange = delayUntilFreshnessChanges(updatedAt, clock.now())
         }
     }
 
@@ -514,12 +515,12 @@ private fun rememberShortDateText(date: LocalDate): String {
         val locale = configuration.locales[0]
         val pattern = DateFormat.getBestDateTimePattern(locale, "d MMM")
 
-        DateTimeFormatter.ofPattern(pattern, locale).format(date)
+        DateTimeFormatter.ofPattern(pattern, locale).format(date.toJavaLocalDate())
     }
 }
 
 @Composable
-private fun rememberRateValueText(value: BigDecimal): String {
+private fun rememberRateValueText(value: Rate): String {
     val configuration = LocalConfiguration.current
 
     return remember(value, configuration) {
@@ -527,7 +528,7 @@ private fun rememberRateValueText(value: BigDecimal): String {
             minimumFractionDigits = 2
             maximumFractionDigits = 4
             roundingMode = RoundingMode.HALF_UP
-        }.format(value)
+        }.format(value.toPlainString().toBigDecimal())
     }
 }
 
@@ -552,7 +553,7 @@ private fun previewPair(
     rate = value?.let {
         RatePoint(
             date = LocalDate.parse("2026-09-18"),
-            value = BigDecimal(it),
+            value = Rate.parse(it)!!,
             sourceId = SourceId.FRANKFURTER,
         )
     },

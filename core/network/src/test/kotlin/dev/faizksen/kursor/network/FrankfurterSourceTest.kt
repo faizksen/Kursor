@@ -3,8 +3,10 @@ package dev.faizksen.kursor.network
 import com.google.common.truth.Truth.assertThat
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.network.util.JsonCreator
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,8 +16,6 @@ import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import java.math.BigDecimal
-import java.time.LocalDate
 
 class FrankfurterSourceTest {
     private lateinit var webServer: MockWebServer
@@ -57,8 +57,8 @@ class FrankfurterSourceTest {
         assertThat(result).hasSize(1)
         assertThat(result[0].base).isEqualTo(CurrencyCode("EUR"))
         assertThat(result[0].quote).isEqualTo(CurrencyCode("PLN"))
-        assertThat(result[0].date).isEqualTo(LocalDate.of(2026, 9, 5))
-        assertThat(result[0].value).isEqualTo(BigDecimal("4.3244"))
+        assertThat(result[0].date).isEqualTo(LocalDate(2026, 9, 5))
+        assertThat(result[0].value).isEqualTo(Rate.parse("4.3244"))
     }
 
     @Test

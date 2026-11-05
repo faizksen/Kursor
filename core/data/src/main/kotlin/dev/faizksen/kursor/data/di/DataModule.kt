@@ -9,7 +9,7 @@ import dev.faizksen.kursor.data.RatesRepository
 import dev.faizksen.kursor.data.RatesRepositoryImpl
 import dev.faizksen.kursor.data.SyncLogRepository
 import dev.faizksen.kursor.data.SyncLogRepositoryImpl
-import java.time.Clock
+import kotlin.time.Clock
 import javax.inject.Singleton
 
 @Module
@@ -29,5 +29,5 @@ object ClockModule {
 
     @Provides
     @Singleton
-    fun clock(): Clock = Clock.systemUTC()
+    fun clock(): Clock = Clock.System
 }

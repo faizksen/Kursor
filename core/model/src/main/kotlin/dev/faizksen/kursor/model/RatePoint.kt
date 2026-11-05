@@ -1,10 +1,9 @@
 package dev.faizksen.kursor.model
 
-import java.math.BigDecimal
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 data class RatePoint(
     val date: LocalDate,
-    val value: BigDecimal,
+    val value: Rate,
     val sourceId: SourceId
 )

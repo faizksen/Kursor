@@ -1,7 +1,9 @@
 package dev.faizksen.kursor.settings.syncstatus
 
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 internal sealed interface Countdown {
     data object Imminent: Countdown
@@ -26,18 +28,18 @@ internal fun delayUntilCountdownChanges(target: Instant, now: Instant): Duration
     val minutesLeft = minutesLeft(target, now)
     if (minutesLeft < 1) return null
 
-    val changesAt = target.minus(Duration.ofMinutes(minutesLeft - 1))
+    val changesAt = target - (minutesLeft - 1).minutes
 
-    return Duration.between(now, changesAt).coerceAtLeast(ShortestDelay)
+    return (changesAt - now).coerceAtLeast(ShortestDelay)
 }
 
 private fun minutesLeft(target: Instant, now: Instant): Long {
-    val left = Duration.between(now, target)
+    val left = target - now
     if (left <= Duration.ZERO) return 0
 
-    return (left.seconds + SecondsInMinute - 1) / SecondsInMinute
+    return (left.inWholeSeconds + SecondsInMinute - 1) / SecondsInMinute
 }
 
 private const val MinutesInHour = 60L
 private const val SecondsInMinute = 60L
-private val ShortestDelay = Duration.ofSeconds(1)
+private val ShortestDelay = 1.seconds

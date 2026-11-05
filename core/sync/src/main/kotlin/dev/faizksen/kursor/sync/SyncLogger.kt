@@ -7,7 +7,7 @@ import dev.faizksen.kursor.model.SyncRun
 import dev.faizksen.kursor.model.SyncTrigger
 import dev.faizksen.kursor.model.toSyncRun
 import kotlinx.coroutines.CancellationException
-import java.time.Clock
+import kotlin.time.Clock
 import javax.inject.Inject
 
 class SyncLogger @Inject constructor(
@@ -21,7 +21,7 @@ class SyncLogger @Inject constructor(
         canRetry: Boolean,
         block: suspend () -> SyncOutcome,
     ): SyncOutcome {
-        val startedAt = clock.instant()
+        val startedAt = clock.now()
         val outcome = block()
 
         record(
@@ -29,7 +29,7 @@ class SyncLogger @Inject constructor(
                 sourceId = sourceId,
                 trigger = trigger,
                 startedAt = startedAt,
-                finishedAt = clock.instant(),
+                finishedAt = clock.now(),
                 attempt = attempt,
                 canRetry = canRetry,
             )

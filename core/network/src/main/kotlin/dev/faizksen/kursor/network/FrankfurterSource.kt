@@ -2,10 +2,12 @@ package dev.faizksen.kursor.network
 
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.dto.FrankfurterRateDto
 import dev.faizksen.kursor.network.model.RemoteRate
-import java.time.LocalDate
+import dev.faizksen.kursor.network.model.RemoteRateFormatException
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 class FrankfurterSource @Inject constructor(
@@ -29,9 +31,13 @@ class FrankfurterSource @Inject constructor(
 
 internal fun Collection<CurrencyCode>.toQueryParam(): String = joinToString(",") { it.code }
 
-internal fun FrankfurterRateDto.toRemoteRate() = RemoteRate(
-    base = CurrencyCode(base),
-    quote = CurrencyCode(quote),
-    date = LocalDate.parse(date),
-    value = rate.toBigDecimal(),
-)
+internal fun FrankfurterRateDto.toRemoteRate(): RemoteRate = try {
+    RemoteRate(
+        base = CurrencyCode(base),
+        quote = CurrencyCode(quote),
+        date = LocalDate.parse(date),
+        value = Rate.ofDouble(rate),
+    )
+} catch (e: IllegalArgumentException) {
+    throw RemoteRateFormatException(e)
+}

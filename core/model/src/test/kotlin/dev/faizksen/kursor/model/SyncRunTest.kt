@@ -3,8 +3,8 @@ package dev.faizksen.kursor.model
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Instant
+import kotlin.time.Duration.Companion.seconds
 
 class SyncRunTest {
 
@@ -44,7 +44,7 @@ class SyncRunTest {
             TransientKind.NoNetwork to SyncErrorKind.NoNetwork,
             TransientKind.Timeout to SyncErrorKind.Timeout,
             TransientKind.ServerError to SyncErrorKind.ServerError,
-            TransientKind.RateLimited(Duration.ofSeconds(30)) to SyncErrorKind.RateLimited,
+            TransientKind.RateLimited(30.seconds) to SyncErrorKind.RateLimited,
         )
 
         expected.forEach { (kind, errorKind) ->
@@ -87,7 +87,7 @@ class SyncRunTest {
 
     @Test
     fun `rate limited loses its retry after`() {
-        val withDelay = SyncOutcome.Transient(TransientKind.RateLimited(Duration.ofSeconds(30)))
+        val withDelay = SyncOutcome.Transient(TransientKind.RateLimited(30.seconds))
         val withoutDelay = SyncOutcome.Transient(TransientKind.RateLimited(null))
 
         assertThat(withDelay.toRun().errorKind).isEqualTo(withoutDelay.toRun().errorKind)

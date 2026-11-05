@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Instant
 
 class ObserveSyncStateUseCaseTest {
 

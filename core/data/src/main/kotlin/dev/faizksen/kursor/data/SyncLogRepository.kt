@@ -6,7 +6,7 @@ import dev.faizksen.kursor.database.dao.SyncLogDao
 import dev.faizksen.kursor.model.SyncRun
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.Instant
+import kotlin.time.Instant
 import javax.inject.Inject
 
 interface SyncLogRepository {
@@ -29,5 +29,5 @@ class SyncLogRepositoryImpl @Inject constructor(
         syncLogDao.observeLastSuccess().map { entity -> entity?.toSyncRun() }
 
     override suspend fun deleteOlderThan(threshold: Instant) =
-        syncLogDao.deleteOlderThan(threshold.toEpochMilli())
+        syncLogDao.deleteOlderThan(threshold.toEpochMilliseconds())
 }

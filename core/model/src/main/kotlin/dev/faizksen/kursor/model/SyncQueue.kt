@@ -1,6 +1,6 @@
 package dev.faizksen.kursor.model
 
-import java.time.Instant
+import kotlin.time.Instant
 
 data class SyncQueue(
     val state: SyncState,

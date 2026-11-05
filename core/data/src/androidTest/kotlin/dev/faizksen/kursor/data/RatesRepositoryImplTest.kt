@@ -13,22 +13,21 @@ import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
 import dev.faizksen.kursor.database.entities.RateEntity
 import dev.faizksen.kursor.model.CurrencyCode
+import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.RatesRemoteSource
 import dev.faizksen.kursor.network.model.RemoteRate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.math.BigDecimal
 import java.net.UnknownHostException
-import java.time.Clock
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneOffset
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @RunWith(AndroidJUnit4::class)
 class RatesRepositoryImplTest {
@@ -37,10 +36,9 @@ class RatesRepositoryImplTest {
     private lateinit var watchedPairsDao: WatchedPairsDao
     private lateinit var ratesDao: RatesDao
 
-    private val clock = Clock.fixed(
-        Instant.parse("2026-09-09T10:00:00Z"),
-        ZoneOffset.UTC
-    )
+    private val clock = object : Clock {
+        override fun now(): Instant = Instant.parse("2026-09-09T10:00:00Z")
+    }
 
     @Before
     fun setUp() {
@@ -91,7 +89,7 @@ class RatesRepositoryImplTest {
         val result = repository.refresh(fakeSource.id)
         assertThat(result).isEqualTo(SyncOutcome.Success(2))
         val rateEntities = ratesDao.observeLatestRates().first()
-        val fetchedAt = clock.millis()
+        val fetchedAt = clock.now().toEpochMilliseconds()
         assertThat(rateEntities).containsExactlyElementsIn(
             listOf(
                 RateEntity(
@@ -171,14 +169,14 @@ class RatesRepositoryImplTest {
         val eurUsdPair = results[0]
         assertThat(eurUsdPair.rate).isNotNull()
         assertThat(eurUsdPair.rate!!.date).isEqualTo(LocalDate.parse(DATE))
-        assertThat(eurUsdPair.rate!!.value.compareTo(BigDecimal(RATE_EUR_USD))).isEqualTo(0)
+        assertThat(eurUsdPair.rate!!.value).isEqualTo(Rate.parse(RATE_EUR_USD))
         assertThat(eurUsdPair.rate!!.sourceId).isEqualTo(SourceId.FRANKFURTER)
 
         val usdPlnPair = results[1]
         assertThat(usdPlnPair).isNotNull()
         assertThat(usdPlnPair.rate).isNotNull()
         assertThat(usdPlnPair.rate!!.date).isEqualTo(LocalDate.parse(DATE))
-        assertThat(usdPlnPair.rate!!.value.compareTo(BigDecimal(RATE_USD_PLN))).isEqualTo(0)
+        assertThat(usdPlnPair.rate!!.value).isEqualTo(Rate.parse(RATE_USD_PLN))
         assertThat(usdPlnPair.rate!!.sourceId).isEqualTo(SourceId.FRANKFURTER)
     }
 
@@ -195,7 +193,7 @@ class RatesRepositoryImplTest {
                         base = CurrencyCode(EUR),
                         quote = CurrencyCode(USD),
                         date = LocalDate.parse(DATE),
-                        value = BigDecimal(RATE_EUR_USD_CBR)
+                        value = Rate.parse(RATE_EUR_USD_CBR)!!
                     )
                 )
             )
@@ -212,8 +210,7 @@ class RatesRepositoryImplTest {
         val results = repository.observeWatchlist().first().mapNotNull { it.rate }
         assertThat(results).hasSize(1)
         assertThat(results[0].sourceId).isEqualTo(SourceId.FRANKFURTER)
-        assertThat(results[0].value).isEqualTo(BigDecimal(RATE_EUR_USD))
-        assertThat(results[0].value.compareTo(BigDecimal(RATE_EUR_USD))).isEqualTo(0)
+        assertThat(results[0].value).isEqualTo(Rate.parse(RATE_EUR_USD))
     }
 
     @Test
@@ -227,7 +224,7 @@ class RatesRepositoryImplTest {
                     date = DATE,
                     sourceId = SourceIdColumn.Unrecognized("UNKNOWN_SOURCE"),
                     value = RATE_EUR_USD,
-                    fetchedAt = clock.millis()
+                    fetchedAt = clock.now().toEpochMilliseconds()
                 )
             )
         )
@@ -255,13 +252,13 @@ class RatesRepositoryImplTest {
                 CurrencyCode("EUR"),
                 CurrencyCode("USD"),
                 LocalDate.parse(DATE),
-                BigDecimal(RATE_EUR_USD)
+                Rate.parse(RATE_EUR_USD)!!
             ),
             RemoteRate(
                 CurrencyCode("USD"),
                 CurrencyCode("PLN"),
                 LocalDate.parse(DATE),
-                BigDecimal(RATE_USD_PLN)
+                Rate.parse(RATE_USD_PLN)!!
             ),
         )
     }
