@@ -108,6 +108,9 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
 kursor-jvm-library = { id = "kursor.jvm.library" }
 kursor-android-library = { id = "kursor.android.library" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrainsKotlinJvm" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kursor-kmp-library = { id = "kursor.kmp.library" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "jetbrainsKotlinJvm" }
 kursor-compose = { id = "kursor.compose" }
 kursor-feature = { id = "kursor.feature" }

@@ -14,6 +14,10 @@ gradlePlugin {
             id = "kursor.jvm.library"
             implementationClass = "dev.faizksen.kursor.build_logic.KursorJvmLibraryConventionPlugin"
         }
+        register("kursorKmpLibrary") {
+            id = "kursor.kmp.library"
+            implementationClass = "dev.faizksen.kursor.build_logic.KursorKmpLibraryConventionPlugin"
+        }
         register("kursorAndroidLibrary") {
             id = "kursor.android.library"
             implementationClass = "dev.faizksen.kursor.build_logic.KursorAndroidLibraryConventionPlugin"
