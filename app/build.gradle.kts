@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kursor.compose)
-    alias(libs.plugins.kursor.android.hilt)
 }
 
 android {
@@ -51,7 +50,14 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
     implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.hilt.work)
+
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.workmanager)
+    implementation(libs.koin.compose.viewmodel)
+
+    testImplementation(platform(libs.koin.bom))
+    testImplementation(libs.koin.test)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,7 +1,6 @@
 package dev.faizksen.kursor.watchlist
 
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCase
 import dev.faizksen.kursor.domain.ObserveSyncStateUseCase
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCase
@@ -16,10 +15,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-@HiltViewModel
-class WatchlistViewModel @Inject constructor(
+class WatchlistViewModel(
     private val watchlistUseCase: ObserveWatchlistUseCase,
     private val requestManualSync: RequestManualSyncUseCase,
     observeSyncState: ObserveSyncStateUseCase,

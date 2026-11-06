@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
-    alias(libs.plugins.kursor.android.hilt)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -11,6 +10,9 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(libs.kotlinx.datetime)
+
+    implementation(platform(libs.koin.bom))
+    api(libs.koin.android)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlinx.serialization)

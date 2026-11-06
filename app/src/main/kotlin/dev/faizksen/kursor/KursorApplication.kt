@@ -1,18 +1,24 @@
 package dev.faizksen.kursor
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+import dev.faizksen.kursor.di.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.workmanager.factory.KoinWorkerFactory
+import org.koin.core.context.startKoin
 
-@HiltAndroidApp
 class KursorApplication : Application(), Configuration.Provider {
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@KursorApplication)
+            modules(appModule)
+        }
+    }
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
+            .setWorkerFactory(KoinWorkerFactory())
             .build()
 }

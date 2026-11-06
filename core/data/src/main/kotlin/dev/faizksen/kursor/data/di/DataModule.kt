@@ -1,33 +1,21 @@
 package dev.faizksen.kursor.data.di
 
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import dev.faizksen.kursor.data.RatesRepository
 import dev.faizksen.kursor.data.RatesRepositoryImpl
 import dev.faizksen.kursor.data.SyncLogRepository
 import dev.faizksen.kursor.data.SyncLogRepositoryImpl
+import dev.faizksen.kursor.database.di.databaseModule
+import dev.faizksen.kursor.network.di.networkModule
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import kotlin.time.Clock
-import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface DataModule {
+val dataModule = module {
+    includes(databaseModule, networkModule)
 
-    @Binds
-    fun bindRatesRepository(impl: RatesRepositoryImpl): RatesRepository
+    single<Clock> { Clock.System }
 
-    @Binds
-    fun bindSyncLogRepository(impl: SyncLogRepositoryImpl): SyncLogRepository
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object ClockModule {
-
-    @Provides
-    @Singleton
-    fun clock(): Clock = Clock.System
+    singleOf(::RatesRepositoryImpl) bind RatesRepository::class
+    singleOf(::SyncLogRepositoryImpl) bind SyncLogRepository::class
 }

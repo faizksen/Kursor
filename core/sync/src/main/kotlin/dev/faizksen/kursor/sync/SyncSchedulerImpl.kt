@@ -19,9 +19,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class SyncSchedulerImpl @Inject constructor(
+class SyncSchedulerImpl(
     private val workManager: WorkManager,
 ) : SyncScheduler {
 

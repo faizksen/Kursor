@@ -8,9 +8,8 @@ import dev.faizksen.kursor.network.dto.FrankfurterRateDto
 import dev.faizksen.kursor.network.model.RemoteRate
 import dev.faizksen.kursor.network.model.RemoteRateFormatException
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
 
-class FrankfurterSource @Inject constructor(
+class FrankfurterSource(
     private val apiInterface: ApiInterfaceFrankfurter
 ): RatesRemoteSource {
     override val id: SourceId

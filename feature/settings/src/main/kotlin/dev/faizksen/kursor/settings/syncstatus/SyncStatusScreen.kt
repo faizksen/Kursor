@@ -45,7 +45,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.faizksen.kursor.designsystem.KursorDimens
 import dev.faizksen.kursor.designsystem.KursorRadius
@@ -69,6 +68,7 @@ import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
+import org.koin.compose.viewmodel.koinViewModel
 
 private val TwoPaneMaxHeight = 480.dp
 private val PaneSpacing = 10.dp
@@ -90,7 +90,7 @@ private const val HistoryEmptyKey = "history_empty"
 @Composable
 fun SyncStatusScreen(
     onBackClick: () -> Unit,
-    viewModel: SyncStatusViewModel = hiltViewModel(),
+    viewModel: SyncStatusViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
     SyncStatusContent(

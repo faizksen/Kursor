@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.faizksen.kursor.designsystem.KursorDimens
 import dev.faizksen.kursor.designsystem.KursorRadius
@@ -74,6 +73,7 @@ import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.koin.compose.viewmodel.koinViewModel
 
 private val CardColumnMinWidth = 320.dp
 private val CardContentSpacing = 12.dp
@@ -88,7 +88,7 @@ fun WatchlistScreen(
     onAddPairClick: () -> Unit,
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
-    viewModel: WatchlistViewModel = hiltViewModel(),
+    viewModel: WatchlistViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
     WatchlistContent(

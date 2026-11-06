@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
-    alias(libs.plugins.kursor.android.hilt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
 
@@ -13,6 +13,9 @@ room {
 }
 
 dependencies {
+    implementation(platform(libs.koin.bom))
+    api(libs.koin.android)
+
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)

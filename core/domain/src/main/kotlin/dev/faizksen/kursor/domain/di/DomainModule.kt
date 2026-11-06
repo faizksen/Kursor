@@ -1,9 +1,6 @@
 package dev.faizksen.kursor.domain.di
 
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dev.faizksen.kursor.data.di.dataModule
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCase
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveSyncQueueUseCase
@@ -12,25 +9,22 @@ import dev.faizksen.kursor.domain.ObserveSyncStateUseCase
 import dev.faizksen.kursor.domain.ObserveSyncStateUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCase
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCaseImpl
+import dev.faizksen.kursor.domain.RecordSyncRunUseCase
+import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCaseImpl
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal interface DomainModule {
+val domainModule = module {
+    includes(dataModule)
 
-    @Binds
-    fun bindObserveWatchlistUseCase(impl: ObserveWatchlistUseCaseImpl): ObserveWatchlistUseCase
-
-    @Binds
-    fun bindObserveSyncStateUseCase(impl: ObserveSyncStateUseCaseImpl): ObserveSyncStateUseCase
-
-    @Binds
-    fun bindObserveSyncLogUseCase(impl: ObserveSyncLogUseCaseImpl): ObserveSyncLogUseCase
-
-    @Binds
-    fun bindRequestManualSyncUseCase(impl: RequestManualSyncUseCaseImpl): RequestManualSyncUseCase
-
-    @Binds
-    fun bindObserveSyncQueueUseCase(impl: ObserveSyncQueueUseCaseImpl): ObserveSyncQueueUseCase
+    factoryOf(::ObserveWatchlistUseCaseImpl) bind ObserveWatchlistUseCase::class
+    factoryOf(::ObserveSyncStateUseCaseImpl) bind ObserveSyncStateUseCase::class
+    factoryOf(::ObserveSyncLogUseCaseImpl) bind ObserveSyncLogUseCase::class
+    factoryOf(::ObserveSyncQueueUseCaseImpl) bind ObserveSyncQueueUseCase::class
+    factoryOf(::RequestManualSyncUseCaseImpl) bind RequestManualSyncUseCase::class
+    factoryOf(::RefreshRatesUseCase)
+    factoryOf(::RecordSyncRunUseCase)
 }

@@ -8,9 +8,8 @@ import dev.faizksen.kursor.model.SyncTrigger
 import dev.faizksen.kursor.model.toSyncRun
 import kotlinx.coroutines.CancellationException
 import kotlin.time.Clock
-import javax.inject.Inject
 
-class SyncLogger @Inject constructor(
+class SyncLogger(
     private val recordSyncRun: RecordSyncRunUseCase,
     private val clock: Clock,
 ) {

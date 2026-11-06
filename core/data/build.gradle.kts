@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
-    alias(libs.plugins.kursor.android.hilt)
 }
 
 android {
@@ -12,6 +11,9 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(project(":core:network"))
     implementation(project(":core:database"))
+
+    implementation(platform(libs.koin.bom))
+    api(libs.koin.core)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)

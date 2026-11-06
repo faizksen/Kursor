@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
-    alias(libs.plugins.kursor.android.hilt)
 }
 
 android {
@@ -12,6 +11,9 @@ dependencies {
     implementation(project(":core:data"))
 
     api(libs.kotlinx.coroutines.core)
+
+    implementation(platform(libs.koin.bom))
+    api(libs.koin.core)
 
     testImplementation(project(":core:testing"))
 }

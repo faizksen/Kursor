@@ -11,7 +11,6 @@ class KursorFeatureConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
         target.pluginManager.apply("kursor.android.library")
         target.pluginManager.apply("kursor.compose")
-        target.pluginManager.apply("kursor.android.hilt")
         target.pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
 
         val libs = target.extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -23,8 +22,11 @@ class KursorFeatureConventionPlugin: Plugin<Project> {
 
             add("implementation", libs.findLibrary("androidx-lifecycle-runtime-compose").get())
             add("implementation", libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
-            add("implementation", libs.findLibrary("androidx-hilt-navigation-compose").get())
             add("implementation", libs.findLibrary("androidx-navigation-compose").get())
+
+            add("implementation", platform(libs.findLibrary("koin-bom").get()))
+            add("implementation", libs.findLibrary("koin-android").get())
+            add("implementation", libs.findLibrary("koin-compose-viewmodel").get())
 
             add("implementation", libs.findLibrary("kotlinx-coroutines-core").get())
             add("implementation", libs.findLibrary("kotlinx-coroutines-android").get())

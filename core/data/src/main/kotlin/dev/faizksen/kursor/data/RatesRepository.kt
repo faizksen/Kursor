@@ -22,14 +22,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.LocalDate
 import kotlin.time.Clock
-import javax.inject.Inject
 
 interface RatesRepository {
     fun observeWatchlist(): Flow<List<WatchedPairWithRate>>
     suspend fun refresh(sourceId: SourceId): SyncOutcome
 }
 
-class RatesRepositoryImpl @Inject constructor(
+class RatesRepositoryImpl(
     private val ratesDao: RatesDao,
     private val watchedPairsDao: WatchedPairsDao,
     private val sources: Map<SourceId, @JvmSuppressWildcards RatesRemoteSource>,

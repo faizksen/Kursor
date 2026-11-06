@@ -1,21 +1,17 @@
 package dev.faizksen.kursor.sync
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncTrigger
 
-@HiltWorker
-class FiatRatesSyncWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted params: WorkerParameters,
+class FiatRatesSyncWorker(
+    appContext: Context,
+    params: WorkerParameters,
     private val refreshRates: RefreshRatesUseCase,
     private val syncLogger: SyncLogger,
 ): CoroutineWorker(appContext, params) {

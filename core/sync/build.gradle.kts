@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
-    alias(libs.plugins.kursor.android.hilt)
 }
 
 android {
@@ -11,7 +10,9 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
 
+    implementation(platform(libs.koin.bom))
+    api(libs.koin.android)
+    implementation(libs.koin.workmanager)
+
     implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.hilt.work)
-    ksp(libs.androidx.hilt.compiler)
 }

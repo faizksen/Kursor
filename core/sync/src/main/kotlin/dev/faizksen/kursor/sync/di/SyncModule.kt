@@ -1,30 +1,21 @@
 package dev.faizksen.kursor.sync.di
 
-import android.content.Context
 import androidx.work.WorkManager
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import dev.faizksen.kursor.domain.SyncScheduler
+import dev.faizksen.kursor.sync.FiatRatesSyncWorker
+import dev.faizksen.kursor.sync.SyncLogger
 import dev.faizksen.kursor.sync.SyncSchedulerImpl
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.workmanager.dsl.workerOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal interface SyncBindsModule {
-    @Binds
-    @Singleton
-    fun bindSyncScheduler(impl: SyncSchedulerImpl): SyncScheduler
-}
+val syncModule = module {
+    single { WorkManager.getInstance(androidContext()) }
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal object SyncProvidesModule {
-    @Provides
-    @Singleton
-    fun workManager(@ApplicationContext context: Context): WorkManager =
-        WorkManager.getInstance(context)
+    singleOf(::SyncSchedulerImpl) bind SyncScheduler::class
+    singleOf(::SyncLogger)
+
+    workerOf(::FiatRatesSyncWorker)
 }

@@ -18,10 +18,6 @@ gradlePlugin {
             id = "kursor.android.library"
             implementationClass = "dev.faizksen.kursor.build_logic.KursorAndroidLibraryConventionPlugin"
         }
-        register("kursorAndroidHilt") {
-            id = "kursor.android.hilt"
-            implementationClass = "dev.faizksen.kursor.build_logic.KursorAndroidHiltConventionPlugin"
-        }
         register("kursorCompose") {
             id = "kursor.compose"
             implementationClass = "dev.faizksen.kursor.build_logic.KursorJetpackComposeConventionPlugin"
