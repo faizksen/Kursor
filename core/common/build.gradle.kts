@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kursor.kmp.library)
+    alias(libs.plugins.koin.compiler)
 }
 
 kotlin {

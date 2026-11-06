@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kursor.android.library)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {

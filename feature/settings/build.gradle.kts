@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kursor.feature)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {

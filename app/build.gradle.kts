@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kursor.compose)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {
