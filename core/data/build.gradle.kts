@@ -18,7 +18,10 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.retrofit.core)
+    implementation(libs.ktor.client.core)
+
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.androidx.junit)

@@ -3,6 +3,7 @@ package dev.faizksen.kursor
 import android.content.Context
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import io.ktor.client.engine.HttpClientEngine
 import dev.faizksen.kursor.di.appModule
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -17,6 +18,7 @@ class KoinGraphTest {
             Context::class,
             WorkManager::class,
             WorkerParameters::class,
+            HttpClientEngine::class,
         )
 
         appModule.verify(extraTypes = provided)

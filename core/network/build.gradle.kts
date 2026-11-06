@@ -1,28 +1,38 @@
 plugins {
-    alias(libs.plugins.kursor.android.library)
+    alias(libs.plugins.kursor.kmp.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.koin.compiler)
 }
 
-android {
-    namespace = "dev.faizksen.kursor.network"
-}
+kotlin {
+    android {
+        namespace = "dev.faizksen.kursor.network"
+    }
 
-dependencies {
-    implementation(project(":core:model"))
-    implementation(libs.kotlinx.datetime)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core:model"))
+            implementation(libs.kotlinx.datetime)
 
-    implementation(platform(libs.koin.bom))
-    api(libs.koin.android)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
 
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.kotlinx.serialization)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp.core)
-    debugImplementation(libs.okhttp.interceptor.logging)
-
-    testImplementation(platform(libs.okhttp.bom))
-    testImplementation(libs.okhttp.mockwebserver)
-    testImplementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.kotlinx.serialization.json)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.coroutines.test)
+        }
+    }
 }

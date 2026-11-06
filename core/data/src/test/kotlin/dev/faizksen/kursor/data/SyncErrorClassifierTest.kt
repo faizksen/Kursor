@@ -6,13 +6,15 @@ import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.TransientKind
 import dev.faizksen.kursor.network.model.RemoteRateFormatException
 import kotlinx.serialization.SerializationException
-import okhttp3.Headers
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.ResponseBody.Companion.toResponseBody
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respondError
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.request.get
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import retrofit2.HttpException
-import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -100,18 +102,16 @@ class SyncErrorClassifierTest {
         )
     }
 
-    private fun httpException(code: Int, retryAfter: String? = null): HttpException {
-        val headers = retryAfter?.let { Headers.headersOf("Retry-After", it) } ?: Headers.headersOf()
-        val response = Response.error<Any>(
-            "".toResponseBody(),
-            okhttp3.Response.Builder()
-                .code(code)
-                .message("")
-                .protocol(Protocol.HTTP_1_1)
-                .request(Request.Builder().url("http://localhost/").build())
-                .headers(headers)
-                .build(),
-        )
-        return HttpException(response)
+    private fun httpException(code: Int, retryAfter: String? = null): ResponseException = runBlocking {
+        val engine = MockEngine {
+            respondError(
+                status = HttpStatusCode.fromValue(code),
+                headers = retryAfter?.let { headersOf("Retry-After", it) } ?: headersOf(),
+            )
+        }
+        val client = HttpClient(engine) { expectSuccess = true }
+
+        runCatching { client.get("http://localhost/") }
+            .exceptionOrNull() as ResponseException
     }
 }

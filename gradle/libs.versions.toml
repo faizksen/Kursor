@@ -11,8 +11,7 @@ material = "1.14.0"
 jetbrainsKotlinJvm = "2.4.21"
 ksp = "2.3.13"
 
-retrofit = "3.0.0"
-okhttp = "5.5.0"
+ktor = "3.6.1"
 kotlinxSerialization = "1.9.0"
 
 koin = "4.2.2"
@@ -46,13 +45,14 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 #network
-retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization"}
-okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
-okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp" }
-okhttp-interceptor-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
-okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver3" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
 #DI
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
