@@ -1,0 +1,23 @@
+package dev.faizksen.kursor.model
+
+import kotlin.jvm.JvmInline
+
+@JvmInline
+value class CurrencyCode(val code: String) {  // "EUR", "RUB", "BTC
+    init {
+        require(code.isNotBlank()) { "Currency code must not be blank" }
+    }
+}
+
+enum class CurrencyType {
+    FIAT,
+    CRYPTO
+}
+
+data class Currency(
+    val code: CurrencyCode,
+    val name: String,
+    val symbol: String, // "€", "₽", "$"
+    val type: CurrencyType,
+    val decimals: Int //count of numbers after dot
+)

@@ -1,9 +1,17 @@
 plugins {
-    alias(libs.plugins.kursor.jvm.library)
+    alias(libs.plugins.kursor.kmp.library)
 }
 
-dependencies {
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(platform(libs.koin.bom))
-    api(libs.koin.core)
+kotlin {
+    android {
+        namespace = "dev.faizksen.kursor.common"
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
+        }
+    }
 }

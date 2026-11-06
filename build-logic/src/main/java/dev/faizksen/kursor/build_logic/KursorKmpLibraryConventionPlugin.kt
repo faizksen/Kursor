@@ -39,5 +39,9 @@ class KursorKmpLibraryConventionPlugin: Plugin<Project> {
                 implementation(libs.findLibrary("truth").get())
             }
         }
+
+        target.tasks.register("test") {
+            dependsOn("allTests")
+        }
     }
 }

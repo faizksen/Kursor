@@ -1,7 +1,18 @@
 plugins {
-    alias(libs.plugins.kursor.jvm.library)
+    alias(libs.plugins.kursor.kmp.library)
 }
 
-dependencies {
-    api(libs.kotlinx.datetime)
+kotlin {
+    android {
+        namespace = "dev.faizksen.kursor.model"
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            api(libs.kotlinx.datetime)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+    }
 }
