@@ -1,11 +1,11 @@
 package dev.faizksen.kursor.data
 
-import com.google.common.truth.Truth.assertThat
 import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.TransientKind
 import dev.faizksen.kursor.network.model.RemoteSourceException
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class SyncErrorClassifierTest {
@@ -14,21 +14,21 @@ class SyncErrorClassifierTest {
     fun noNetworkIsTransient() {
         val result = RemoteSourceException.NoNetwork(cause = null).toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Transient(TransientKind.NoNetwork))
+        assertEquals(SyncOutcome.Transient(TransientKind.NoNetwork), result)
     }
 
     @Test
     fun timeoutIsTransient() {
         val result = RemoteSourceException.Timeout(cause = null).toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Transient(TransientKind.Timeout))
+        assertEquals(SyncOutcome.Transient(TransientKind.Timeout), result)
     }
 
     @Test
     fun serverErrorIsTransient() {
         val result = RemoteSourceException.ServerError(status = 500, cause = null).toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Transient(TransientKind.ServerError))
+        assertEquals(SyncOutcome.Transient(TransientKind.ServerError), result)
     }
 
     @Test
@@ -37,9 +37,7 @@ class SyncErrorClassifierTest {
             .RateLimited(retryAfter = 3600.seconds, cause = null)
             .toSyncOutcome()
 
-        assertThat(result).isEqualTo(
-            SyncOutcome.Transient(TransientKind.RateLimited(3600.seconds))
-        )
+        assertEquals(SyncOutcome.Transient(TransientKind.RateLimited(3600.seconds)), result)
     }
 
     @Test
@@ -48,21 +46,21 @@ class SyncErrorClassifierTest {
             .RateLimited(retryAfter = null, cause = null)
             .toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Transient(TransientKind.RateLimited(null)))
+        assertEquals(SyncOutcome.Transient(TransientKind.RateLimited(null)), result)
     }
 
     @Test
     fun rejectedRequestIsPermanent() {
         val result = RemoteSourceException.Rejected(status = 404, cause = null).toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Permanent(PermanentKind.InvalidCurrency))
+        assertEquals(SyncOutcome.Permanent(PermanentKind.InvalidCurrency), result)
     }
 
     @Test
     fun malformedResponseIsPermanentParseError() {
         val result = RemoteSourceException.Malformed(cause = null).toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Permanent(PermanentKind.ParseError))
+        assertEquals(SyncOutcome.Permanent(PermanentKind.ParseError), result)
     }
 
     @Test
@@ -71,6 +69,6 @@ class SyncErrorClassifierTest {
 
         val result = exception.toSyncOutcome()
 
-        assertThat(result).isEqualTo(SyncOutcome.Permanent(PermanentKind.Unknown(exception)))
+        assertEquals(SyncOutcome.Permanent(PermanentKind.Unknown(exception)), result)
     }
 }

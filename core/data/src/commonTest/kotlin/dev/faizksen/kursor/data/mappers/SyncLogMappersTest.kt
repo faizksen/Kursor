@@ -1,7 +1,5 @@
 package dev.faizksen.kursor.data.mappers
 
-import com.google.common.truth.Truth.assertThat
-import com.google.common.truth.Truth.assertWithMessage
 import dev.faizksen.kursor.database.consts.ErrorColumn
 import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.consts.SyncResultColumn
@@ -12,7 +10,9 @@ import dev.faizksen.kursor.model.SyncErrorKind
 import dev.faizksen.kursor.model.SyncResult
 import dev.faizksen.kursor.model.SyncRun
 import dev.faizksen.kursor.model.SyncTrigger
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.time.Instant
 
 class SyncLogMappersTest {
@@ -25,23 +25,21 @@ class SyncLogMappersTest {
             updatedCount = null,
         )
 
-        assertThat(run.toSyncLogEntity().toSyncRun()).isEqualTo(run)
+        assertEquals(run, run.toSyncLogEntity().toSyncRun())
     }
 
     @Test
     fun successfulRunSurvivesRoundTrip() {
         val run = syncRun(result = SyncResult.Success, errorKind = null, updatedCount = 12)
 
-        assertThat(run.toSyncLogEntity().toSyncRun()).isEqualTo(run)
+        assertEquals(run, run.toSyncLogEntity().toSyncRun())
     }
 
     @Test
     fun everySourceSurvivesRoundTrip() {
         SourceId.entries.forEach { source ->
             val run = syncRun(sourceId = source)
-            assertWithMessage("source $source")
-                .that(run.toSyncLogEntity().toSyncRun())
-                .isEqualTo(run)
+            assertEquals(run, run.toSyncLogEntity().toSyncRun(), "source $source")
         }
     }
 
@@ -49,9 +47,7 @@ class SyncLogMappersTest {
     fun everyTriggerSurvivesRoundTrip() {
         SyncTrigger.entries.forEach { trigger ->
             val run = syncRun(trigger = trigger)
-            assertWithMessage("trigger $trigger")
-                .that(run.toSyncLogEntity().toSyncRun())
-                .isEqualTo(run)
+            assertEquals(run, run.toSyncLogEntity().toSyncRun(), "trigger $trigger")
         }
     }
 
@@ -59,9 +55,7 @@ class SyncLogMappersTest {
     fun everyResultSurvivesRoundTrip() {
         SyncResult.entries.forEach { result ->
             val run = syncRun(result = result)
-            assertWithMessage("result $result")
-                .that(run.toSyncLogEntity().toSyncRun())
-                .isEqualTo(run)
+            assertEquals(run, run.toSyncLogEntity().toSyncRun(), "result $result")
         }
     }
 
@@ -69,9 +63,7 @@ class SyncLogMappersTest {
     fun everyErrorKindSurvivesRoundTrip() {
         SyncErrorKind.entries.forEach { errorKind ->
             val run = syncRun(errorKind = errorKind)
-            assertWithMessage("error kind $errorKind")
-                .that(run.toSyncLogEntity().toSyncRun())
-                .isEqualTo(run)
+            assertEquals(run, run.toSyncLogEntity().toSyncRun(), "error kind $errorKind")
         }
     }
 
@@ -81,36 +73,36 @@ class SyncLogMappersTest {
 
         val entity = run.toSyncLogEntity()
 
-        assertThat(entity.startedAt).isEqualTo(run.startedAt.toEpochMilliseconds())
-        assertThat(entity.finishedAt).isEqualTo(run.finishedAt.toEpochMilliseconds())
+        assertEquals(run.startedAt.toEpochMilliseconds(), entity.startedAt)
+        assertEquals(run.finishedAt.toEpochMilliseconds(), entity.finishedAt)
     }
 
     @Test
     fun unrecognizedErrorKindIsReadAsUnknown() {
         val entity = syncLogEntity(errorKind = ErrorColumn.Unrecognized("WhatEver"))
 
-        assertThat(entity.toSyncRun()?.errorKind).isEqualTo(SyncErrorKind.Unknown)
+        assertEquals(SyncErrorKind.Unknown, entity.toSyncRun()?.errorKind)
     }
 
     @Test
     fun rowWithUnrecognizedSourceIsSkipped() {
         val entity = syncLogEntity(sourceId = SourceIdColumn.Unrecognized("BINANCE"))
 
-        assertThat(entity.toSyncRun()).isNull()
+        assertNull(entity.toSyncRun())
     }
 
     @Test
     fun rowWithUnrecognizedTriggerIsSkipped() {
         val entity = syncLogEntity(trigger = TriggerColumn.Unrecognized("expedited"))
 
-        assertThat(entity.toSyncRun()).isNull()
+        assertNull(entity.toSyncRun())
     }
 
     @Test
     fun rowWithUnrecognizedResultIsSkipped() {
         val entity = syncLogEntity(result = SyncResultColumn.Unrecognized("cancelled"))
 
-        assertThat(entity.toSyncRun()).isNull()
+        assertNull(entity.toSyncRun())
     }
 
     private fun syncRun(

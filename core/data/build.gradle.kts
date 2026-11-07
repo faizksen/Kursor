@@ -1,30 +1,33 @@
 plugins {
-    alias(libs.plugins.kursor.android.library)
+    alias(libs.plugins.kursor.kmp.library)
     alias(libs.plugins.koin.compiler)
 }
 
-android {
-    namespace = "dev.faizksen.kursor.data"
-}
+kotlin {
+    android {
+        namespace = "dev.faizksen.kursor.data"
+    }
 
-dependencies {
-    implementation(project(":core:model"))
-    implementation(libs.kotlinx.datetime)
-    implementation(project(":core:network"))
-    implementation(project(":core:database"))
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core:model"))
+            implementation(project(":core:network"))
+            implementation(project(":core:database"))
 
-    implementation(platform(libs.koin.bom))
-    api(libs.koin.core)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
 
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.serialization.json)
-
-    testImplementation(libs.kotlinx.coroutines.test)
-
-    androidTestImplementation(libs.room3.testing)
-    androidTestImplementation(libs.sqlite.bundled)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.room3.runtime)
+            implementation(libs.sqlite.bundled)
+        }
+        getByName("androidHostTest").dependencies {
+            implementation(libs.sqlite.bundled.jvm)
+        }
+    }
 }
