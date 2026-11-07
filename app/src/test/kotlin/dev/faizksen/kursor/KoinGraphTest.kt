@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.ktor.client.engine.HttpClientEngine
+import kotlinx.coroutines.CoroutineDispatcher
 import dev.faizksen.kursor.di.appModule
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -19,6 +20,7 @@ class KoinGraphTest {
             WorkManager::class,
             WorkerParameters::class,
             HttpClientEngine::class,
+            CoroutineDispatcher::class,
         )
 
         appModule.verify(extraTypes = provided)
