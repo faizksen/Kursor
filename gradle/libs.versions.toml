@@ -72,6 +72,7 @@ room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref 
 room3-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room3" }
 room3-testing = { group = "androidx.room3", name = "room3-testing", version.ref = "room3" }
 sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
+sqlite-bundled-jvm = { group = "androidx.sqlite", name = "sqlite-bundled-jvm", version.ref = "sqlite" }
 
 #Coroutines
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
