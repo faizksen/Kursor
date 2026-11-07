@@ -1,7 +1,5 @@
 package dev.faizksen.kursor.data
 
-import androidx.room3.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dev.faizksen.kursor.database.KursorDatabase
 import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.dao.RatesDao
@@ -40,9 +38,7 @@ class RatesRepositoryImplTest {
 
     @BeforeTest
     fun setUp() {
-        database = Room.inMemoryDatabaseBuilder<KursorDatabase>()
-            .setDriver(BundledSQLiteDriver())
-            .build()
+        database = testDatabase()
         watchedPairsDao = database.watchedPairsDao
         ratesDao = database.ratesDao
     }
