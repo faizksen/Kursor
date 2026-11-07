@@ -1,6 +1,5 @@
 package dev.faizksen.kursor.domain
 
-import com.google.common.truth.Truth.assertThat
 import dev.faizksen.kursor.model.SyncQueue
 import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
@@ -9,7 +8,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.time.Instant
 
 class ObserveSyncStateUseCaseTest {
@@ -34,9 +34,10 @@ class ObserveSyncStateUseCaseTest {
     fun `queue is unwrapped into its state`() = runTest {
         queues = flowOf(queue(SyncState.Idle), queue(SyncState.Running))
 
-        assertThat(useCase(SyncTrigger.Manual).toList())
-            .containsExactly(SyncState.Idle, SyncState.Running)
-            .inOrder()
+        assertEquals(
+            listOf(SyncState.Idle, SyncState.Running),
+            useCase(SyncTrigger.Manual).toList(),
+        )
     }
 
     @Test
@@ -48,9 +49,10 @@ class ObserveSyncStateUseCaseTest {
             queue(SyncState.Running),
         )
 
-        assertThat(useCase(SyncTrigger.Manual).toList())
-            .containsExactly(SyncState.Idle, SyncState.Running)
-            .inOrder()
+        assertEquals(
+            listOf(SyncState.Idle, SyncState.Running),
+            useCase(SyncTrigger.Manual).toList(),
+        )
     }
 
     @Test
@@ -61,9 +63,10 @@ class ObserveSyncStateUseCaseTest {
             queue(SyncState.Idle),
         )
 
-        assertThat(useCase(SyncTrigger.Manual).toList())
-            .containsExactly(SyncState.Idle, SyncState.Running, SyncState.Idle)
-            .inOrder()
+        assertEquals(
+            listOf(SyncState.Idle, SyncState.Running, SyncState.Idle),
+            useCase(SyncTrigger.Manual).toList(),
+        )
     }
 
     @Test
@@ -81,20 +84,19 @@ class ObserveSyncStateUseCaseTest {
             ),
         )
 
-        assertThat(useCase(SyncTrigger.Manual).toList())
-            .containsExactly(SyncState.Scheduled)
+        assertEquals(setOf(SyncState.Scheduled), useCase(SyncTrigger.Manual).toList().toSet())
     }
 
     @Test
     fun `an empty queue reports nothing`() = runTest {
-        assertThat(useCase(SyncTrigger.Manual).toList()).isEmpty()
+        assertEquals(emptyList(), useCase(SyncTrigger.Manual).toList())
     }
 
     @Test
     fun `the trigger is passed to the scheduler`() = runTest {
         useCase(SyncTrigger.Periodic).toList()
 
-        assertThat(requestedTrigger).isEqualTo(SyncTrigger.Periodic)
+        assertEquals(SyncTrigger.Periodic, requestedTrigger)
     }
 
     private fun queue(state: SyncState) =

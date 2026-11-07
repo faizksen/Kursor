@@ -1,20 +1,26 @@
 plugins {
-    alias(libs.plugins.kursor.android.library)
+    alias(libs.plugins.kursor.kmp.library)
     alias(libs.plugins.koin.compiler)
 }
 
-android {
-    namespace = "dev.faizksen.kursor.domain"
-}
+kotlin {
+    android {
+        namespace = "dev.faizksen.kursor.domain"
+    }
 
-dependencies {
-    api(project(":core:model"))
-    implementation(project(":core:data"))
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":core:model"))
+            implementation(project(":core:data"))
 
-    api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.coroutines.core)
 
-    implementation(platform(libs.koin.bom))
-    api(libs.koin.core)
-
-    testImplementation(project(":core:testing"))
+            implementation(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+    }
 }
