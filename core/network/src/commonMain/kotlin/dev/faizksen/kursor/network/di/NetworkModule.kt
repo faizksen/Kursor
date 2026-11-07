@@ -10,6 +10,7 @@ import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.url
 import io.ktor.serialization.kotlinx.json.json
@@ -36,6 +37,7 @@ val networkModule = module {
 internal fun httpClient(
     cacheDirectory: Path,
     loggingEnabled: Boolean,
+    httpLogger: Logger,
     json: Json,
 ): HttpClient {
     SystemFileSystem.createDirectories(cacheDirectory)
@@ -50,7 +52,10 @@ internal fun httpClient(
         install(HttpCache) { publicStorage(FileStorage(cacheDirectory)) }
 
         if (loggingEnabled) {
-            install(Logging) { level = LogLevel.BODY }
+            install(Logging) {
+                logger = httpLogger
+                level = LogLevel.BODY
+            }
         }
     }
 }
