@@ -1,8 +1,8 @@
 package dev.faizksen.kursor.database.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Transaction
 import dev.faizksen.kursor.database.entities.WatchedPairEntity
 import kotlinx.coroutines.flow.Flow
 

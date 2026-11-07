@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kursor.android.library)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.room)
+    alias(libs.plugins.room3)
     alias(libs.plugins.koin.compiler)
 }
 
@@ -9,7 +9,7 @@ android {
     namespace = "dev.faizksen.kursor.database"
 }
 
-room {
+room3 {
     schemaDirectory("$projectDir/schemas")
 }
 
@@ -17,10 +17,10 @@ dependencies {
     implementation(platform(libs.koin.bom))
     api(libs.koin.android)
 
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-    androidTestImplementation(libs.room.testing)
+    implementation(libs.room3.runtime)
+    implementation(libs.sqlite.bundled)
+    ksp(libs.room3.compiler)
+    androidTestImplementation(libs.room3.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.truth)

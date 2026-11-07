@@ -1,16 +1,16 @@
 package dev.faizksen.kursor.database
 
-import androidx.room.TypeConverter
+import androidx.room3.ColumnTypeConverter
 import dev.faizksen.kursor.database.consts.ErrorColumn
 import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.consts.SyncResultColumn
 import dev.faizksen.kursor.database.consts.TriggerColumn
 
 class SyncLogConverters {
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromResult(result: SyncResultColumn): String = result.columnValue
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toResult(value: String): SyncResultColumn = when (value) {
         SyncResultColumn.Success.columnValue -> SyncResultColumn.Success
         SyncResultColumn.Retry.columnValue -> SyncResultColumn.Retry
@@ -18,20 +18,20 @@ class SyncLogConverters {
         else -> SyncResultColumn.Unrecognized(value)
     }
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromTrigger(trigger: TriggerColumn): String = trigger.columnValue
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toTrigger(value: String): TriggerColumn = when (value) {
         TriggerColumn.Periodic.columnValue -> TriggerColumn.Periodic
         TriggerColumn.Manual.columnValue -> TriggerColumn.Manual
         else -> TriggerColumn.Unrecognized(value)
     }
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromErrorColumn(column: ErrorColumn): String = column.columnValue
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toErrorColumn(value: String): ErrorColumn = when (value) {
         ErrorColumn.NoNetwork.columnValue -> ErrorColumn.NoNetwork
         ErrorColumn.Timeout.columnValue -> ErrorColumn.Timeout
@@ -46,10 +46,10 @@ class SyncLogConverters {
 }
 
 class RateConverters {
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromSourceId(column: SourceIdColumn): String = column.columnValue
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toSourceIdColumn(value: String): SourceIdColumn = when (value) {
         SourceIdColumn.Frankfurter.columnValue -> SourceIdColumn.Frankfurter
         SourceIdColumn.CoinGecko.columnValue -> SourceIdColumn.CoinGecko

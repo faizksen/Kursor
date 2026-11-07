@@ -1,9 +1,9 @@
 package dev.faizksen.kursor.database
 
-import androidx.room.AutoMigration
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room3.AutoMigration
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import androidx.room3.ColumnTypeConverters
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.SyncLogDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
@@ -21,7 +21,7 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
     version = KursorDatabase.VERSION,
     exportSchema = true
 )
-@TypeConverters(
+@ColumnTypeConverters(
     SyncLogConverters::class,
     RateConverters::class
 )

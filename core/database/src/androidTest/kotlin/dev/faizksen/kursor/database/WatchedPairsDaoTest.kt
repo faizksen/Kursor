@@ -1,7 +1,8 @@
 package dev.faizksen.kursor.database
 
 import android.database.sqlite.SQLiteConstraintException
-import androidx.room.Room
+import androidx.room3.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
@@ -24,7 +25,9 @@ class WatchedPairsDaoTest {
         database = Room.inMemoryDatabaseBuilder(
             context = ApplicationProvider.getApplicationContext(),
             klass = KursorDatabase::class.java
-        ).build()
+        )
+            .setDriver(BundledSQLiteDriver())
+            .build()
         watchedPairsDao = database.watchedPairsDao
     }
 
