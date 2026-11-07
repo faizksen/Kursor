@@ -6,7 +6,7 @@ import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.dto.FrankfurterRateDto
 import dev.faizksen.kursor.network.model.RemoteRate
-import dev.faizksen.kursor.network.model.RemoteRateFormatException
+import dev.faizksen.kursor.network.model.RemoteSourceException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -25,12 +25,14 @@ class FrankfurterSource(
         keySelector = { it.base },
         valueTransform = { it.quote }
     ).flatMap { (base, quotes) ->
-        httpClient.get(RATES_PATH) {
-            parameter(BASE_PARAM, base.code)
-            parameter(QUOTES_PARAM, quotes.toQueryParam())
+        remoteCall {
+            httpClient.get(RATES_PATH) {
+                parameter(BASE_PARAM, base.code)
+                parameter(QUOTES_PARAM, quotes.toQueryParam())
+            }
+                .body<List<FrankfurterRateDto>>()
+                .map(FrankfurterRateDto::toRemoteRate)
         }
-            .body<List<FrankfurterRateDto>>()
-            .map(FrankfurterRateDto::toRemoteRate)
     }
 }
 
@@ -44,7 +46,7 @@ internal fun FrankfurterRateDto.toRemoteRate(): RemoteRate = try {
         value = Rate.ofDouble(rate),
     )
 } catch (e: IllegalArgumentException) {
-    throw RemoteRateFormatException(e)
+    throw RemoteSourceException.Malformed(e)
 }
 
 private const val RATES_PATH = "rates"

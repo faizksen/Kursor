@@ -19,6 +19,7 @@ import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.RatesRemoteSource
 import dev.faizksen.kursor.network.model.RemoteRate
+import dev.faizksen.kursor.network.model.RemoteSourceException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -26,7 +27,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.net.UnknownHostException
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -129,7 +129,7 @@ class RatesRepositoryImplTest {
         val sourceId = SourceId.FRANKFURTER
         val fakeSource = FakeRatesRemoteSource(
             id = sourceId,
-            result = Result.failure(UnknownHostException())
+            result = Result.failure(RemoteSourceException.NoNetwork(cause = null))
         )
         val repository = createRepository(mapOf(sourceId to fakeSource))
         val result = repository.refresh(sourceId)

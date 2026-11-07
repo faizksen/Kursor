@@ -3,11 +3,11 @@ package dev.faizksen.kursor.network
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.Rate
+import dev.faizksen.kursor.network.model.RemoteSourceException
 import dev.faizksen.kursor.network.util.JsonCreator
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.url
@@ -21,6 +21,8 @@ import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.seconds
 
 class FrankfurterSourceTest {
 
@@ -31,9 +33,14 @@ class FrankfurterSourceTest {
         respond(
             content = body,
             status = status,
-            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+            headers = headersOf(
+                HttpHeaders.ContentType to listOf(ContentType.Application.Json.toString()),
+                HttpHeaders.RetryAfter to listOfNotNull(retryAfter),
+            ),
         )
     }
+
+    private var retryAfter: String? = null
 
     private val source = FrankfurterSource(
         HttpClient(engine) {
@@ -85,17 +92,55 @@ class FrankfurterSourceTest {
     }
 
     @Test
-    fun throwsOnTooManyRequests() = runTest {
+    fun reportsTooManyRequestsAsRateLimitedWithRetryAfter() = runTest {
         enqueue(429, "")
+        retryAfter = "3600"
 
-        assertFailsWith<ResponseException> { source.latest(listOf(EUR_PLN)) }
+        val failure = assertFailsWith<RemoteSourceException.RateLimited> {
+            source.latest(listOf(EUR_PLN))
+        }
+
+        assertEquals(3600.seconds, failure.retryAfter)
     }
 
     @Test
-    fun throwsOnServerError() = runTest {
+    fun reportsTooManyRequestsWithoutRetryAfter() = runTest {
+        enqueue(429, "")
+
+        val failure = assertFailsWith<RemoteSourceException.RateLimited> {
+            source.latest(listOf(EUR_PLN))
+        }
+
+        assertNull(failure.retryAfter)
+    }
+
+    @Test
+    fun reportsServerErrorWithItsStatus() = runTest {
         enqueue(500, "")
 
-        assertFailsWith<ResponseException> { source.latest(listOf(EUR_PLN)) }
+        val failure = assertFailsWith<RemoteSourceException.ServerError> {
+            source.latest(listOf(EUR_PLN))
+        }
+
+        assertEquals(500, failure.status)
+    }
+
+    @Test
+    fun reportsOtherStatusesAsRejected() = runTest {
+        enqueue(404, "")
+
+        val failure = assertFailsWith<RemoteSourceException.Rejected> {
+            source.latest(listOf(EUR_PLN))
+        }
+
+        assertEquals(404, failure.status)
+    }
+
+    @Test
+    fun reportsUnreadableBodyAsMalformed() = runTest {
+        enqueue(200, "{\"not\":\"an array\"}")
+
+        assertFailsWith<RemoteSourceException.Malformed> { source.latest(listOf(EUR_PLN)) }
     }
 
     companion object {

@@ -18,12 +18,11 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.client.core)
 
-    testImplementation(libs.ktor.client.mock)
     testImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(libs.room3.testing)
+    androidTestImplementation(libs.sqlite.bundled)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.truth)

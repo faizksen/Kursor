@@ -3,7 +3,7 @@ package dev.faizksen.kursor.network
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.network.dto.FrankfurterRateDto
-import dev.faizksen.kursor.network.model.RemoteRateFormatException
+import dev.faizksen.kursor.network.model.RemoteSourceException
 import dev.faizksen.kursor.network.util.JsonCreator
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
@@ -27,7 +27,7 @@ class FrankfurterMapperTest {
 
     @Test
     fun `fails on malformed date`() {
-        assertFailsWith<RemoteRateFormatException> {
+        assertFailsWith<RemoteSourceException.Malformed> {
             FrankfurterRateDto(
                 date = "05.09.2026",
                 base = "EUR",
