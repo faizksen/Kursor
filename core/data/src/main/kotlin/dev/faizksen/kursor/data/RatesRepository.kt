@@ -31,7 +31,7 @@ interface RatesRepository {
 class RatesRepositoryImpl(
     private val ratesDao: RatesDao,
     private val watchedPairsDao: WatchedPairsDao,
-    private val sources: Map<SourceId, @JvmSuppressWildcards RatesRemoteSource>,
+    private val sources: Map<SourceId, RatesRemoteSource>,
     private val clock: Clock
 ): RatesRepository {
 
