@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
-import dev.faizksen.kursor.domain.RefreshRatesUseCase
+import dev.faizksen.kursor.domain.RunSyncUseCase
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncTrigger
@@ -12,8 +12,7 @@ import dev.faizksen.kursor.model.SyncTrigger
 class FiatRatesSyncWorker(
     appContext: Context,
     params: WorkerParameters,
-    private val refreshRates: RefreshRatesUseCase,
-    private val syncLogger: SyncLogger,
+    private val runSync: RunSyncUseCase,
 ): CoroutineWorker(appContext, params) {
 
     companion object {
@@ -26,14 +25,12 @@ class FiatRatesSyncWorker(
         val attempt = runAttemptCount + 1
         val canRetry = attempt < MAX_ATTEMPTS
 
-        return syncLogger.log(
+        return runSync(
             sourceId = SourceId.FRANKFURTER,
             trigger = inputData.syncTrigger(),
             attempt = attempt,
             canRetry = canRetry,
-        ) {
-            refreshRates()
-        }.toWorkerResult(canRetry)
+        ).toWorkerResult(canRetry)
     }
 
     private fun Data.syncTrigger(): SyncTrigger = getString(KEY_TRIGGER)

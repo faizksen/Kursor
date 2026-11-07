@@ -1,6 +1,5 @@
-package dev.faizksen.kursor.sync
+package dev.faizksen.kursor.domain
 
-import dev.faizksen.kursor.domain.RecordSyncRunUseCase
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncRun
@@ -9,19 +8,19 @@ import dev.faizksen.kursor.model.toSyncRun
 import kotlinx.coroutines.CancellationException
 import kotlin.time.Clock
 
-class SyncLogger(
+class RunSyncUseCase(
+    private val refreshRates: RefreshRatesUseCase,
     private val recordSyncRun: RecordSyncRunUseCase,
     private val clock: Clock,
 ) {
-    suspend fun log(
+    suspend operator fun invoke(
         sourceId: SourceId,
         trigger: SyncTrigger,
         attempt: Int,
         canRetry: Boolean,
-        block: suspend () -> SyncOutcome,
     ): SyncOutcome {
         val startedAt = clock.now()
-        val outcome = block()
+        val outcome = refreshRates(sourceId)
 
         record(
             outcome.toSyncRun(

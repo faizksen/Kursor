@@ -7,5 +7,5 @@ import dev.faizksen.kursor.model.SyncOutcome
 class RefreshRatesUseCase(
     private val ratesRepository: RatesRepository,
 ) {
-    suspend operator fun invoke(): SyncOutcome = ratesRepository.refresh(SourceId.FRANKFURTER)
+    suspend operator fun invoke(sourceId: SourceId): SyncOutcome = ratesRepository.refresh(sourceId)
 }

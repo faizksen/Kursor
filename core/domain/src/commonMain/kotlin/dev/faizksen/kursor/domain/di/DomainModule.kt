@@ -13,6 +13,7 @@ import dev.faizksen.kursor.domain.RecordSyncRunUseCase
 import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCaseImpl
+import dev.faizksen.kursor.domain.RunSyncUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -27,4 +28,5 @@ val domainModule = module {
     factoryOf(::RequestManualSyncUseCaseImpl) bind RequestManualSyncUseCase::class
     factoryOf(::RefreshRatesUseCase)
     factoryOf(::RecordSyncRunUseCase)
+    factoryOf(::RunSyncUseCase)
 }
