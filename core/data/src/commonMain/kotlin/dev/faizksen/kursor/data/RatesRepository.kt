@@ -28,7 +28,7 @@ interface RatesRepository {
     suspend fun refresh(sourceId: SourceId): SyncOutcome
 }
 
-class RatesRepositoryImpl(
+internal class RatesRepositoryImpl(
     private val ratesDao: RatesDao,
     private val watchedPairsDao: WatchedPairsDao,
     private val sources: Map<SourceId, RatesRemoteSource>,

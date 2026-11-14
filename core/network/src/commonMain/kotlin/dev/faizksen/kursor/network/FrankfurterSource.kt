@@ -13,7 +13,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import kotlinx.datetime.LocalDate
 
-class FrankfurterSource(
+internal class FrankfurterSource(
     private val httpClient: HttpClient,
 ): RatesRemoteSource {
     override val id: SourceId

@@ -15,7 +15,7 @@ interface SyncLogRepository {
     suspend fun deleteOlderThan(threshold: Instant)
 }
 
-class SyncLogRepositoryImpl(
+internal class SyncLogRepositoryImpl(
     private val syncLogDao: SyncLogDao,
 ): SyncLogRepository {
 
