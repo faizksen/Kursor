@@ -46,4 +46,57 @@ class RatesDaoTest {
         assertEquals("4.5000", stored[0].value)
         assertEquals(2_000L, stored[0].fetchedAt)
     }
+
+    @Test
+    fun latestRateIsTheOneFetchedLastEvenWhenAnotherCarriesALaterDate() = runTest {
+        dao.upsertAll(
+            listOf(
+                rate(date = "2026-11-08", value = "4.4016", fetchedAt = 1_000L),
+                rate(date = "2026-11-06", value = "4.3900", fetchedAt = 2_000L),
+            )
+        )
+
+        val stored = dao.observeLatestRates().first()
+
+        assertEquals(1, stored.size)
+        assertEquals("4.3900", stored[0].value)
+        assertEquals("2026-11-06", stored[0].date)
+    }
+
+    @Test
+    fun eachSourceKeepsItsOwnLatestRate() = runTest {
+        dao.upsertAll(
+            listOf(
+                rate(date = "2026-11-06", value = "4.3900", fetchedAt = 2_000L),
+                rate(
+                    date = "2026-11-05",
+                    value = "4.4100",
+                    fetchedAt = 1_000L,
+                    sourceId = SourceIdColumn.CBR,
+                ),
+            )
+        )
+
+        val stored = dao.observeLatestRates().first()
+
+        assertEquals(2, stored.size)
+        assertEquals(
+            setOf(SourceIdColumn.Frankfurter, SourceIdColumn.CBR),
+            stored.map { it.sourceId }.toSet(),
+        )
+    }
+
+    private fun rate(
+        date: String,
+        value: String,
+        fetchedAt: Long,
+        sourceId: SourceIdColumn = SourceIdColumn.Frankfurter,
+    ) = RateEntity(
+        base = "EUR",
+        quote = "PLN",
+        date = date,
+        sourceId = sourceId,
+        value = value,
+        fetchedAt = fetchedAt,
+    )
 }

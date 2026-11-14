@@ -1,6 +1,5 @@
 package dev.faizksen.kursor.watchlist
 
-import android.text.format.DateFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,12 +66,10 @@ import dev.faizksen.kursor.model.WatchedPair
 import dev.faizksen.kursor.model.WatchedPairWithRate
 import java.math.RoundingMode
 import java.text.NumberFormat
-import java.time.format.DateTimeFormatter
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
 private val CardColumnMinWidth = 320.dp
@@ -434,11 +431,7 @@ private fun RateCard(
 private fun rateMetaText(rate: RatePoint?): String = if (rate == null) {
     stringResource(R.string.watchlist_rate_unavailable)
 } else {
-    stringResource(
-        R.string.watchlist_rate_meta,
-        stringResource(rate.sourceId.labelRes),
-        rememberShortDateText(rate.date),
-    )
+    stringResource(rate.sourceId.labelRes)
 }
 
 @Composable
@@ -505,18 +498,6 @@ private fun rememberFreshness(updatedAt: Instant, clock: Clock): Freshness {
     }
 
     return freshness
-}
-
-@Composable
-private fun rememberShortDateText(date: LocalDate): String {
-    val configuration = LocalConfiguration.current
-
-    return remember(date, configuration) {
-        val locale = configuration.locales[0]
-        val pattern = DateFormat.getBestDateTimePattern(locale, "d MMM")
-
-        DateTimeFormatter.ofPattern(pattern, locale).format(date.toJavaLocalDate())
-    }
 }
 
 @Composable

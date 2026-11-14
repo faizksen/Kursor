@@ -52,8 +52,8 @@ interface RatesDao {
     @Query(
         """
         SELECT * FROM rate r
-        WHERE r.date = (
-            SELECT MAX(date) FROM rate
+        WHERE r.fetchedAt = (
+            SELECT MAX(fetchedAt) FROM rate
             WHERE base = r.base AND quote = r.quote AND sourceId = r.sourceId
         )
     """

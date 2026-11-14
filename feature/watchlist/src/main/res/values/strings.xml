@@ -44,7 +44,6 @@
     <string name="watchlist_add_pair">Add pair</string>
 
     <string name="watchlist_pair">%1$s → %2$s</string>
-    <string name="watchlist_rate_meta">%1$s · %2$s</string>
     <string name="watchlist_rate_unavailable">No data yet</string>
     <string name="watchlist_rate_placeholder">—</string>
 
