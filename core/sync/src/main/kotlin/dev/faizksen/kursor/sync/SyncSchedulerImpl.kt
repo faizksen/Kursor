@@ -5,7 +5,9 @@ import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -33,37 +35,17 @@ class SyncSchedulerImpl(
         workManager.enqueueUniquePeriodicWork(
             FIAT_PERIODIC_SYNC_NAME,
             ExistingPeriodicWorkPolicy.UPDATE,
-            periodicRequest(),
+            periodicSyncRequest(),
         )
     }
-
-    private fun periodicRequest() = PeriodicWorkRequestBuilder<FiatRatesSyncWorker>(
-        repeatInterval = 6, repeatIntervalTimeUnit = TimeUnit.HOURS,
-        flexTimeInterval = 1, flexTimeIntervalUnit = TimeUnit.HOURS
-    ).setInputData(
-        triggerData(SyncTrigger.Periodic)
-    ).setConstraints(
-        Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.NOT_ROAMING)
-            .build()
-    ).setBackoffCriteria(
-        backoffPolicy = BackoffPolicy.EXPONENTIAL,
-        backoffDelay = 30,
-        timeUnit = TimeUnit.SECONDS
-    ).build()
 
     override fun requestImmediateSync() {
         workManager.enqueueUniqueWork(
             uniqueWorkName = FIAT_IMMEDIATE_SYNC_NAME,
             existingWorkPolicy = ExistingWorkPolicy.KEEP,
-            request = OneTimeWorkRequestBuilder<FiatRatesSyncWorker>()
-                .setInputData(triggerData(SyncTrigger.Manual))
-                .build()
+            request = immediateSyncRequest(),
         )
     }
-
-    private fun triggerData(trigger: SyncTrigger) =
-        workDataOf(FiatRatesSyncWorker.KEY_TRIGGER to trigger.name)
 
     override fun observeSyncQueue(trigger: SyncTrigger): Flow<SyncQueue> =
         workManager.getWorkInfosForUniqueWorkFlow(trigger.uniqueWorkName())
@@ -74,26 +56,54 @@ class SyncSchedulerImpl(
         SyncTrigger.Periodic -> FIAT_PERIODIC_SYNC_NAME
         SyncTrigger.Manual -> FIAT_IMMEDIATE_SYNC_NAME
     }
+}
 
-    private fun WorkInfo?.toSyncQueue(): SyncQueue = if (this == null) {
-        SyncQueue.Idle
-    } else {
-        SyncQueue(
-            state = toSyncState(),
-            nextRunAt = nextRunAt(),
-            attemptCount = runAttemptCount,
-        )
-    }
+internal fun periodicSyncRequest(): PeriodicWorkRequest =
+    PeriodicWorkRequestBuilder<FiatRatesSyncWorker>(
+        repeatInterval = SYNC_INTERVAL_HOURS, repeatIntervalTimeUnit = TimeUnit.HOURS,
+        flexTimeInterval = SYNC_FLEX_HOURS, flexTimeIntervalUnit = TimeUnit.HOURS,
+    ).setInputData(
+        triggerData(SyncTrigger.Periodic)
+    ).setConstraints(
+        Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.NOT_ROAMING)
+            .build()
+    ).setBackoffCriteria(
+        backoffPolicy = BackoffPolicy.EXPONENTIAL,
+        backoffDelay = SYNC_BACKOFF_SECONDS,
+        timeUnit = TimeUnit.SECONDS,
+    ).build()
 
-    private fun WorkInfo.nextRunAt(): Instant? = nextScheduleTimeMillis
-        .takeIf { state == WorkInfo.State.ENQUEUED && it != Long.MAX_VALUE }
-        ?.let { Instant.fromEpochMilliseconds(it) }
+internal fun immediateSyncRequest(): OneTimeWorkRequest =
+    OneTimeWorkRequestBuilder<FiatRatesSyncWorker>()
+        .setInputData(triggerData(SyncTrigger.Manual))
+        .build()
 
-    private fun WorkInfo?.toSyncState(): SyncState = when (this?.state) {
-        WorkInfo.State.RUNNING -> SyncState.Running
-        WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> SyncState.Scheduled
-        WorkInfo.State.SUCCEEDED -> SyncState.Succeeded
-        WorkInfo.State.FAILED -> SyncState.Failed
-        else -> SyncState.Idle
-    }
+private fun triggerData(trigger: SyncTrigger) =
+    workDataOf(FiatRatesSyncWorker.KEY_TRIGGER to trigger.name)
+
+internal const val SYNC_INTERVAL_HOURS = 6L
+internal const val SYNC_FLEX_HOURS = 1L
+internal const val SYNC_BACKOFF_SECONDS = 30L
+
+internal fun WorkInfo?.toSyncQueue(): SyncQueue = if (this == null) {
+    SyncQueue.Idle
+} else {
+    SyncQueue(
+        state = toSyncState(),
+        nextRunAt = nextRunAt(),
+        attemptCount = runAttemptCount,
+    )
+}
+
+private fun WorkInfo.nextRunAt(): Instant? = nextScheduleTimeMillis
+    .takeIf { state == WorkInfo.State.ENQUEUED && it != Long.MAX_VALUE }
+    ?.let { Instant.fromEpochMilliseconds(it) }
+
+private fun WorkInfo?.toSyncState(): SyncState = when (this?.state) {
+    WorkInfo.State.RUNNING -> SyncState.Running
+    WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> SyncState.Scheduled
+    WorkInfo.State.SUCCEEDED -> SyncState.Succeeded
+    WorkInfo.State.FAILED -> SyncState.Failed
+    else -> SyncState.Idle
 }

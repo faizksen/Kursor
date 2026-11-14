@@ -16,4 +16,6 @@ dependencies {
     implementation(libs.koin.workmanager)
 
     implementation(libs.androidx.work.runtime)
+
+    testImplementation(libs.junit)
 }

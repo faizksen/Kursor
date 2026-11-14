@@ -36,6 +36,7 @@ class KursorJetpackComposeConventionPlugin: Plugin<Project> {
             add("implementation", libs.findLibrary("androidx-compose-ui-tooling-preview").get())
             add("debugImplementation", libs.findLibrary("androidx-compose-ui-tooling").get())
             add("debugImplementation", libs.findLibrary("androidx-compose-ui-test-manifest").get())
+            add("androidTestImplementation", platform(libs.findLibrary("androidx-compose-bom").get()))
             add("androidTestImplementation", libs.findLibrary("androidx-compose-ui-test-junit4").get())
         }
     }
