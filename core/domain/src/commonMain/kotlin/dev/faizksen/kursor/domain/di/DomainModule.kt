@@ -9,6 +9,8 @@ import dev.faizksen.kursor.domain.ObserveSyncStateUseCase
 import dev.faizksen.kursor.domain.ObserveSyncStateUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCase
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCaseImpl
+import dev.faizksen.kursor.domain.ProviderCandidatesUseCase
+import dev.faizksen.kursor.domain.ProviderCandidatesUseCaseImpl
 import dev.faizksen.kursor.domain.RecordSyncRunUseCase
 import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
@@ -29,4 +31,5 @@ val domainModule = module {
     factoryOf(::RefreshRatesUseCase)
     factoryOf(::RecordSyncRunUseCase)
     factoryOf(::RunSyncUseCase)
+    factoryOf(::ProviderCandidatesUseCaseImpl) bind ProviderCandidatesUseCase::class
 }
