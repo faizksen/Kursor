@@ -39,13 +39,8 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,6 +59,7 @@ import dev.faizksen.kursor.designsystem.components.KursorSmallButton
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.Provider
 import dev.faizksen.kursor.watchlist.R
+import dev.faizksen.kursor.watchlist.rememberScrollingUp
 import org.koin.compose.viewmodel.koinViewModel
 
 private val StepIndicatorPaddingTop = 6.dp
@@ -659,28 +655,6 @@ private fun AddPairBottomBar(
             )
         }
     }
-}
-
-@Composable
-private fun rememberScrollingUp(state: LazyGridState): Boolean {
-    var previousIndex by remember(state) { mutableIntStateOf(state.firstVisibleItemIndex) }
-    var previousOffset by remember(state) { mutableIntStateOf(state.firstVisibleItemScrollOffset) }
-    var scrollingUp by remember(state) { mutableStateOf(true) }
-
-    LaunchedEffect(state) {
-        snapshotFlow { state.firstVisibleItemIndex to state.firstVisibleItemScrollOffset }
-            .collect { (index, offset) ->
-                scrollingUp = if (index == previousIndex) {
-                    offset <= previousOffset
-                } else {
-                    index < previousIndex
-                }
-                previousIndex = index
-                previousOffset = offset
-            }
-    }
-
-    return scrollingUp
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)

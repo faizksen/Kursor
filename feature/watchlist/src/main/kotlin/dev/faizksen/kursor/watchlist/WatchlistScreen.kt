@@ -1,5 +1,8 @@
 package dev.faizksen.kursor.watchlist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,6 +77,7 @@ import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
 private val CardColumnMinWidth = 320.dp
+private val FabClearance = KursorDimens.fabHeight + KursorDimens.sectionSpacing * 2
 private val CardContentSpacing = 12.dp
 private val CardBorderWidth = 1.dp
 private val ProgressIndicatorSize = 16.dp
@@ -150,7 +154,11 @@ fun WatchlistContent(
             )
         },
         floatingActionButton = {
-            if (results != null) {
+            AnimatedVisibility(
+                visible = results != null && rememberScrollingUp(gridState),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
                 FloatingActionButton(
                     onClick = onAddPairClick,
                     shape = RoundedCornerShape(KursorRadius.button),
@@ -248,7 +256,7 @@ private fun WatchlistResults(
             start = KursorDimens.screenHorizontalPadding,
             end = KursorDimens.screenHorizontalPadding,
             top = KursorDimens.sectionHeaderPaddingBottom,
-            bottom = KursorDimens.sectionSpacing + KursorDimens.fabHeight,
+            bottom = FabClearance,
         ),
         verticalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
         horizontalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
