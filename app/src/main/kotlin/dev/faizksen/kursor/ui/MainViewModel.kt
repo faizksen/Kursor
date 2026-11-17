@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.faizksen.kursor.domain.RefreshCatalogueUseCase
 import dev.faizksen.kursor.domain.ResolveMissingProvidersUseCase
+import dev.faizksen.kursor.domain.SeedDefaultPairsUseCase
 import dev.faizksen.kursor.domain.SyncMissingRatesUseCase
 import dev.faizksen.kursor.domain.SyncScheduler
 import kotlinx.coroutines.CancellationException
@@ -13,12 +14,17 @@ class MainViewModel(
     private val syncScheduler: SyncScheduler,
     private val refreshCatalogue: RefreshCatalogueUseCase,
     private val resolveMissingProviders: ResolveMissingProvidersUseCase,
+    private val seedDefaultPairs: SeedDefaultPairsUseCase,
     private val syncMissingRates: SyncMissingRatesUseCase,
 ): ViewModel() {
 
     fun scheduleSync() {
         syncScheduler.schedulePeriodicSync()
-        launchIgnoringFailure { syncMissingRates() }
+
+        launchIgnoringFailure {
+            seedDefaultPairs()
+            syncMissingRates()
+        }
     }
 
     fun refreshCatalogue() {

@@ -115,6 +115,20 @@ class MigrateToProviderPerPairTest {
     }
 
     @Test
+    fun anExistingDatabaseIsTreatedAsAlreadySeeded() = runTest {
+        schemaThree {
+            execSQL(
+                "INSERT INTO watched_pair (base, quote, position, addedAt) " +
+                    "VALUES ('EUR', 'PLN', 0, 1000)"
+            )
+        }
+
+        migrated { database ->
+            assertTrue(database.appStateDao.defaultsSeeded())
+        }
+    }
+
+    @Test
     fun aRateCarriesItsProviderAfterTheMigration() = runTest {
         schemaThree {}
 
@@ -159,7 +173,7 @@ class MigrateToProviderPerPairTest {
 
     private suspend fun migrated(assertions: suspend (KursorDatabase) -> Unit) {
         val database = fileBuilder(path)
-            .addMigrations(MigrateToProviderPerPair)
+            .addMigrations(MigrateToProviderPerPair, MigrateSeedingOutOfTheDatabase)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.Default)
             .build()

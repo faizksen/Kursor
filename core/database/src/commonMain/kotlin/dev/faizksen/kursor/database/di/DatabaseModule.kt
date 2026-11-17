@@ -4,8 +4,9 @@ import androidx.room3.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dev.faizksen.kursor.common.di.dispatchersModule
 import dev.faizksen.kursor.database.KursorDatabase
+import dev.faizksen.kursor.database.MigrateSeedingOutOfTheDatabase
 import dev.faizksen.kursor.database.MigrateToProviderPerPair
-import dev.faizksen.kursor.database.SeedWatchedPairs
+import dev.faizksen.kursor.database.dao.AppStateDao
 import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.SyncLogDao
@@ -25,6 +26,7 @@ val databaseModule = module {
     factoryOf(::ratesDao)
     factoryOf(::syncLogDao)
     factoryOf(::catalogueDao)
+    factoryOf(::appStateDao)
 }
 
 internal fun kursorDatabase(
@@ -32,8 +34,7 @@ internal fun kursorDatabase(
     clock: Clock,
     queryContext: CoroutineContext,
 ): KursorDatabase = builder
-    .addCallback(SeedWatchedPairs(clock))
-    .addMigrations(MigrateToProviderPerPair)
+    .addMigrations(MigrateToProviderPerPair, MigrateSeedingOutOfTheDatabase)
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(queryContext)
     .build()
@@ -45,5 +46,7 @@ internal fun ratesDao(database: KursorDatabase): RatesDao = database.ratesDao
 internal fun syncLogDao(database: KursorDatabase): SyncLogDao = database.syncLogDao
 
 internal fun catalogueDao(database: KursorDatabase): CatalogueDao = database.catalogueDao
+
+internal fun appStateDao(database: KursorDatabase): AppStateDao = database.appStateDao
 
 internal const val DATABASE_NAME = "kursor"

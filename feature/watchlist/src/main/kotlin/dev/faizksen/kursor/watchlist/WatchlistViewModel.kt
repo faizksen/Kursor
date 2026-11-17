@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.watchlist
 
 import androidx.lifecycle.viewModelScope
+import dev.faizksen.kursor.domain.ObserveDefaultsSeededUseCase
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCase
 import dev.faizksen.kursor.domain.ObserveSyncStateUseCase
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCase
@@ -21,6 +22,7 @@ class WatchlistViewModel(
     private val requestManualSync: RequestManualSyncUseCase,
     observeSyncState: ObserveSyncStateUseCase,
     observeSyncLog: ObserveSyncLogUseCase,
+    observeDefaultsSeeded: ObserveDefaultsSeededUseCase,
 ): BaseMviViewModel<WatchlistUiState, WatchlistUiAction, WatchlistUiEffect>(
     WatchlistUiState.Loading
 ) {
@@ -29,8 +31,9 @@ class WatchlistViewModel(
             watchlistUseCase(),
             observeSyncLog(LAST_RUN_ONLY).map { runs -> runs.firstOrNull() },
             observeSyncState(SyncTrigger.Manual),
-        ) { pairsWithRates, lastRun, syncState ->
-            pairsWithRates.toUiState(lastUpdate(lastRun, syncState))
+            observeDefaultsSeeded(),
+        ) { pairsWithRates, lastRun, syncState, seeded ->
+            pairsWithRates.toUiState(lastUpdate(lastRun, syncState), seeded)
         }
             .onEach { state -> updateState { state } }
             .launchIn(viewModelScope)
@@ -42,12 +45,14 @@ class WatchlistViewModel(
         }
     }
 
-    private fun List<WatchedPairWithRate>.toUiState(lastUpdate: LastUpdate): WatchlistUiState =
-        if (isEmpty()) {
-            WatchlistUiState.Empty
-        } else {
-            WatchlistUiState.Results(lastUpdate = lastUpdate, pairs = this)
-        }
+    private fun List<WatchedPairWithRate>.toUiState(
+        lastUpdate: LastUpdate,
+        seeded: Boolean,
+    ): WatchlistUiState = when {
+        isNotEmpty() -> WatchlistUiState.Results(lastUpdate = lastUpdate, pairs = this)
+        seeded -> WatchlistUiState.Empty
+        else -> WatchlistUiState.Loading
+    }
 
     private companion object {
         const val LAST_RUN_ONLY = 1

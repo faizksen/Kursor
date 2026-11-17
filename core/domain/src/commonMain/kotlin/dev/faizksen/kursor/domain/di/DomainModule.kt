@@ -23,7 +23,11 @@ import dev.faizksen.kursor.domain.ResolveMissingProvidersUseCaseImpl
 import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCaseImpl
+import dev.faizksen.kursor.domain.ObserveDefaultsSeededUseCase
+import dev.faizksen.kursor.domain.ObserveDefaultsSeededUseCaseImpl
 import dev.faizksen.kursor.domain.RunSyncUseCase
+import dev.faizksen.kursor.domain.SeedDefaultPairsUseCase
+import dev.faizksen.kursor.domain.SeedDefaultPairsUseCaseImpl
 import dev.faizksen.kursor.domain.SyncMissingRatesUseCase
 import dev.faizksen.kursor.domain.SyncMissingRatesUseCaseImpl
 import org.koin.core.module.dsl.factoryOf
@@ -46,5 +50,7 @@ val domainModule = module {
     factoryOf(::RefreshCatalogueUseCaseImpl) bind RefreshCatalogueUseCase::class
     factoryOf(::AddWatchedPairUseCaseImpl) bind AddWatchedPairUseCase::class
     factoryOf(::SyncMissingRatesUseCaseImpl) bind SyncMissingRatesUseCase::class
+    factoryOf(::SeedDefaultPairsUseCaseImpl) bind SeedDefaultPairsUseCase::class
+    factoryOf(::ObserveDefaultsSeededUseCaseImpl) bind ObserveDefaultsSeededUseCase::class
     factoryOf(::ResolveMissingProvidersUseCaseImpl) bind ResolveMissingProvidersUseCase::class
 }

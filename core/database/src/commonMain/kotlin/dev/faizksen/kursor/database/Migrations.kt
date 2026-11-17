@@ -4,6 +4,20 @@ import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
+internal object MigrateSeedingOutOfTheDatabase : Migration(5, 6) {
+
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "CREATE TABLE IF NOT EXISTS `app_state` (`id` INTEGER NOT NULL, " +
+                "`defaultsSeededAt` INTEGER, PRIMARY KEY(`id`))"
+        )
+        connection.execSQL(
+            "INSERT OR REPLACE INTO `app_state` (`id`, `defaultsSeededAt`) " +
+                "SELECT 0, COALESCE(MIN(`addedAt`), 0) FROM `watched_pair`"
+        )
+    }
+}
+
 internal object MigrateToProviderPerPair : Migration(3, 4) {
 
     override suspend fun migrate(connection: SQLiteConnection) {
@@ -14,11 +28,12 @@ internal object MigrateToProviderPerPair : Migration(3, 4) {
                 "ON `watched_pair` (`base`, `quote`, `provider`)"
         )
 
-        DEFAULT_WATCHED_PAIRS.forEach { pair ->
+        SEEDED_BEFORE_PROVIDERS.forEach { (pair, provider) ->
+            val (base, quote) = pair
+
             connection.execSQL(
-                "UPDATE `watched_pair` SET `provider` = '${pair.provider}' " +
-                    "WHERE `base` = '${pair.base}' AND `quote` = '${pair.quote}' " +
-                    "AND `provider` = ''"
+                "UPDATE `watched_pair` SET `provider` = '$provider' " +
+                    "WHERE `base` = '$base' AND `quote` = '$quote' AND `provider` = ''"
             )
         }
 
@@ -35,3 +50,9 @@ internal object MigrateToProviderPerPair : Migration(3, 4) {
         )
     }
 }
+
+private val SEEDED_BEFORE_PROVIDERS = mapOf(
+    ("EUR" to "PLN") to "NBP",
+    ("EUR" to "USD") to "ECB",
+    ("EUR" to "RUB") to "CBR",
+)

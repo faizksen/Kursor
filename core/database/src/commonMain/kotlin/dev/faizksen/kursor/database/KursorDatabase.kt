@@ -6,10 +6,12 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
+import dev.faizksen.kursor.database.dao.AppStateDao
 import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.SyncLogDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
+import dev.faizksen.kursor.database.entities.AppStateEntity
 import dev.faizksen.kursor.database.entities.CatalogueMetaEntity
 import dev.faizksen.kursor.database.entities.CurrencyEntity
 import dev.faizksen.kursor.database.entities.ProviderCoverageEntity
@@ -26,7 +28,8 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
         CurrencyEntity::class,
         ProviderEntity::class,
         ProviderCoverageEntity::class,
-        CatalogueMetaEntity::class
+        CatalogueMetaEntity::class,
+        AppStateEntity::class
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -44,7 +47,7 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
 @ConstructedBy(KursorDatabaseConstructor::class)
 abstract class KursorDatabase: RoomDatabase() {
     companion object {
-        const val VERSION = 5
+        const val VERSION = 6
     }
 
     abstract val watchedPairsDao: WatchedPairsDao
@@ -54,6 +57,8 @@ abstract class KursorDatabase: RoomDatabase() {
     abstract val syncLogDao: SyncLogDao
 
     abstract val catalogueDao: CatalogueDao
+
+    abstract val appStateDao: AppStateDao
 }
 
 @Suppress("KotlinNoActualForExpect")

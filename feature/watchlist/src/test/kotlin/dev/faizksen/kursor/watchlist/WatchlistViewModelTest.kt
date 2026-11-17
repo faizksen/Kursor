@@ -33,6 +33,7 @@ class WatchlistViewModelTest {
     private val syncState = MutableStateFlow(SyncState.Idle)
     private var manualSyncCalls = 0
     private var logLimit: Int? = null
+    private val seeded = MutableStateFlow(true)
 
     private fun viewModel() = WatchlistViewModel(
         watchlistUseCase = { pairs },
@@ -41,7 +42,8 @@ class WatchlistViewModelTest {
         observeSyncLog = { limit ->
             logLimit = limit
             runs
-        }
+        },
+        observeDefaultsSeeded = { seeded },
     )
 
     private fun watchedPair(id: Long = 1, base: String = "EUR", quote: String = "RUB") =
@@ -78,6 +80,26 @@ class WatchlistViewModelTest {
     @Test
     fun `empty pairs in watchlist produce Empty`() = runTest {
         assertThat(viewModel().screenState.value).isEqualTo(WatchlistUiState.Empty)
+    }
+
+    @Test
+    fun `an empty watchlist before seeding is still loading`() = runTest {
+        seeded.value = false
+
+        viewModel().screenState.test {
+            assertThat(awaitItem()).isEqualTo(WatchlistUiState.Loading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `an empty watchlist after seeding is empty on purpose`() = runTest {
+        seeded.value = true
+
+        viewModel().screenState.test {
+            assertThat(awaitItem()).isEqualTo(WatchlistUiState.Empty)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
