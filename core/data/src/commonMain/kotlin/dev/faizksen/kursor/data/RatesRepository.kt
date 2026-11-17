@@ -26,7 +26,7 @@ import kotlin.time.Clock
 
 interface RatesRepository {
     fun observeWatchlist(): Flow<List<WatchedPairWithRate>>
-    suspend fun refresh(sourceId: SourceId): SyncOutcome
+    suspend fun refresh(sourceId: SourceId, only: CurrencyPair? = null): SyncOutcome
 }
 
 internal class RatesRepositoryImpl(
@@ -52,8 +52,9 @@ internal class RatesRepositoryImpl(
             }
         }
 
-    override suspend fun refresh(sourceId: SourceId): SyncOutcome {
-        val pairs = watchedPairsDao.getAll().map { it.toWatchedPair() }.map { it.pair }
+    override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncOutcome {
+        val watched = watchedPairsDao.getAll().map { it.toWatchedPair() }.map { it.pair }
+        val pairs = if (only == null) watched else watched.filter { pair -> pair == only }
         val source = sources[sourceId]
             ?: return SyncOutcome.Permanent(PermanentKind.UnknownSource)
         if (pairs.isEmpty()) {

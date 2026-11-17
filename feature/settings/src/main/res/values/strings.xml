@@ -5,6 +5,7 @@
     <string name="sync_status_now_title">Right now</string>
     <string name="sync_status_trigger_periodic">Periodic</string>
     <string name="sync_status_trigger_manual">Manual</string>
+    <string name="sync_status_trigger_pair_added">Pair added</string>
 
     <string name="sync_status_next_run_in">Next check no sooner than in %1$s</string>
     <string name="sync_status_next_run_awaiting">Awaiting a run</string>

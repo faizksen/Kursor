@@ -1,5 +1,6 @@
 package dev.faizksen.kursor.domain
 
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncRun
@@ -18,9 +19,10 @@ class RunSyncUseCase(
         trigger: SyncTrigger,
         attempt: Int,
         canRetry: Boolean,
+        only: CurrencyPair? = null,
     ): SyncOutcome {
         val startedAt = clock.now()
-        val outcome = refreshRates(sourceId)
+        val outcome = refreshRates(sourceId, only)
 
         record(
             outcome.toSyncRun(

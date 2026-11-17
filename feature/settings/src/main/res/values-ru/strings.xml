@@ -5,6 +5,7 @@
     <string name="sync_status_now_title">Сейчас</string>
     <string name="sync_status_trigger_periodic">Периодическая</string>
     <string name="sync_status_trigger_manual">Ручная</string>
+    <string name="sync_status_trigger_pair_added">Добавлена пара</string>
 
     <string name="sync_status_next_run_in">Следующая проверка не раньше чем через %1$s</string>
     <string name="sync_status_next_run_awaiting">Ожидает запуска</string>

@@ -1,11 +1,13 @@
 package dev.faizksen.kursor.domain
 
 import dev.faizksen.kursor.data.RatesRepository
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 
 class RefreshRatesUseCase(
     private val ratesRepository: RatesRepository,
 ) {
-    suspend operator fun invoke(sourceId: SourceId): SyncOutcome = ratesRepository.refresh(sourceId)
+    suspend operator fun invoke(sourceId: SourceId, only: CurrencyPair? = null): SyncOutcome =
+        ratesRepository.refresh(sourceId, only)
 }

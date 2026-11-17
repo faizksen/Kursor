@@ -3,6 +3,7 @@ package dev.faizksen.kursor.domain
 import dev.faizksen.kursor.data.RatesRepository
 import dev.faizksen.kursor.data.SyncLogRepository
 import dev.faizksen.kursor.model.PermanentKind
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncErrorKind
 import dev.faizksen.kursor.model.SyncOutcome
@@ -38,11 +39,14 @@ class RunSyncUseCaseTest {
         override fun now(): Instant = now
     }
 
+    private var refreshedPair: CurrencyPair? = null
+
     private val ratesRepository = object : RatesRepository {
         override fun observeWatchlist(): Flow<List<WatchedPairWithRate>> = emptyFlow()
 
-        override suspend fun refresh(sourceId: SourceId): SyncOutcome {
+        override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncOutcome {
             refreshedSource = sourceId
+            refreshedPair = only
             now += 2.seconds
             return outcome
         }

@@ -43,7 +43,7 @@ class SyncStatusViewModelTest {
         observeSyncQueue = { trigger ->
             when (trigger) {
                 SyncTrigger.Periodic -> periodic
-                SyncTrigger.Manual -> manual
+                SyncTrigger.Manual, SyncTrigger.PairAdded -> manual
             }
         },
     )

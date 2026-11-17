@@ -6,6 +6,7 @@ internal const val SYNC_RETRY = "retry"
 
 internal const val SYNC_TRIGGER_PERIODIC = "periodic"
 internal const val SYNC_TRIGGER_MANUAL = "manual"
+internal const val SYNC_TRIGGER_PAIR_ADDED = "pair_added"
 
 sealed interface SyncResultColumn {
     val columnValue: String
@@ -19,6 +20,7 @@ sealed interface TriggerColumn {
     val columnValue: String
     data object Periodic: TriggerColumn { override val columnValue = SYNC_TRIGGER_PERIODIC }
     data object Manual: TriggerColumn { override val columnValue = SYNC_TRIGGER_MANUAL }
+    data object PairAdded: TriggerColumn { override val columnValue = SYNC_TRIGGER_PAIR_ADDED }
     data class Unrecognized(override val columnValue: String): TriggerColumn
 }
 

@@ -22,6 +22,18 @@ class TriggerColumnTest {
     }
 
     @Test
+    fun `sync converter knows pair added trigger`() {
+        val source = TriggerColumn.PairAdded
+        val restored = syncConverters.toTrigger(syncConverters.fromTrigger(source))
+        assertEquals(source, restored)
+    }
+
+    @Test
+    fun `PairAdded columnValue is equals with database const`() {
+        assertEquals("pair_added", syncConverters.fromTrigger(TriggerColumn.PairAdded))
+    }
+
+    @Test
     fun `Periodic columnValue is equals with database const`() {
         assertEquals("periodic", syncConverters.fromTrigger(TriggerColumn.Periodic))
     }

@@ -13,6 +13,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import dev.faizksen.kursor.domain.SyncScheduler
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SyncQueue
 import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
@@ -47,6 +48,14 @@ class SyncSchedulerImpl(
         )
     }
 
+    override fun requestPairSync(pair: CurrencyPair) {
+        workManager.enqueueUniqueWork(
+            uniqueWorkName = pair.uniqueWorkName(),
+            existingWorkPolicy = ExistingWorkPolicy.REPLACE,
+            request = pairSyncRequest(pair),
+        )
+    }
+
     override fun observeSyncQueue(trigger: SyncTrigger): Flow<SyncQueue> =
         workManager.getWorkInfosForUniqueWorkFlow(trigger.uniqueWorkName())
             .map { infos -> infos.firstOrNull().toSyncQueue() }
@@ -54,7 +63,7 @@ class SyncSchedulerImpl(
 
     private fun SyncTrigger.uniqueWorkName(): String = when (this) {
         SyncTrigger.Periodic -> FIAT_PERIODIC_SYNC_NAME
-        SyncTrigger.Manual -> FIAT_IMMEDIATE_SYNC_NAME
+        SyncTrigger.Manual, SyncTrigger.PairAdded -> FIAT_IMMEDIATE_SYNC_NAME
     }
 }
 
@@ -78,6 +87,27 @@ internal fun immediateSyncRequest(): OneTimeWorkRequest =
     OneTimeWorkRequestBuilder<FiatRatesSyncWorker>()
         .setInputData(triggerData(SyncTrigger.Manual))
         .build()
+
+internal fun pairSyncRequest(pair: CurrencyPair): OneTimeWorkRequest =
+    OneTimeWorkRequestBuilder<FiatRatesSyncWorker>()
+        .setInputData(
+            workDataOf(
+                FiatRatesSyncWorker.KEY_TRIGGER to SyncTrigger.PairAdded.name,
+                FiatRatesSyncWorker.KEY_BASE to pair.base.code,
+                FiatRatesSyncWorker.KEY_QUOTE to pair.quote.code,
+            )
+        )
+        .setConstraints(
+            Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+        )
+        .build()
+
+internal fun CurrencyPair.uniqueWorkName(): String =
+    FIAT_PAIR_SYNC_PREFIX + base.code + "_" + quote.code
+
+internal const val FIAT_PAIR_SYNC_PREFIX = "fiat_rates_pair_sync_"
 
 private fun triggerData(trigger: SyncTrigger) =
     workDataOf(FiatRatesSyncWorker.KEY_TRIGGER to trigger.name)

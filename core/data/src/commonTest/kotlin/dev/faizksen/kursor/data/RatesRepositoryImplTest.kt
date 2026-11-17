@@ -6,6 +6,7 @@ import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
 import dev.faizksen.kursor.database.entities.RateEntity
 import dev.faizksen.kursor.model.CurrencyCode
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.SourceId
@@ -77,6 +78,39 @@ class RatesRepositoryImplTest {
             ),
             ratesDao.observeLatestRates().first().toSet(),
         )
+    }
+
+    @Test
+    fun refreshOfOnePairLeavesTheOthersAlone() = runTest {
+        putWatchedPairsIntoDatabase()
+        val fakeSource = frankfurterSource(REMOTE_RATES)
+        val repository = repository(mapOf(fakeSource.id to fakeSource))
+
+        val result = repository.refresh(
+            sourceId = fakeSource.id,
+            only = CurrencyPair(CurrencyCode(EUR), CurrencyCode(USD)),
+        )
+
+        assertEquals(
+            listOf(CurrencyPair(CurrencyCode(EUR), CurrencyCode(USD))),
+            fakeSource.lastRequestedPairs,
+        )
+        assertEquals(SyncOutcome.Success(2), result)
+    }
+
+    @Test
+    fun refreshOfAPairNobodyWatchesFetchesNothing() = runTest {
+        putWatchedPairsIntoDatabase()
+        val fakeSource = frankfurterSource(REMOTE_RATES)
+        val repository = repository(mapOf(fakeSource.id to fakeSource))
+
+        val result = repository.refresh(
+            sourceId = fakeSource.id,
+            only = CurrencyPair(CurrencyCode("CHF"), CurrencyCode("JPY")),
+        )
+
+        assertEquals(SyncOutcome.Success(0), result)
+        assertEquals(0, fakeSource.callCount)
     }
 
     @Test

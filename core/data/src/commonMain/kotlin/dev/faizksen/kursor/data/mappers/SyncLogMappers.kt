@@ -58,11 +58,13 @@ internal fun SourceIdColumn.toSourceId(): SourceId? = when (this) {
 internal fun SyncTrigger.toColumn(): TriggerColumn = when (this) {
     SyncTrigger.Periodic -> TriggerColumn.Periodic
     SyncTrigger.Manual -> TriggerColumn.Manual
+    SyncTrigger.PairAdded -> TriggerColumn.PairAdded
 }
 
 internal fun TriggerColumn.toSyncTrigger(): SyncTrigger? = when (this) {
     TriggerColumn.Periodic -> SyncTrigger.Periodic
     TriggerColumn.Manual -> SyncTrigger.Manual
+    TriggerColumn.PairAdded -> SyncTrigger.PairAdded
     is TriggerColumn.Unrecognized -> null
 }
 

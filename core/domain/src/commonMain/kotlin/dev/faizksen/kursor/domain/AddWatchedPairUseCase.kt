@@ -16,11 +16,15 @@ fun interface AddWatchedPairUseCase {
 
 internal class AddWatchedPairUseCaseImpl(
     private val watchedPairsRepository: WatchedPairsRepository,
+    private val syncScheduler: SyncScheduler,
 ): AddWatchedPairUseCase {
 
     override suspend fun invoke(pair: CurrencyPair, provider: ProviderKey): AddPairOutcome =
         when (watchedPairsRepository.add(pair, provider)) {
-            is AddPairResult.Added -> AddPairOutcome.ADDED
+            is AddPairResult.Added -> {
+                syncScheduler.requestPairSync(pair)
+                AddPairOutcome.ADDED
+            }
             is AddPairResult.AlreadyWatched -> AddPairOutcome.ALREADY_WATCHED
         }
 }

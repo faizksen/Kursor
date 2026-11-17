@@ -604,6 +604,7 @@ private val SyncTrigger.labelRes: Int
     get() = when (this) {
         SyncTrigger.Periodic -> R.string.sync_status_trigger_periodic
         SyncTrigger.Manual -> R.string.sync_status_trigger_manual
+        SyncTrigger.PairAdded -> R.string.sync_status_trigger_pair_added
     }
 
 private val SyncState.labelRes: Int

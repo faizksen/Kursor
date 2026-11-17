@@ -1,5 +1,6 @@
 package dev.faizksen.kursor.domain
 
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SyncQueue
 import dev.faizksen.kursor.model.SyncState
 import dev.faizksen.kursor.model.SyncTrigger
@@ -21,6 +22,8 @@ class ObserveSyncStateUseCaseTest {
         override fun schedulePeriodicSync() = error("not used")
 
         override fun requestImmediateSync() = error("not used")
+
+        override fun requestPairSync(pair: CurrencyPair) = error("not used")
 
         override fun observeSyncQueue(trigger: SyncTrigger): Flow<SyncQueue> {
             requestedTrigger = trigger

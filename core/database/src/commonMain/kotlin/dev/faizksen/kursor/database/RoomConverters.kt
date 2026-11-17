@@ -27,6 +27,7 @@ class SyncLogConverters {
     fun toTrigger(value: String): TriggerColumn = when (value) {
         TriggerColumn.Periodic.columnValue -> TriggerColumn.Periodic
         TriggerColumn.Manual.columnValue -> TriggerColumn.Manual
+        TriggerColumn.PairAdded.columnValue -> TriggerColumn.PairAdded
         else -> TriggerColumn.Unrecognized(value)
     }
 

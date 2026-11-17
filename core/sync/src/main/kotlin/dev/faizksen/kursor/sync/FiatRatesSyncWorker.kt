@@ -6,6 +6,8 @@ import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import dev.faizksen.kursor.domain.RunSyncUseCase
+import dev.faizksen.kursor.model.CurrencyCode
+import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncTrigger
@@ -18,6 +20,8 @@ class FiatRatesSyncWorker(
 
     companion object {
         const val KEY_TRIGGER = "sync_trigger"
+        const val KEY_BASE = "sync_base"
+        const val KEY_QUOTE = "sync_quote"
     }
 
     override suspend fun doWork(): Result {
@@ -29,6 +33,7 @@ class FiatRatesSyncWorker(
             trigger = inputData.syncTrigger(),
             attempt = attempt,
             canRetry = canRetry,
+            only = inputData.syncPair(),
         ).toWorkerResult(canRetry)
     }
 }
@@ -40,6 +45,13 @@ private val FALLBACK_TRIGGER = SyncTrigger.Periodic
 internal fun Data.syncTrigger(): SyncTrigger = getString(FiatRatesSyncWorker.KEY_TRIGGER)
     ?.let { name -> SyncTrigger.entries.firstOrNull { it.name == name } }
     ?: FALLBACK_TRIGGER
+
+internal fun Data.syncPair(): CurrencyPair? {
+    val base = getString(FiatRatesSyncWorker.KEY_BASE)?.takeIf { it.isNotBlank() } ?: return null
+    val quote = getString(FiatRatesSyncWorker.KEY_QUOTE)?.takeIf { it.isNotBlank() } ?: return null
+
+    return CurrencyPair(base = CurrencyCode(base), quote = CurrencyCode(quote))
+}
 
 internal fun SyncOutcome.toWorkerResult(canRetry: Boolean): ListenableWorker.Result = when (this) {
     is SyncOutcome.Success -> ListenableWorker.Result.success()
