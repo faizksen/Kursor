@@ -415,7 +415,7 @@ private fun RateCard(
                     style = KursorTheme.typography.titleMedium,
                 )
                 Text(
-                    text = rateMetaText(rate),
+                    text = rateMetaText(pairWithRate.watchedPair.provider, rate),
                     style = KursorTheme.typography.labelMedium,
                     color = KursorTheme.colorScheme.onSurfaceVariant,
                 )
@@ -429,10 +429,10 @@ private fun RateCard(
 }
 
 @Composable
-private fun rateMetaText(rate: RatePoint?): String = if (rate == null) {
-    stringResource(R.string.watchlist_rate_unavailable)
-} else {
-    stringResource(rate.sourceId.labelRes)
+private fun rateMetaText(provider: ProviderKey?, rate: RatePoint?): String = when {
+    provider != null -> provider.key
+    rate != null -> stringResource(rate.sourceId.labelRes)
+    else -> stringResource(R.string.watchlist_rate_unavailable)
 }
 
 @Composable

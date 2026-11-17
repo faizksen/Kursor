@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,16 +48,15 @@ import dev.faizksen.kursor.model.Provider
 import dev.faizksen.kursor.watchlist.R
 import org.koin.compose.viewmodel.koinViewModel
 
+private val StepIndicatorPaddingTop = 6.dp
 private val StepBarHeight = 3.dp
 private val StepBarRadius = 2.dp
 private val StepSpacing = 8.dp
 private val StepLabelSpacing = 4.dp
 private val RowTitleSpacing = 2.dp
-private val MarkerSize = 22.dp
 private val RadioSize = 20.dp
 private val RadioDotSize = 10.dp
 private val MarkerBorderWidth = 2.dp
-private val SelectedBorderWidth = 1.5.dp
 private val CardBorderWidth = 1.dp
 private val ProviderRowPaddingVertical = 12.dp
 private val ProviderCardPaddingVertical = 4.dp
@@ -165,6 +163,7 @@ private fun StepIndicator(step: AddPairStep) {
         modifier = Modifier.padding(
             start = KursorDimens.screenHorizontalPadding,
             end = KursorDimens.screenHorizontalPadding,
+            top = StepIndicatorPaddingTop,
             bottom = KursorDimens.sectionSpacing,
         ),
     ) {
@@ -257,10 +256,7 @@ private fun CurrencyPicker(
         verticalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
     ) {
         items(items = matches, key = { currency -> currency.code.code }) { currency ->
-            RowCard(
-                selected = false,
-                onClick = { onAction(AddPairUiAction.CurrencyPicked(currency.code)) },
-            ) {
+            RowCard(onClick = { onAction(AddPairUiAction.CurrencyPicked(currency.code)) }) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = currency.code.code,
@@ -274,7 +270,6 @@ private fun CurrencyPicker(
                         modifier = Modifier.padding(top = RowTitleSpacing),
                     )
                 }
-                Marker(selected = false)
             }
         }
 
@@ -336,6 +331,7 @@ private fun ProviderPicker(
             item {
                 Note(
                     text = stringResource(R.string.add_pair_show_all, state.everyProviderCount),
+                    color = KursorTheme.colorScheme.primary,
                     modifier = Modifier.clickable {
                         onAction(AddPairUiAction.ShowEveryProviderClicked)
                     },
@@ -421,18 +417,13 @@ private fun PairSummary(base: CurrencyCode?, quote: CurrencyCode?) {
 
 @Composable
 private fun RowCard(
-    selected: Boolean,
     onClick: () -> Unit,
     content: @Composable RowScope.() -> Unit,
 ) {
     Surface(
         color = KursorTheme.colorScheme.surface,
         shape = RoundedCornerShape(KursorRadius.card),
-        border = if (selected) {
-            BorderStroke(SelectedBorderWidth, KursorTheme.colorScheme.primary)
-        } else {
-            BorderStroke(CardBorderWidth, KursorTheme.colorScheme.outlineVariant)
-        },
+        border = BorderStroke(CardBorderWidth, KursorTheme.colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
@@ -466,43 +457,21 @@ private fun SectionHeader(text: String) {
 }
 
 @Composable
-private fun Note(text: String, modifier: Modifier = Modifier) {
+private fun Note(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = KursorTheme.colorScheme.onSurfaceVariant,
+) {
     Text(
         text = text,
         style = KursorTheme.typography.labelLarge,
-        color = KursorTheme.colorScheme.onSurfaceVariant,
+        color = color,
         modifier = modifier.padding(
             start = KursorDimens.screenHorizontalPadding + NoteInset,
             end = KursorDimens.screenHorizontalPadding,
             top = NotePaddingTop,
         ),
     )
-}
-
-@Composable
-private fun Marker(selected: Boolean) {
-    if (selected) {
-        Surface(
-            color = KursorTheme.colorScheme.primary,
-            shape = RoundedCornerShape(MarkerSize / 2),
-            modifier = Modifier.size(MarkerSize),
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = KursorTheme.colorScheme.onPrimary,
-                )
-            }
-        }
-    } else {
-        Surface(
-            color = Color.Transparent,
-            shape = RoundedCornerShape(MarkerSize / 2),
-            border = BorderStroke(MarkerBorderWidth, KursorTheme.colorScheme.outlineVariant),
-            modifier = Modifier.size(MarkerSize),
-        ) {}
-    }
 }
 
 @Composable
