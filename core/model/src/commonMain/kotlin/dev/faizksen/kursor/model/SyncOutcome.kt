@@ -3,7 +3,10 @@ package dev.faizksen.kursor.model
 import kotlin.time.Duration
 
 sealed interface SyncOutcome {
-    data class Success(val updatedCount: Int) : SyncOutcome
+    data class Success(
+        val updatedCount: Int,
+        val requestedCount: Int = updatedCount,
+    ) : SyncOutcome
     data class Transient(val kind: TransientKind) : SyncOutcome
     data class Permanent(val kind: PermanentKind) : SyncOutcome
 }

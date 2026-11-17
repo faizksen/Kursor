@@ -68,7 +68,7 @@ class RatesRepositoryImplTest {
 
         val result = repository.refresh(fakeSource.id)
 
-        assertEquals(SyncOutcome.Success(2), result)
+        assertEquals(SyncOutcome.Success(2, 2), result)
 
         val fetchedAt = clock.now().toEpochMilliseconds()
         assertEquals(
@@ -95,7 +95,7 @@ class RatesRepositoryImplTest {
             listOf(CurrencyPair(CurrencyCode(EUR), CurrencyCode(USD))),
             fakeSource.lastRequestedPairs,
         )
-        assertEquals(SyncOutcome.Success(2), result)
+        assertEquals(SyncOutcome.Success(1, 1), result)
     }
 
     @Test

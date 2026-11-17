@@ -32,7 +32,7 @@ class LastUpdateTest {
         val lastRun = syncRun(result = SyncResult.Success)
 
         assertThat(lastUpdate(lastRun, SyncState.Succeeded))
-            .isEqualTo(LastUpdate.Success(finishedAt))
+            .isEqualTo(LastUpdate.Success(finishedAt, updatedCount = 4, requestedCount = 4))
     }
 
     @Test
@@ -88,6 +88,8 @@ class LastUpdateTest {
         result: SyncResult,
         errorKind: SyncErrorKind? = null,
         attempt: Int = 2,
+        updatedCount: Int? = 4,
+        requestedCount: Int? = 4,
     ) = SyncRun(
         id = 1,
         sourceId = SourceId.FRANKFURTER,
@@ -96,7 +98,8 @@ class LastUpdateTest {
         finishedAt = finishedAt,
         result = result,
         errorKind = errorKind,
-        updatedCount = null,
+        updatedCount = updatedCount,
+        requestedCount = requestedCount,
         attempt = attempt,
     )
 }

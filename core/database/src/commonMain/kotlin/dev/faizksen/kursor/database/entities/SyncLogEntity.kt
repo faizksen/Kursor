@@ -22,5 +22,6 @@ data class SyncLogEntity(
     val result: SyncResultColumn,
     val errorKind: ErrorColumn?,
     val updatedCount: Int?,
+    val requestedCount: Int?,
     val attempt: Int
 )

@@ -75,4 +75,5 @@
     <string name="add_pair_cadence_quarterly">quarterly</string>
     <string name="add_pair_cadence_unknown">cadence unknown</string>
     <string name="add_pair_close">Close</string>
+    <string name="watchlist_updated_partially">%1$s · %2$s</string>
 </resources>

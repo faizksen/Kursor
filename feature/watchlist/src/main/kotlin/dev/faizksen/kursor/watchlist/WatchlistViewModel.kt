@@ -57,7 +57,11 @@ class WatchlistViewModel(
 internal fun lastUpdate(lastRun: SyncRun?, syncState: SyncState): LastUpdate = when {
     isSyncing(lastRun, syncState) -> LastUpdate.Progress(0)
     lastRun == null -> LastUpdate.Empty
-    lastRun.result == SyncResult.Success -> LastUpdate.Success(lastRun.finishedAt)
+    lastRun.result == SyncResult.Success -> LastUpdate.Success(
+        updatedAt = lastRun.finishedAt,
+        updatedCount = lastRun.updatedCount,
+        requestedCount = lastRun.requestedCount,
+    )
     else -> LastUpdate.Failed(
         failedAttempts = lastRun.attempt,
         lastTryAt = lastRun.finishedAt,

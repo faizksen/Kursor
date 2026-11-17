@@ -10,6 +10,7 @@ data class SyncRun(
     val result: SyncResult,
     val errorKind: SyncErrorKind?,
     val updatedCount: Int?,
+    val requestedCount: Int?,
     val attempt: Int,
     val id: Long = NOT_STORED,
 ) {
@@ -50,6 +51,7 @@ fun SyncOutcome.toSyncRun(
     result = toSyncResult(canRetry),
     errorKind = toSyncErrorKind(),
     updatedCount = (this as? SyncOutcome.Success)?.updatedCount,
+    requestedCount = (this as? SyncOutcome.Success)?.requestedCount,
     attempt = attempt,
 )
 

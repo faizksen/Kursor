@@ -75,9 +75,9 @@ internal class RatesRepositoryImpl(
         }
 
         return when {
-            updated > 0 -> SyncOutcome.Success(updated)
+            updated > 0 -> SyncOutcome.Success(updated, selected.size)
             failure != null -> failure.toSyncOutcome()
-            else -> SyncOutcome.Success(0)
+            else -> SyncOutcome.Success(0, selected.size)
         }
     }
 
@@ -88,13 +88,15 @@ internal class RatesRepositoryImpl(
         pairs: List<CurrencyPair>,
     ): Int {
         val fetchedAt = clock.now().toEpochMilliseconds()
-        val entities = source
-            .latest(provider, pairs)
-            .map { remote -> remote.toRateEntity(sourceId, provider, fetchedAt) }
+        val returned = source.latest(provider, pairs)
 
-        ratesDao.upsertAll(entities)
+        ratesDao.upsertAll(
+            returned.map { remote -> remote.toRateEntity(sourceId, provider, fetchedAt) }
+        )
 
-        return entities.size
+        return pairs.count { pair ->
+            returned.any { remote -> remote.base == pair.base && remote.quote == pair.quote }
+        }
     }
 }
 

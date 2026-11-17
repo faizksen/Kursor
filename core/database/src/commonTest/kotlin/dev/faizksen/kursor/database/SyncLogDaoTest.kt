@@ -127,6 +127,7 @@ class SyncLogDaoTest {
         sourceId: SourceIdColumn = SourceIdColumn.Frankfurter,
         errorKind: ErrorColumn? = null,
         updatedCount: Int? = 0,
+        requestedCount: Int? = updatedCount,
         attempt: Int = 1,
     ) = SyncLogEntity(
         id = 0,
@@ -137,6 +138,7 @@ class SyncLogDaoTest {
         result = result,
         errorKind = errorKind,
         updatedCount = updatedCount,
+        requestedCount = requestedCount,
         attempt = attempt,
     )
 }

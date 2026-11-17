@@ -21,6 +21,7 @@ internal fun SyncRun.toSyncLogEntity() = SyncLogEntity(
     result = result.toColumn(),
     errorKind = errorKind?.toColumn(),
     updatedCount = updatedCount,
+    requestedCount = requestedCount,
     attempt = attempt,
 )
 
@@ -38,6 +39,7 @@ internal fun SyncLogEntity.toSyncRun(): SyncRun? {
         result = syncResult,
         errorKind = errorKind?.toSyncErrorKind(),
         updatedCount = updatedCount,
+        requestedCount = requestedCount,
         attempt = attempt,
     )
 }

@@ -111,6 +111,7 @@ class SyncLogMappersTest {
         result: SyncResult = SyncResult.Success,
         errorKind: SyncErrorKind? = null,
         updatedCount: Int? = 3,
+        requestedCount: Int? = 4,
     ) = SyncRun(
         id = 42,
         sourceId = sourceId,
@@ -120,6 +121,7 @@ class SyncLogMappersTest {
         result = result,
         errorKind = errorKind,
         updatedCount = updatedCount,
+        requestedCount = requestedCount,
         attempt = 1,
     )
 
@@ -128,6 +130,7 @@ class SyncLogMappersTest {
         trigger: TriggerColumn = TriggerColumn.Periodic,
         result: SyncResultColumn = SyncResultColumn.Failed,
         errorKind: ErrorColumn? = ErrorColumn.Timeout,
+        requestedCount: Int? = 4,
     ) = SyncLogEntity(
         id = 42,
         sourceId = sourceId,
@@ -137,6 +140,7 @@ class SyncLogMappersTest {
         result = result,
         errorKind = errorKind,
         updatedCount = null,
+        requestedCount = requestedCount,
         attempt = 1,
     )
 }

@@ -58,7 +58,7 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Success(2), outcome)
+        assertEquals(SyncOutcome.Success(2, 2), outcome)
         assertEquals(setOf<ProviderKey?>(NBP, ECB), source.askedProviders.toSet())
     }
 
@@ -119,7 +119,7 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Success(1), outcome)
+        assertEquals(SyncOutcome.Success(1, 2), outcome)
         assertEquals(listOf("PLN"), ratesDao.observeLatestRates().first().map { it.quote })
     }
 
@@ -151,7 +151,7 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Success(1), outcome)
+        assertEquals(SyncOutcome.Success(1, 2), outcome)
         assertNull(
             repository.observeWatchlist()
                 .first()

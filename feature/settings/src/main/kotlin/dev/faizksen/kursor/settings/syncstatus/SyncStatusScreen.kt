@@ -708,6 +708,7 @@ private fun previewRun(
     minutesAgo: Long,
     result: SyncResult,
     updatedCount: Int? = null,
+    requestedCount: Int? = updatedCount,
     errorKind: SyncErrorKind? = null,
     attempt: Int = 1,
 ): SyncRun {
@@ -721,6 +722,7 @@ private fun previewRun(
         result = result,
         errorKind = errorKind,
         updatedCount = updatedCount,
+        requestedCount = requestedCount,
         attempt = attempt,
         id = id,
     )

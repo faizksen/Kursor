@@ -17,7 +17,11 @@ sealed interface WatchlistUiState: UiState {
 
 sealed interface LastUpdate {
     data object Empty: LastUpdate
-    data class Success(val updatedAt: Instant): LastUpdate
+    data class Success(
+        val updatedAt: Instant,
+        val updatedCount: Int?,
+        val requestedCount: Int?,
+    ): LastUpdate
     data class Failed(
         val failedAttempts: Int,
         val lastTryAt: Instant,

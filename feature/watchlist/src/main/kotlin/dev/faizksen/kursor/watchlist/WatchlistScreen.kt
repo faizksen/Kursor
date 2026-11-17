@@ -456,7 +456,16 @@ private fun freshnessText(lastUpdate: LastUpdate): String = when (lastUpdate) {
 
     is LastUpdate.Failed -> stringResource(failedTitleRes(lastUpdate))
 
-    is LastUpdate.Success -> rememberUpdatedAtText(lastUpdate.updatedAt)
+    is LastUpdate.Success -> {
+        val updatedAt = rememberUpdatedAtText(lastUpdate.updatedAt)
+        val partial = lastUpdate.partialCount()
+
+        if (partial == null) {
+            updatedAt
+        } else {
+            stringResource(R.string.watchlist_updated_partially, partial, updatedAt)
+        }
+    }
 
     is LastUpdate.Progress -> if (lastUpdate.percents > 0) {
         stringResource(R.string.watchlist_syncing_progress, lastUpdate.percents)
@@ -559,7 +568,11 @@ private fun WatchlistResultsPreview() {
     KursorTheme {
         WatchlistContent(
             state = WatchlistUiState.Results(
-                lastUpdate = LastUpdate.Success(Instant.parse("2026-09-20T06:12:00Z")),
+                lastUpdate = LastUpdate.Success(
+                    updatedAt = Instant.parse("2026-09-20T06:12:00Z"),
+                    updatedCount = 3,
+                    requestedCount = 4,
+                ),
                 pairs = listOf(
                     previewPair(1L, "EUR", "PLN", "4.2718"),
                     previewPair(2L, "EUR", "USD", "1.0934"),

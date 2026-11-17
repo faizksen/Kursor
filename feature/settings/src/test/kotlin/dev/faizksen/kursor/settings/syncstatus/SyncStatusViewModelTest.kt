@@ -154,6 +154,7 @@ class SyncStatusViewModelTest {
         result = SyncResult.Success,
         errorKind = null,
         updatedCount = 4,
+        requestedCount = 4,
         attempt = attempt,
     )
 }

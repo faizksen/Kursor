@@ -30,7 +30,8 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3)
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 4, to = 5)
     ],
     version = KursorDatabase.VERSION,
     exportSchema = true
@@ -43,7 +44,7 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
 @ConstructedBy(KursorDatabaseConstructor::class)
 abstract class KursorDatabase: RoomDatabase() {
     companion object {
-        const val VERSION = 4
+        const val VERSION = 5
     }
 
     abstract val watchedPairsDao: WatchedPairsDao

@@ -85,4 +85,5 @@
     <string name="add_pair_cadence_quarterly">раз в квартал</string>
     <string name="add_pair_cadence_unknown">частота неизвестна</string>
     <string name="add_pair_close">Закрыть</string>
+    <string name="watchlist_updated_partially">%1$s · %2$s</string>
 </resources>
