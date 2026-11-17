@@ -437,10 +437,18 @@ private fun RateCard(
 }
 
 @Composable
-private fun rateMetaText(provider: ProviderKey?, rate: RatePoint?): String = when {
-    provider != null -> provider.key
-    rate != null -> stringResource(rate.sourceId.labelRes)
-    else -> stringResource(R.string.watchlist_rate_unavailable)
+private fun rateMetaText(provider: ProviderKey?, rate: RatePoint?): String {
+    val issuer = provider?.key ?: rate?.let { stringResource(it.sourceId.labelRes) }
+
+    return when {
+        issuer == null -> stringResource(R.string.watchlist_rate_unavailable)
+        rate == null -> issuer
+        else -> stringResource(
+            R.string.watchlist_rate_meta,
+            issuer,
+            rememberShortDateText(rate.date),
+        )
+    }
 }
 
 @Composable

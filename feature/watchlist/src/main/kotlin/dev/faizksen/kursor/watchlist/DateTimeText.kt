@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
@@ -14,6 +15,18 @@ import java.time.format.FormatStyle
 import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.Instant
+
+@Composable
+fun rememberShortDateText(date: LocalDate): String {
+    val configuration = LocalConfiguration.current
+
+    return remember(date, configuration) {
+        val locale = configuration.locales[0]
+        val pattern = DateFormat.getBestDateTimePattern(locale, "d MMM")
+
+        DateTimeFormatter.ofPattern(pattern, locale).format(date.toJavaLocalDate())
+    }
+}
 
 @Composable
 fun rememberShortDateTimeText(
