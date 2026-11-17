@@ -1,5 +1,6 @@
 package dev.faizksen.kursor.watchlist.addpair
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,22 +14,38 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,11 +55,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass
 import dev.faizksen.kursor.designsystem.KursorDimens
 import dev.faizksen.kursor.designsystem.KursorRadius
 import dev.faizksen.kursor.designsystem.KursorTheme
 import dev.faizksen.kursor.designsystem.components.KursorButton
-import dev.faizksen.kursor.designsystem.components.ScreenTopBar
+import dev.faizksen.kursor.designsystem.components.KursorSmallButton
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.Provider
 import dev.faizksen.kursor.watchlist.R
@@ -63,37 +81,50 @@ private val ProviderCardPaddingVertical = 4.dp
 private val NotePaddingTop = 6.dp
 private val NoteInset = 4.dp
 private val SectionLetterSpacing = 1.sp
+private val CurrencyColumnMinWidth = 320.dp
+private val ContentMaxWidth = 840.dp
+private val BarSearchFieldMinWidth = 240.dp
+private val BarSearchFieldMaxWidth = 480.dp
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AddPairScreen(
     onDismiss: () -> Unit,
     onAdded: () -> Unit,
     viewModel: AddPairViewModel = koinViewModel(),
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
 
     AddPairEffects(effects = viewModel.effect, onDismiss = onDismiss, onAdded = onAdded)
 
-    AddPairContent(state = state, onAction = viewModel::obtainAction)
+    AddPairContent(
+        state = state,
+        onAction = viewModel::obtainAction,
+        shortOnHeight = windowAdaptiveInfo.isShortOnHeight(),
+    )
 }
 
 @Composable
 internal fun AddPairContent(
     state: AddPairUiState,
     onAction: (AddPairUiAction) -> Unit,
+    shortOnHeight: Boolean,
 ) {
+    val gridState = rememberLazyGridState()
+
     Scaffold(
         containerColor = KursorTheme.colorScheme.background,
         topBar = {
-            ScreenTopBar(
-                onNavButtonClick = { onAction(AddPairUiAction.BackClicked) },
-                title = stringResource(R.string.add_pair_title),
-                navButtonIcon = Icons.Default.Close,
-                navButtonContentDescription = stringResource(R.string.add_pair_close),
+            AddPairTopBar(
+                state = state,
+                onAction = onAction,
+                searchInBar = shortOnHeight,
+                confirmInBar = shortOnHeight,
             )
         },
         bottomBar = {
-            if (state is AddPairUiState.Picking) {
+            if (!shortOnHeight && state is AddPairUiState.Picking) {
                 AddPairBottomBar(state = state, onAction = onAction)
             }
         },
@@ -102,10 +133,71 @@ internal fun AddPairContent(
             when (state) {
                 AddPairUiState.Loading -> Loading()
                 AddPairUiState.CatalogueTooOld -> CatalogueTooOld()
-                is AddPairUiState.Picking -> Picking(state = state, onAction = onAction)
+                is AddPairUiState.Picking -> Picking(
+                    state = state,
+                    onAction = onAction,
+                    gridState = gridState,
+                    searchInBar = shortOnHeight,
+                )
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddPairTopBar(
+    state: AddPairUiState,
+    onAction: (AddPairUiAction) -> Unit,
+    searchInBar: Boolean,
+    confirmInBar: Boolean,
+) {
+    val picking = state as? AddPairUiState.Picking
+
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = { onAction(AddPairUiAction.BackClicked) }) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.add_pair_close),
+                )
+            }
+        },
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(KursorDimens.cardContentSpacing),
+            ) {
+                Text(
+                    text = stringResource(R.string.add_pair_title),
+                    style = KursorTheme.typography.titleLarge,
+                )
+                if (searchInBar && picking?.step?.picksCurrency == true) {
+                    SearchField(
+                        query = picking.query,
+                        onAction = onAction,
+                        modifier = Modifier
+                            .weight(1f)
+                            .widthIn(min = BarSearchFieldMinWidth, max = BarSearchFieldMaxWidth),
+                    )
+                }
+            }
+        },
+        actions = {
+            if (confirmInBar && picking?.step == AddPairStep.PROVIDER) {
+                KursorSmallButton(
+                    text = stringResource(
+                        R.string.add_pair_confirm,
+                        picking.base?.code.orEmpty(),
+                        picking.quote?.code.orEmpty(),
+                    ),
+                    onClick = { onAction(AddPairUiAction.ConfirmClicked) },
+                    enabled = picking.provider != null,
+                    modifier = Modifier.padding(end = KursorDimens.screenHorizontalPadding),
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -145,13 +237,25 @@ private fun CatalogueTooOld() {
 private fun Picking(
     state: AddPairUiState.Picking,
     onAction: (AddPairUiAction) -> Unit,
+    gridState: LazyGridState,
+    searchInBar: Boolean,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        StepIndicator(step = state.step)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(modifier = Modifier.widthIn(max = ContentMaxWidth)) {
+            StepIndicator(step = state.step)
 
-        when (state.step) {
-            AddPairStep.BASE, AddPairStep.QUOTE -> CurrencyPicker(state = state, onAction = onAction)
-            AddPairStep.PROVIDER -> ProviderPicker(state = state, onAction = onAction)
+            when (state.step) {
+                AddPairStep.BASE, AddPairStep.QUOTE -> CurrencyPicker(
+                    state = state,
+                    onAction = onAction,
+                    gridState = gridState,
+                    searchInBar = searchInBar,
+                )
+                AddPairStep.PROVIDER -> ProviderPicker(state = state, onAction = onAction)
+            }
         }
     }
 }
@@ -209,9 +313,28 @@ private fun Step(
 }
 
 @Composable
+private fun SearchField(
+    query: String,
+    onAction: (AddPairUiAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = { changed -> onAction(AddPairUiAction.QueryChanged(changed)) },
+        singleLine = true,
+        shape = RoundedCornerShape(KursorRadius.card),
+        placeholder = { Text(text = stringResource(R.string.add_pair_search_hint)) },
+        leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
+        modifier = modifier,
+    )
+}
+
+@Composable
 private fun CurrencyPicker(
     state: AddPairUiState.Picking,
     onAction: (AddPairUiAction) -> Unit,
+    gridState: LazyGridState,
+    searchInBar: Boolean,
 ) {
     val nameOf = rememberCurrencyNamer()
     val matches = remember(state.currencies, state.query, state.base, state.step, nameOf) {
@@ -222,17 +345,17 @@ private fun CurrencyPicker(
         )
     }
 
-    OutlinedTextField(
-        value = state.query,
-        onValueChange = { query -> onAction(AddPairUiAction.QueryChanged(query)) },
-        singleLine = true,
-        shape = RoundedCornerShape(KursorRadius.card),
-        placeholder = { Text(text = stringResource(R.string.add_pair_search_hint)) },
-        leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = KursorDimens.screenHorizontalPadding),
-    )
+    if (!searchInBar) {
+        AnimatedVisibility(visible = rememberScrollingUp(gridState)) {
+            SearchField(
+                query = state.query,
+                onAction = onAction,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = KursorDimens.screenHorizontalPadding),
+            )
+        }
+    }
 
     SectionHeader(
         text = if (state.query.isBlank()) {
@@ -247,17 +370,20 @@ private fun CurrencyPicker(
         return
     }
 
-    LazyColumn(
+    LazyVerticalGrid(
+        state = gridState,
+        columns = GridCells.Adaptive(minSize = CurrencyColumnMinWidth),
         contentPadding = PaddingValues(
             start = KursorDimens.screenHorizontalPadding,
             end = KursorDimens.screenHorizontalPadding,
             bottom = KursorDimens.sectionSpacing,
         ),
         verticalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
+        horizontalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
     ) {
         items(items = matches, key = { currency -> currency.code.code }) { currency ->
             RowCard(onClick = { onAction(AddPairUiAction.CurrencyPicked(currency.code)) }) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column {
                     Text(
                         text = currency.code.code,
                         style = KursorTheme.typography.bodyLarge,
@@ -273,7 +399,7 @@ private fun CurrencyPicker(
             }
         }
 
-        item {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             Note(text = stringResource(R.string.add_pair_search_note))
         }
     }
@@ -293,7 +419,8 @@ private fun ProviderPicker(
         return
     }
 
-    LazyColumn(
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(
             start = KursorDimens.screenHorizontalPadding,
             end = KursorDimens.screenHorizontalPadding,
@@ -530,6 +657,35 @@ private fun AddPairBottomBar(
         }
     }
 }
+
+@Composable
+private fun rememberScrollingUp(state: LazyGridState): Boolean {
+    var previousIndex by remember(state) { mutableIntStateOf(state.firstVisibleItemIndex) }
+    var previousOffset by remember(state) { mutableIntStateOf(state.firstVisibleItemScrollOffset) }
+    var scrollingUp by remember(state) { mutableStateOf(true) }
+
+    LaunchedEffect(state) {
+        snapshotFlow { state.firstVisibleItemIndex to state.firstVisibleItemScrollOffset }
+            .collect { (index, offset) ->
+                scrollingUp = if (index == previousIndex) {
+                    offset <= previousOffset
+                } else {
+                    index < previousIndex
+                }
+                previousIndex = index
+                previousOffset = offset
+            }
+    }
+
+    return scrollingUp
+}
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+internal fun WindowAdaptiveInfo.isShortOnHeight(): Boolean = !windowSizeClass
+    .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+
+private val AddPairStep.picksCurrency: Boolean
+    get() = this == AddPairStep.BASE || this == AddPairStep.QUOTE
 
 private val AddPairStep.labelRes: Int
     get() = when (this) {

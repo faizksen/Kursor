@@ -22,8 +22,8 @@ import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCaseImpl
 import dev.faizksen.kursor.domain.RunSyncUseCase
-import dev.faizksen.kursor.domain.SyncOnFirstLaunchUseCase
-import dev.faizksen.kursor.domain.SyncOnFirstLaunchUseCaseImpl
+import dev.faizksen.kursor.domain.SyncMissingRatesUseCase
+import dev.faizksen.kursor.domain.SyncMissingRatesUseCaseImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -43,5 +43,5 @@ val domainModule = module {
     factoryOf(::PickableCurrenciesUseCaseImpl) bind PickableCurrenciesUseCase::class
     factoryOf(::RefreshCatalogueUseCaseImpl) bind RefreshCatalogueUseCase::class
     factoryOf(::AddWatchedPairUseCaseImpl) bind AddWatchedPairUseCase::class
-    factoryOf(::SyncOnFirstLaunchUseCaseImpl) bind SyncOnFirstLaunchUseCase::class
+    factoryOf(::SyncMissingRatesUseCaseImpl) bind SyncMissingRatesUseCase::class
 }
