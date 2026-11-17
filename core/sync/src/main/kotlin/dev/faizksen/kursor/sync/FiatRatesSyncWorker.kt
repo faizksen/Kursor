@@ -5,17 +5,20 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
+import dev.faizksen.kursor.domain.RefreshCatalogueUseCase
 import dev.faizksen.kursor.domain.RunSyncUseCase
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncTrigger
+import kotlinx.coroutines.CancellationException
 
 class FiatRatesSyncWorker(
     appContext: Context,
     params: WorkerParameters,
     private val runSync: RunSyncUseCase,
+    private val refreshCatalogue: RefreshCatalogueUseCase,
 ): CoroutineWorker(appContext, params) {
 
     companion object {
@@ -27,14 +30,28 @@ class FiatRatesSyncWorker(
     override suspend fun doWork(): Result {
         val attempt = runAttemptCount + 1
         val canRetry = attempt < MAX_SYNC_ATTEMPTS
+        val trigger = inputData.syncTrigger()
+
+        if (trigger == SyncTrigger.Periodic) {
+            refreshCatalogueIgnoringFailure()
+        }
 
         return runSync(
             sourceId = SourceId.FRANKFURTER,
-            trigger = inputData.syncTrigger(),
+            trigger = trigger,
             attempt = attempt,
             canRetry = canRetry,
             only = inputData.syncPair(),
         ).toWorkerResult(canRetry)
+    }
+
+    private suspend fun refreshCatalogueIgnoringFailure() {
+        try {
+            refreshCatalogue()
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (ignored: Throwable) {
+        }
     }
 }
 

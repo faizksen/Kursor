@@ -26,7 +26,7 @@ class RemoteCallTest {
         val cause = IOException("unable to resolve host")
 
         val failure = assertFailsWith<RemoteSourceException.NoNetwork> {
-            sourceThrowing(cause).latest(listOf(EUR_PLN))
+            sourceThrowing(cause).latest(provider = null, pairs = listOf(EUR_PLN))
         }
 
         assertTrue(failure.cause is IOException)
@@ -38,7 +38,7 @@ class RemoteCallTest {
         val cause = ConnectTimeoutException("connect timed out", null)
 
         val failure = assertFailsWith<RemoteSourceException.Timeout> {
-            sourceThrowing(cause).latest(listOf(EUR_PLN))
+            sourceThrowing(cause).latest(provider = null, pairs = listOf(EUR_PLN))
         }
 
         assertEquals(cause.message, failure.cause?.message)
@@ -47,7 +47,7 @@ class RemoteCallTest {
     @Test
     fun reportsRequestTimeoutAsTimeout() = runTest {
         assertFailsWith<RemoteSourceException.Timeout> {
-            sourceThrowing(HttpRequestTimeoutException(BASE_URL, 1_000L)).latest(listOf(EUR_PLN))
+            sourceThrowing(HttpRequestTimeoutException(BASE_URL, 1_000L)).latest(provider = null, pairs = listOf(EUR_PLN))
         }
     }
 

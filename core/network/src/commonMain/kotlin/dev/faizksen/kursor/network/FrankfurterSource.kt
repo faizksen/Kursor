@@ -2,6 +2,7 @@ package dev.faizksen.kursor.network
 
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.dto.FrankfurterRateDto
@@ -20,13 +21,14 @@ internal class FrankfurterSource(
         get() = SourceId.FRANKFURTER
 
     override suspend fun latest(
-        pairs: List<CurrencyPair>
+        provider: ProviderKey?,
+        pairs: List<CurrencyPair>,
     ): List<RemoteRate> = pairs.groupBy(
         keySelector = { it.base },
         valueTransform = { it.quote }
     ).flatMap { (base, quotes) ->
         remoteCall {
-            httpClient.get(RATES_PATH) {
+            httpClient.get(ratesPath(provider)) {
                 parameter(BASE_PARAM, base.code)
                 parameter(QUOTES_PARAM, quotes.toQueryParam())
             }
@@ -49,6 +51,10 @@ internal fun FrankfurterRateDto.toRemoteRate(): RemoteRate = try {
     throw RemoteSourceException.Malformed(e)
 }
 
+internal fun ratesPath(provider: ProviderKey?): String =
+    if (provider == null) RATES_PATH else "$PROVIDERS_PATH/${provider.key}/$RATES_PATH"
+
 private const val RATES_PATH = "rates"
+private const val PROVIDERS_PATH = "providers"
 private const val BASE_PARAM = "base"
 private const val QUOTES_PARAM = "quotes"

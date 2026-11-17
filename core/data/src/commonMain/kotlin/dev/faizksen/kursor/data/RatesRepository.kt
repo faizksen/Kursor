@@ -45,36 +45,61 @@ internal class RatesRepositoryImpl(
                 WatchedPairWithRate(
                     watchedPair = pair.toWatchedPair(),
                     rate = rates
-                        .filter { it.base == pair.base && it.quote == pair.quote }
-                        .mapNotNull { it.toRatePoint() }
-                        .pickPreferred()
+                        .filter { rate -> rate.describes(pair) }
+                        .firstNotNullOfOrNull { rate -> rate.toRatePoint() }
                 )
             }
         }
 
     override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncOutcome {
-        val watched = watchedPairsDao.getAll().map { it.toWatchedPair() }.map { it.pair }
-        val pairs = if (only == null) watched else watched.filter { pair -> pair == only }
+        val watched = watchedPairsDao.getAll().map { entity -> entity.toWatchedPair() }
+        val selected = if (only == null) watched else watched.filter { it.pair == only }
         val source = sources[sourceId]
             ?: return SyncOutcome.Permanent(PermanentKind.UnknownSource)
-        if (pairs.isEmpty()) {
+
+        if (selected.isEmpty()) {
             return SyncOutcome.Success(0)
         }
-        return try {
-            val results = source.latest(pairs)
-            val fetchedAt = clock.now().toEpochMilliseconds()
-            val rateEntities = results.map { it.toRateEntity(sourceId, null, fetchedAt) }
-            ratesDao.upsertAll(rateEntities)
-            SyncOutcome.Success(rateEntities.size)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Throwable) {
-            e.toSyncOutcome()
+
+        var updated = 0
+        var failure: Throwable? = null
+
+        selected.groupBy({ it.provider }, { it.pair }).forEach { (provider, pairs) ->
+            try {
+                updated += fetch(source, sourceId, provider, pairs)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                failure = failure ?: e
+            }
         }
+
+        return when {
+            updated > 0 -> SyncOutcome.Success(updated)
+            failure != null -> failure.toSyncOutcome()
+            else -> SyncOutcome.Success(0)
+        }
+    }
+
+    private suspend fun fetch(
+        source: RatesRemoteSource,
+        sourceId: SourceId,
+        provider: ProviderKey?,
+        pairs: List<CurrencyPair>,
+    ): Int {
+        val fetchedAt = clock.now().toEpochMilliseconds()
+        val entities = source
+            .latest(provider, pairs)
+            .map { remote -> remote.toRateEntity(sourceId, provider, fetchedAt) }
+
+        ratesDao.upsertAll(entities)
+
+        return entities.size
     }
 }
 
-internal fun List<RatePoint>.pickPreferred(): RatePoint? = minByOrNull { it.sourceId.ordinal }
+internal fun RateEntity.describes(pair: WatchedPairEntity): Boolean =
+    base == pair.base && quote == pair.quote && provider == pair.provider
 
 internal fun RateEntity.toRatePoint(): RatePoint? {
     val source = sourceId.toSourceId() ?: return null

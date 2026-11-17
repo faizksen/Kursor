@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.data
 
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.network.RatesRemoteSource
 import dev.faizksen.kursor.network.model.RemoteRate
@@ -8,6 +9,7 @@ import dev.faizksen.kursor.network.model.RemoteRate
 class FakeRatesRemoteSource(
     override val id: SourceId = SourceId.FRANKFURTER,
     private val result: Result<List<RemoteRate>> = Result.success(emptyList()),
+    private val perProvider: Map<ProviderKey?, Result<List<RemoteRate>>> = emptyMap(),
 ) : RatesRemoteSource {
 
     var callCount: Int = 0
@@ -16,9 +18,16 @@ class FakeRatesRemoteSource(
     var lastRequestedPairs: List<CurrencyPair>? = null
         private set
 
-    override suspend fun latest(pairs: List<CurrencyPair>): List<RemoteRate> {
+    val askedProviders: MutableList<ProviderKey?> = mutableListOf()
+
+    override suspend fun latest(
+        provider: ProviderKey?,
+        pairs: List<CurrencyPair>,
+    ): List<RemoteRate> {
         callCount++
         lastRequestedPairs = pairs
-        return result.getOrThrow()
+        askedProviders += provider
+
+        return (perProvider[provider] ?: result).getOrThrow()
     }
 }

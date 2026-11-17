@@ -58,7 +58,7 @@ class FrankfurterSourceTest {
     fun mapsResponseToRemoteRates() = runTest {
         enqueue(200, EUR_RESPONSE)
 
-        val result = source.latest(listOf(EUR_PLN))
+        val result = source.latest(provider = null, pairs = listOf(EUR_PLN))
 
         assertEquals(1, result.size)
         assertEquals(CurrencyCode("EUR"), result[0].base)
@@ -71,7 +71,7 @@ class FrankfurterSourceTest {
     fun sendsBaseAndCommaSeparatedQuotes() = runTest {
         enqueue(200, EUR_RESPONSE)
 
-        source.latest(listOf(EUR_PLN, EUR_USD))
+        source.latest(provider = null, pairs = listOf(EUR_PLN, EUR_USD))
 
         val parameters = engine.requestHistory.single().url.parameters
         assertEquals("EUR", parameters["base"])
@@ -83,7 +83,7 @@ class FrankfurterSourceTest {
         enqueue(200, EUR_RESPONSE)
         enqueue(200, USD_RESPONSE)
 
-        val result = source.latest(listOf(EUR_PLN, USD_EUR))
+        val result = source.latest(provider = null, pairs = listOf(EUR_PLN, USD_EUR))
 
         assertEquals(2, engine.requestHistory.size)
         assertEquals("EUR", engine.requestHistory[0].url.parameters["base"])
@@ -97,7 +97,7 @@ class FrankfurterSourceTest {
         retryAfter = "3600"
 
         val failure = assertFailsWith<RemoteSourceException.RateLimited> {
-            source.latest(listOf(EUR_PLN))
+            source.latest(provider = null, pairs = listOf(EUR_PLN))
         }
 
         assertEquals(3600.seconds, failure.retryAfter)
@@ -108,7 +108,7 @@ class FrankfurterSourceTest {
         enqueue(429, "")
 
         val failure = assertFailsWith<RemoteSourceException.RateLimited> {
-            source.latest(listOf(EUR_PLN))
+            source.latest(provider = null, pairs = listOf(EUR_PLN))
         }
 
         assertNull(failure.retryAfter)
@@ -119,7 +119,7 @@ class FrankfurterSourceTest {
         enqueue(500, "")
 
         val failure = assertFailsWith<RemoteSourceException.ServerError> {
-            source.latest(listOf(EUR_PLN))
+            source.latest(provider = null, pairs = listOf(EUR_PLN))
         }
 
         assertEquals(500, failure.status)
@@ -130,7 +130,7 @@ class FrankfurterSourceTest {
         enqueue(404, "")
 
         val failure = assertFailsWith<RemoteSourceException.Rejected> {
-            source.latest(listOf(EUR_PLN))
+            source.latest(provider = null, pairs = listOf(EUR_PLN))
         }
 
         assertEquals(404, failure.status)
@@ -140,7 +140,7 @@ class FrankfurterSourceTest {
     fun reportsUnreadableBodyAsMalformed() = runTest {
         enqueue(200, "{\"not\":\"an array\"}")
 
-        assertFailsWith<RemoteSourceException.Malformed> { source.latest(listOf(EUR_PLN)) }
+        assertFailsWith<RemoteSourceException.Malformed> { source.latest(provider = null, pairs = listOf(EUR_PLN)) }
     }
 
     companion object {
