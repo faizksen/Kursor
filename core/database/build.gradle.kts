@@ -8,10 +8,6 @@ plugins {
 kotlin {
     android {
         namespace = "dev.faizksen.kursor.database"
-
-        withDeviceTest {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
     }
 
     sourceSets {
@@ -31,12 +27,6 @@ kotlin {
         }
         getByName("androidHostTest").dependencies {
             implementation(libs.sqlite.bundled.jvm)
-        }
-        getByName("androidDeviceTest").dependencies {
-            implementation(libs.junit)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.room3.testing)
-            implementation(libs.androidx.test.runner)
         }
     }
 }
