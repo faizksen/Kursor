@@ -5,6 +5,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dev.faizksen.kursor.common.di.dispatchersModule
 import dev.faizksen.kursor.database.KursorDatabase
 import dev.faizksen.kursor.database.SeedWatchedPairs
+import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.SyncLogDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
@@ -22,6 +23,7 @@ val databaseModule = module {
     factoryOf(::watchedPairsDao)
     factoryOf(::ratesDao)
     factoryOf(::syncLogDao)
+    factoryOf(::catalogueDao)
 }
 
 internal fun kursorDatabase(
@@ -39,5 +41,7 @@ internal fun watchedPairsDao(database: KursorDatabase): WatchedPairsDao = databa
 internal fun ratesDao(database: KursorDatabase): RatesDao = database.ratesDao
 
 internal fun syncLogDao(database: KursorDatabase): SyncLogDao = database.syncLogDao
+
+internal fun catalogueDao(database: KursorDatabase): CatalogueDao = database.catalogueDao
 
 internal const val DATABASE_NAME = "kursor"

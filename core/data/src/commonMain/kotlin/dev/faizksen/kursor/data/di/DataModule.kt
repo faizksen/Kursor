@@ -1,5 +1,7 @@
 package dev.faizksen.kursor.data.di
 
+import dev.faizksen.kursor.data.CatalogueRepository
+import dev.faizksen.kursor.data.CatalogueRepositoryImpl
 import dev.faizksen.kursor.data.RatesRepository
 import dev.faizksen.kursor.data.RatesRepositoryImpl
 import dev.faizksen.kursor.data.SyncLogRepository
@@ -18,4 +20,5 @@ val dataModule = module {
 
     singleOf(::RatesRepositoryImpl) bind RatesRepository::class
     singleOf(::SyncLogRepositoryImpl) bind SyncLogRepository::class
+    singleOf(::CatalogueRepositoryImpl) bind CatalogueRepository::class
 }

@@ -1,6 +1,8 @@
 package dev.faizksen.kursor.database
 
 import androidx.room3.ColumnTypeConverter
+import dev.faizksen.kursor.database.consts.CadenceColumn
+import dev.faizksen.kursor.database.consts.CurrencyTypeColumn
 import dev.faizksen.kursor.database.consts.ErrorColumn
 import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.consts.SyncResultColumn
@@ -55,5 +57,32 @@ class RateConverters {
         SourceIdColumn.CoinGecko.columnValue -> SourceIdColumn.CoinGecko
         SourceIdColumn.CBR.columnValue -> SourceIdColumn.CBR
         else -> SourceIdColumn.Unrecognized(value)
+    }
+}
+
+class CatalogueConverters {
+    @ColumnTypeConverter
+    fun fromCurrencyType(column: CurrencyTypeColumn): String = column.columnValue
+
+    @ColumnTypeConverter
+    fun toCurrencyTypeColumn(value: String): CurrencyTypeColumn = when (value) {
+        CurrencyTypeColumn.Fiat.columnValue -> CurrencyTypeColumn.Fiat
+        CurrencyTypeColumn.Crypto.columnValue -> CurrencyTypeColumn.Crypto
+        CurrencyTypeColumn.Metal.columnValue -> CurrencyTypeColumn.Metal
+        CurrencyTypeColumn.Other.columnValue -> CurrencyTypeColumn.Other
+        else -> CurrencyTypeColumn.Unrecognized(value)
+    }
+
+    @ColumnTypeConverter
+    fun fromCadence(column: CadenceColumn): String = column.columnValue
+
+    @ColumnTypeConverter
+    fun toCadenceColumn(value: String): CadenceColumn = when (value) {
+        CadenceColumn.Daily.columnValue -> CadenceColumn.Daily
+        CadenceColumn.Weekly.columnValue -> CadenceColumn.Weekly
+        CadenceColumn.Monthly.columnValue -> CadenceColumn.Monthly
+        CadenceColumn.Quarterly.columnValue -> CadenceColumn.Quarterly
+        CadenceColumn.Unknown.columnValue -> CadenceColumn.Unknown
+        else -> CadenceColumn.Unrecognized(value)
     }
 }

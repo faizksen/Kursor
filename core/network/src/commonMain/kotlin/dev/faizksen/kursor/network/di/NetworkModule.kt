@@ -1,6 +1,8 @@
 package dev.faizksen.kursor.network.di
 
 import dev.faizksen.kursor.model.SourceId
+import dev.faizksen.kursor.network.CatalogueRemoteSource
+import dev.faizksen.kursor.network.CatalogueSource
 import dev.faizksen.kursor.network.FrankfurterSource
 import dev.faizksen.kursor.network.RatesRemoteSource
 import dev.faizksen.kursor.network.util.JsonCreator
@@ -18,6 +20,7 @@ import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -28,6 +31,7 @@ val networkModule = module {
 
     singleOf(JsonCreator::create)
     singleOf(::FrankfurterSource)
+    singleOf(::CatalogueSource) { bind<CatalogueRemoteSource>() }
 
     single<Map<SourceId, RatesRemoteSource>> {
         mapOf(SourceId.FRANKFURTER to get<FrankfurterSource>())
