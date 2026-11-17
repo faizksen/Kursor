@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.LocalDate
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 interface RatesRepository {
     fun observeWatchlist(): Flow<List<WatchedPairWithRate>>
@@ -171,7 +172,8 @@ internal fun WatchedPairEntity.toWatchedPair() = WatchedPair(
         quote = CurrencyCode(quote),
     ),
     provider = provider.toProviderKey(),
-    position = position
+    position = position,
+    addedAt = Instant.fromEpochMilliseconds(addedAt),
 )
 
 internal fun String.toProviderKey(): ProviderKey? = takeIf { it.isNotBlank() }?.let(::ProviderKey)

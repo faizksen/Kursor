@@ -8,6 +8,7 @@ import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.model.Currency
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.Provider
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.network.CatalogueRemoteSource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -17,6 +18,7 @@ interface CatalogueRepository {
     suspend fun refresh()
     suspend fun fiatCurrencies(): List<Currency>
     suspend fun providersFor(pair: CurrencyPair): List<Provider>
+    suspend fun providers(keys: List<ProviderKey>): List<Provider>
 }
 
 internal class CatalogueRepositoryImpl(
@@ -43,6 +45,10 @@ internal class CatalogueRepositoryImpl(
     override suspend fun fiatCurrencies(): List<Currency> = catalogueDao
         .currenciesOfType(CurrencyTypeColumn.Fiat)
         .map { entity -> entity.toCurrency() }
+
+    override suspend fun providers(keys: List<ProviderKey>): List<Provider> = catalogueDao
+        .providers(keys.map { key -> key.key })
+        .map { entity -> entity.toProvider() }
 
     override suspend fun providersFor(pair: CurrencyPair): List<Provider> {
         val serving = catalogueDao.providersCovering(pair.base.code)

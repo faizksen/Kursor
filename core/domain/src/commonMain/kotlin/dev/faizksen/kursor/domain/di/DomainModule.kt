@@ -3,8 +3,12 @@ package dev.faizksen.kursor.domain.di
 import dev.faizksen.kursor.data.di.dataModule
 import dev.faizksen.kursor.domain.AddWatchedPairUseCase
 import dev.faizksen.kursor.domain.AddWatchedPairUseCaseImpl
+import dev.faizksen.kursor.domain.ChangeProviderUseCase
+import dev.faizksen.kursor.domain.ChangeProviderUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveRunAttemptsUseCase
 import dev.faizksen.kursor.domain.ObserveRunAttemptsUseCaseImpl
+import dev.faizksen.kursor.domain.WatchedPairUseCase
+import dev.faizksen.kursor.domain.WatchedPairUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveRunUseCase
 import dev.faizksen.kursor.domain.ObserveRunUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCase
@@ -58,6 +62,8 @@ val domainModule = module {
     factoryOf(::PickableCurrenciesUseCaseImpl) bind PickableCurrenciesUseCase::class
     factoryOf(::RefreshCatalogueUseCaseImpl) bind RefreshCatalogueUseCase::class
     factoryOf(::AddWatchedPairUseCaseImpl) bind AddWatchedPairUseCase::class
+    factoryOf(::WatchedPairUseCaseImpl) bind WatchedPairUseCase::class
+    factoryOf(::ChangeProviderUseCaseImpl) bind ChangeProviderUseCase::class
     factoryOf(::SyncMissingRatesUseCaseImpl) bind SyncMissingRatesUseCase::class
     factoryOf(::SeedDefaultPairsUseCaseImpl) bind SeedDefaultPairsUseCase::class
     factoryOf(::ObserveDefaultsSeededUseCaseImpl) bind ObserveDefaultsSeededUseCase::class

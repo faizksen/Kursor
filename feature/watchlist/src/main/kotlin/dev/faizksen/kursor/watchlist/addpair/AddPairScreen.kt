@@ -250,7 +250,18 @@ private fun Picking(
                     gridState = gridState,
                     searchInBar = searchInBar,
                 )
-                AddPairStep.PROVIDER -> ProviderPicker(state = state, onAction = onAction)
+                AddPairStep.PROVIDER -> {
+                    PairSummary(base = state.base, quote = state.quote)
+                    SectionHeader(text = stringResource(R.string.add_pair_providers_header))
+                    ProviderList(
+                        providers = state.providers,
+                        selected = state.provider,
+                        everyProviderCount = state.everyProviderCount,
+                        showingEveryProvider = state.showingEveryProvider,
+                        onPick = { key -> onAction(AddPairUiAction.ProviderPicked(key)) },
+                        onShowEvery = { onAction(AddPairUiAction.ShowEveryProviderClicked) },
+                    )
+                }
             }
         }
     }
@@ -405,117 +416,6 @@ private fun CurrencyPicker(
 }
 
 @Composable
-private fun ProviderPicker(
-    state: AddPairUiState.Picking,
-    onAction: (AddPairUiAction) -> Unit,
-) {
-    PairSummary(base = state.base, quote = state.quote)
-
-    SectionHeader(text = stringResource(R.string.add_pair_providers_header))
-
-    if (state.providers.isEmpty()) {
-        Note(text = stringResource(R.string.add_pair_no_providers))
-        return
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
-        contentPadding = PaddingValues(
-            start = KursorDimens.screenHorizontalPadding,
-            end = KursorDimens.screenHorizontalPadding,
-            bottom = KursorDimens.sectionSpacing,
-        ),
-    ) {
-        item {
-            Surface(
-                color = KursorTheme.colorScheme.surface,
-                shape = RoundedCornerShape(KursorRadius.card),
-                border = BorderStroke(CardBorderWidth, KursorTheme.colorScheme.outlineVariant),
-            ) {
-                Column(
-                    modifier = Modifier.padding(
-                        horizontal = KursorDimens.cardPaddingHorizontal,
-                        vertical = ProviderCardPaddingVertical,
-                    ),
-                ) {
-                    state.providers.forEachIndexed { index, provider ->
-                        ProviderRow(
-                            provider = provider,
-                            recommended = index == 0,
-                            selected = provider.key == state.provider,
-                            onClick = { onAction(AddPairUiAction.ProviderPicked(provider.key)) },
-                        )
-                        if (index != state.providers.lastIndex) {
-                            HorizontalDivider(color = KursorTheme.colorScheme.surfaceVariant)
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!state.showingEveryProvider) {
-            item {
-                Note(
-                    text = stringResource(R.string.add_pair_show_all, state.everyProviderCount),
-                    color = KursorTheme.colorScheme.primary,
-                    modifier = Modifier.clickable {
-                        onAction(AddPairUiAction.ShowEveryProviderClicked)
-                    },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProviderRow(
-    provider: Provider,
-    recommended: Boolean,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = ProviderRowPaddingVertical),
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
-            ) {
-                Text(
-                    text = provider.key.key,
-                    style = KursorTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                )
-                if (recommended) {
-                    Text(
-                        text = stringResource(R.string.add_pair_recommended),
-                        style = KursorTheme.typography.labelSmall,
-                        color = KursorTheme.colorScheme.primary,
-                    )
-                }
-            }
-            Text(
-                text = provider.name,
-                style = KursorTheme.typography.labelMedium,
-                color = KursorTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = RowTitleSpacing),
-            )
-            Text(
-                text = cadenceText(provider.cadence),
-                style = KursorTheme.typography.labelMedium,
-                color = KursorTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Radio(selected = selected)
-    }
-}
-
-@Composable
 private fun PairSummary(base: CurrencyCode?, quote: CurrencyCode?) {
     if (base == null || quote == null) return
 
@@ -583,7 +483,7 @@ private fun SectionHeader(text: String) {
 }
 
 @Composable
-private fun Note(
+internal fun Note(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = KursorTheme.colorScheme.onSurfaceVariant,
@@ -598,33 +498,6 @@ private fun Note(
             top = NotePaddingTop,
         ),
     )
-}
-
-@Composable
-private fun Radio(selected: Boolean) {
-    Surface(
-        color = Color.Transparent,
-        shape = RoundedCornerShape(RadioSize / 2),
-        border = BorderStroke(
-            MarkerBorderWidth,
-            if (selected) {
-                KursorTheme.colorScheme.primary
-            } else {
-                KursorTheme.colorScheme.outlineVariant
-            },
-        ),
-        modifier = Modifier.size(RadioSize),
-    ) {
-        if (selected) {
-            Box(contentAlignment = Alignment.Center) {
-                Surface(
-                    color = KursorTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(RadioDotSize / 2),
-                    modifier = Modifier.size(RadioDotSize),
-                ) {}
-            }
-        }
-    }
 }
 
 @Composable

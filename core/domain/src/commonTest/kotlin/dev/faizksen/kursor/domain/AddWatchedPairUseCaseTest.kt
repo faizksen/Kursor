@@ -29,6 +29,8 @@ class AddWatchedPairUseCaseTest {
             return result
         }
 
+        override suspend fun byId(id: Long): WatchedPair? = null
+
         override suspend fun withoutProvider(): List<WatchedPair> = emptyList()
 
         override suspend fun setProvider(id: Long, provider: ProviderKey) = error("not used")

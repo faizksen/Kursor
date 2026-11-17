@@ -87,4 +87,9 @@
     <string name="add_pair_close">Закрыть</string>
     <string name="watchlist_updated_partially">%1$s · %2$s</string>
     <string name="watchlist_rate_meta">%1$s · %2$s</string>
+    <string name="watchlist_rate_quiet">%1$s · молчит</string>
+    <string name="change_provider_title">Сменить источник</string>
+    <string name="change_provider_subtitle">%1$s / %2$s отслеживается через</string>
+    <string name="change_provider_confirm">Сменить источник</string>
+    <string name="change_provider_gone">Этой пары уже нет в списке</string>
 </resources>

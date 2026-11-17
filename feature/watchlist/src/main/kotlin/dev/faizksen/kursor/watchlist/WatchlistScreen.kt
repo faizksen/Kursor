@@ -91,6 +91,7 @@ fun WatchlistScreen(
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
     onRunClick: (Long) -> Unit,
+    onChangeProviderClick: (Long) -> Unit,
     viewModel: WatchlistViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
@@ -100,6 +101,7 @@ fun WatchlistScreen(
         onPairClick = onPairClick,
         onSyncStatusClick = onSyncStatusClick,
         onRunClick = onRunClick,
+        onChangeProviderClick = onChangeProviderClick,
         onAction = viewModel::obtainAction,
     )
 }
@@ -111,6 +113,7 @@ fun WatchlistContent(
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
     onRunClick: (Long) -> Unit = {},
+    onChangeProviderClick: (Long) -> Unit = {},
     onAction: (WatchlistUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -189,6 +192,7 @@ fun WatchlistContent(
                     onPairClick = onPairClick,
                     onRetryClick = { onAction(WatchlistUiAction.RefreshClicked) },
                     onRunClick = onRunClick,
+                    onChangeProviderClick = onChangeProviderClick,
                 )
             }
         }
@@ -250,6 +254,7 @@ private fun WatchlistResults(
     onPairClick: (Long) -> Unit,
     onRetryClick: () -> Unit,
     onRunClick: (Long) -> Unit,
+    onChangeProviderClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
@@ -276,7 +281,13 @@ private fun WatchlistResults(
         items(items = results.pairs, key = { it.watchedPair.id }) { pairWithRate ->
             RateCard(
                 pairWithRate = pairWithRate,
-                onClick = { onPairClick(pairWithRate.watchedPair.id) },
+                onClick = {
+                    if (pairWithRate.quiet) {
+                        onChangeProviderClick(pairWithRate.watchedPair.id)
+                    } else {
+                        onPairClick(pairWithRate.watchedPair.id)
+                    }
+                },
             )
         }
     }
@@ -438,9 +449,17 @@ private fun RateCard(
                     style = KursorTheme.typography.titleMedium,
                 )
                 Text(
-                    text = rateMetaText(pairWithRate.watchedPair.provider, rate),
+                    text = rateMetaText(
+                        provider = pairWithRate.watchedPair.provider,
+                        rate = rate,
+                        quiet = pairWithRate.quiet,
+                    ),
                     style = KursorTheme.typography.labelMedium,
-                    color = KursorTheme.colorScheme.onSurfaceVariant,
+                    color = if (pairWithRate.quiet) {
+                        KursorTheme.colors.stale
+                    } else {
+                        KursorTheme.colorScheme.onSurfaceVariant
+                    },
                 )
             }
             Text(
@@ -452,11 +471,16 @@ private fun RateCard(
 }
 
 @Composable
-private fun rateMetaText(provider: ProviderKey?, rate: RatePoint?): String {
+private fun rateMetaText(
+    provider: ProviderKey?,
+    rate: RatePoint?,
+    quiet: Boolean,
+): String {
     val issuer = provider?.key ?: rate?.let { stringResource(it.sourceId.labelRes) }
 
     return when {
         issuer == null -> stringResource(R.string.watchlist_rate_unavailable)
+        quiet -> stringResource(R.string.watchlist_rate_quiet, issuer)
         rate == null -> issuer
         else -> stringResource(
             R.string.watchlist_rate_meta,
@@ -573,6 +597,7 @@ private fun previewPair(
         pair = CurrencyPair(base = CurrencyCode(base), quote = CurrencyCode(quote)),
         provider = ProviderKey(provider),
         position = id.toInt(),
+        addedAt = Instant.parse("2026-09-18T00:00:00Z"),
     ),
     rate = value?.let {
         RatePoint(

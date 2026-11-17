@@ -25,6 +25,8 @@ class SeedDefaultPairsUseCaseTest {
             return AddPairResult.Added(added.size.toLong())
         }
 
+        override suspend fun byId(id: Long): WatchedPair? = null
+
         override suspend fun withoutProvider(): List<WatchedPair> = error("not used")
 
         override suspend fun setProvider(id: Long, provider: ProviderKey) = error("not used")

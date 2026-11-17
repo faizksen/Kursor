@@ -23,6 +23,8 @@ class ProviderCandidatesUseCaseTest {
         override suspend fun refresh() = Unit
         override suspend fun fiatCurrencies(): List<Currency> = emptyList()
 
+        override suspend fun providers(keys: List<ProviderKey>): List<Provider> = emptyList()
+
         override suspend fun providersFor(pair: CurrencyPair): List<Provider> {
             askedFor = pair
             return served

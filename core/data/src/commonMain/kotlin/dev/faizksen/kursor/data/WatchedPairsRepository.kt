@@ -10,6 +10,7 @@ import kotlin.time.Clock
 interface WatchedPairsRepository {
     suspend fun add(pair: CurrencyPair, provider: ProviderKey): AddPairResult
     suspend fun withoutProvider(): List<WatchedPair>
+    suspend fun byId(id: Long): WatchedPair?
     suspend fun setProvider(id: Long, provider: ProviderKey)
 }
 
@@ -32,6 +33,11 @@ internal class WatchedPairsRepositoryImpl(
             AddPairResult.Added(inserted.id)
         }
     }
+
+    override suspend fun byId(id: Long): WatchedPair? = watchedPairsDao
+        .getAll()
+        .firstOrNull { entity -> entity.id == id }
+        ?.toWatchedPair()
 
     override suspend fun withoutProvider(): List<WatchedPair> = watchedPairsDao
         .getAll()

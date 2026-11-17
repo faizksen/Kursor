@@ -15,6 +15,7 @@ import dev.faizksen.kursor.model.WatchedPairWithRate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -96,6 +97,7 @@ class SyncMissingRatesUseCaseTest {
             pair = CurrencyPair(base = CurrencyCode("EUR"), quote = CurrencyCode(quote)),
             provider = ProviderKey("ECB"),
             position = 0,
+            addedAt = Instant.fromEpochMilliseconds(1_000L),
         ),
         rate = rate,
     )

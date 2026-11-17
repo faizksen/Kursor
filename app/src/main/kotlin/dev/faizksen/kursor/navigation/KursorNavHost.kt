@@ -23,6 +23,8 @@ import dev.faizksen.kursor.settings.navigation.syncStatusScreen
 import dev.faizksen.kursor.ui.KursorAppState
 import dev.faizksen.kursor.watchlist.navigation.WatchlistRoute
 import dev.faizksen.kursor.watchlist.navigation.addPairScreen
+import dev.faizksen.kursor.watchlist.navigation.changeProviderScreen
+import dev.faizksen.kursor.watchlist.navigation.navigateToChangeProvider
 import dev.faizksen.kursor.watchlist.navigation.navigateToAddPair
 import dev.faizksen.kursor.watchlist.navigation.watchlistScreen
 
@@ -45,8 +47,10 @@ fun KursorNavHost(
             onAddPairClick = appState.navController::navigateToAddPair,
             onSyncStatusClick = appState.navController::navigateToSyncStatus,
             onRunClick = appState.navController::navigateToRunDetail,
+            onChangeProviderClick = appState.navController::navigateToChangeProvider,
         )
         addPairScreen(onClose = { appState.navController.popBackStack() })
+        changeProviderScreen(onClose = { appState.navController.popBackStack() })
         syncStatusScreen(
             onBackClick = appState.navController::popBackStack,
             onRunClick = appState.navController::navigateToRunDetail,

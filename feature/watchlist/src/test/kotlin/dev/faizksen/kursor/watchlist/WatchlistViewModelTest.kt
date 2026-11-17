@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import kotlin.time.Instant
 import org.junit.Rule
 import org.junit.Test
 
@@ -52,7 +53,8 @@ class WatchlistViewModelTest {
                 id = id,
                 pair = CurrencyPair(CurrencyCode(base), CurrencyCode(quote)),
                 provider = ProviderKey("CBR"),
-                position = 0
+                position = 0,
+                addedAt = Instant.parse("2026-10-13T10:00:00Z"),
             ),
             rate = RatePoint(
                 date = LocalDate(2026, 10, 13),

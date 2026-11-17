@@ -9,6 +9,7 @@ import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.PublishCadence
 import dev.faizksen.kursor.model.WatchedPair
 import kotlinx.coroutines.test.runTest
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,6 +23,8 @@ class ResolveMissingProvidersUseCaseTest {
     private val watchedPairsRepository = object : WatchedPairsRepository {
         override suspend fun add(pair: CurrencyPair, provider: ProviderKey): AddPairResult =
             error("not used")
+
+        override suspend fun byId(id: Long): WatchedPair? = null
 
         override suspend fun withoutProvider(): List<WatchedPair> = unresolved
 
@@ -79,9 +82,11 @@ class ResolveMissingProvidersUseCaseTest {
         pair = CurrencyPair(base = CurrencyCode("EUR"), quote = CurrencyCode(quote)),
         provider = null,
         position = 0,
+        addedAt = ADDED_AT,
     )
 
     private companion object {
+        val ADDED_AT = Instant.fromEpochMilliseconds(1_000L)
         val NBP = Provider(
             key = ProviderKey("NBP"),
             name = "Narodowy Bank Polski",
