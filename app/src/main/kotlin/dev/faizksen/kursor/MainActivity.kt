@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         viewModel.scheduleSync()
+        viewModel.refreshCatalogue()
         setContent {
             KursorTheme {
                 KursorApp()

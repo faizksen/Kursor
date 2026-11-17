@@ -17,6 +17,8 @@ import dev.faizksen.kursor.settings.navigation.navigateToSyncStatus
 import dev.faizksen.kursor.settings.navigation.syncStatusScreen
 import dev.faizksen.kursor.ui.KursorAppState
 import dev.faizksen.kursor.watchlist.navigation.WatchlistRoute
+import dev.faizksen.kursor.watchlist.navigation.addPairScreen
+import dev.faizksen.kursor.watchlist.navigation.navigateToAddPair
 import dev.faizksen.kursor.watchlist.navigation.watchlistScreen
 
 @Composable
@@ -31,9 +33,10 @@ fun KursorNavHost(
     ) {
         watchlistScreen(
             onPairClick = { /*open pair*/ },
-            onAddPairClick = { /*open create pair*/ },
+            onAddPairClick = appState.navController::navigateToAddPair,
             onSyncStatusClick = appState.navController::navigateToSyncStatus,
         )
+        addPairScreen(onClose = { appState.navController.popBackStack() })
         syncStatusScreen(onBackClick = appState.navController::popBackStack)
         composable<ConverterRoute> { PlaceholderScreen(stringResource(R.string.top_level_converter)) }
         composable<AlertsRoute> { PlaceholderScreen(stringResource(R.string.top_level_alerts)) }
