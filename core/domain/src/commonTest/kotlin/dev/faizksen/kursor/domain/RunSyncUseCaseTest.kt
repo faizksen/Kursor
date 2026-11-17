@@ -60,6 +60,8 @@ class RunSyncUseCaseTest {
 
         override fun observeLastSuccess(): Flow<SyncRun?> = emptyFlow()
 
+        override fun observeRun(id: Long): Flow<SyncRun?> = emptyFlow()
+
         override suspend fun record(run: SyncRun, attempts: List<ProviderAttempt>): Long {
             recordFailure?.let { throw it }
             recorded += run

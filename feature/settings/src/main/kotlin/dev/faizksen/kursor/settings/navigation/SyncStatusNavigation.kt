@@ -11,8 +11,11 @@ data object SyncStatusRoute
 
 fun NavController.navigateToSyncStatus() = navigate(SyncStatusRoute)
 
-fun NavGraphBuilder.syncStatusScreen(onBackClick: () -> Unit) {
+fun NavGraphBuilder.syncStatusScreen(
+    onBackClick: () -> Unit,
+    onRunClick: (Long) -> Unit,
+) {
     composable<SyncStatusRoute> {
-        SyncStatusScreen(onBackClick = onBackClick)
+        SyncStatusScreen(onBackClick = onBackClick, onRunClick = onRunClick)
     }
 }

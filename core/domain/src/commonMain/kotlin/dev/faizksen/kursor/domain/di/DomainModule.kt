@@ -3,6 +3,10 @@ package dev.faizksen.kursor.domain.di
 import dev.faizksen.kursor.data.di.dataModule
 import dev.faizksen.kursor.domain.AddWatchedPairUseCase
 import dev.faizksen.kursor.domain.AddWatchedPairUseCaseImpl
+import dev.faizksen.kursor.domain.ObserveRunAttemptsUseCase
+import dev.faizksen.kursor.domain.ObserveRunAttemptsUseCaseImpl
+import dev.faizksen.kursor.domain.ObserveRunUseCase
+import dev.faizksen.kursor.domain.ObserveRunUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCase
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveSyncQueueUseCase
@@ -43,6 +47,8 @@ val domainModule = module {
     factoryOf(::ObserveSyncStateUseCaseImpl) bind ObserveSyncStateUseCase::class
     factoryOf(::ObserveSyncLogUseCaseImpl) bind ObserveSyncLogUseCase::class
     factoryOf(::ObserveSyncQueueUseCaseImpl) bind ObserveSyncQueueUseCase::class
+    factoryOf(::ObserveRunUseCaseImpl) bind ObserveRunUseCase::class
+    factoryOf(::ObserveRunAttemptsUseCaseImpl) bind ObserveRunAttemptsUseCase::class
     factoryOf(::RequestManualSyncUseCaseImpl) bind RequestManualSyncUseCase::class
     factoryOf(::RefreshRatesUseCase)
     factoryOf(::RecordSyncRunUseCase)

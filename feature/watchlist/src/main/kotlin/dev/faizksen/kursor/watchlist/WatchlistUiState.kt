@@ -21,6 +21,7 @@ sealed interface LastUpdate {
         val updatedAt: Instant,
         val updatedCount: Int?,
         val requestedCount: Int?,
+        val runId: Long = 0,
     ): LastUpdate
     data class Failed(
         val failedAttempts: Int,

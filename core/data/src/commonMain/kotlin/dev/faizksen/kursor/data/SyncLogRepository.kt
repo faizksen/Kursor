@@ -17,6 +17,7 @@ interface SyncLogRepository {
     fun observeAttempts(runId: Long): Flow<List<ProviderAttempt>>
     fun observeRecent(limit: Int): Flow<List<SyncRun>>
     fun observeLastSuccess(): Flow<SyncRun?>
+    fun observeRun(id: Long): Flow<SyncRun?>
     suspend fun deleteOlderThan(threshold: Instant)
 }
 
@@ -44,6 +45,9 @@ internal class SyncLogRepositoryImpl(
 
     override fun observeLastSuccess(): Flow<SyncRun?> =
         syncLogDao.observeLastSuccess().map { entity -> entity?.toSyncRun() }
+
+    override fun observeRun(id: Long): Flow<SyncRun?> =
+        syncLogDao.observeRun(id).map { entity -> entity?.toSyncRun() }
 
     override suspend fun deleteOlderThan(threshold: Instant) =
         syncLogDao.deleteOlderThan(threshold.toEpochMilliseconds())

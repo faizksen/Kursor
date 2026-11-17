@@ -18,6 +18,9 @@ interface SyncLogDao {
     @Query("SELECT * FROM sync_log WHERE result = '$SYNC_SUCCESS' ORDER BY finishedAt DESC LIMIT 1")
     fun observeLastSuccess(): Flow<SyncLogEntity?>
 
+    @Query("SELECT * FROM sync_log WHERE id = :id")
+    fun observeRun(id: Long): Flow<SyncLogEntity?>
+
     @Query("DELETE FROM sync_log WHERE finishedAt < :invalidateOlderThan")
     suspend fun deleteOlderThan(invalidateOlderThan: Long)
 }

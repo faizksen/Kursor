@@ -16,7 +16,9 @@ import dev.faizksen.kursor.R
 import dev.faizksen.kursor.alerts.navigation.AlertsRoute
 import dev.faizksen.kursor.converter.navigation.ConverterRoute
 import dev.faizksen.kursor.settings.navigation.SettingsRoute
+import dev.faizksen.kursor.settings.navigation.navigateToRunDetail
 import dev.faizksen.kursor.settings.navigation.navigateToSyncStatus
+import dev.faizksen.kursor.settings.navigation.runDetailScreen
 import dev.faizksen.kursor.settings.navigation.syncStatusScreen
 import dev.faizksen.kursor.ui.KursorAppState
 import dev.faizksen.kursor.watchlist.navigation.WatchlistRoute
@@ -42,9 +44,14 @@ fun KursorNavHost(
             onPairClick = { /*open pair*/ },
             onAddPairClick = appState.navController::navigateToAddPair,
             onSyncStatusClick = appState.navController::navigateToSyncStatus,
+            onRunClick = appState.navController::navigateToRunDetail,
         )
         addPairScreen(onClose = { appState.navController.popBackStack() })
-        syncStatusScreen(onBackClick = appState.navController::popBackStack)
+        syncStatusScreen(
+            onBackClick = appState.navController::popBackStack,
+            onRunClick = appState.navController::navigateToRunDetail,
+        )
+        runDetailScreen(onBackClick = appState.navController::popBackStack)
         composable<ConverterRoute> { PlaceholderScreen(stringResource(R.string.top_level_converter)) }
         composable<AlertsRoute> { PlaceholderScreen(stringResource(R.string.top_level_alerts)) }
         composable<SettingsRoute> { PlaceholderScreen(stringResource(R.string.top_level_more)) }

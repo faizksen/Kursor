@@ -2,6 +2,7 @@ package dev.faizksen.kursor.settings.syncstatus
 
 import android.text.format.DateFormat
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -90,12 +91,14 @@ private const val HistoryEmptyKey = "history_empty"
 @Composable
 fun SyncStatusScreen(
     onBackClick: () -> Unit,
+    onRunClick: (Long) -> Unit,
     viewModel: SyncStatusViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
     SyncStatusContent(
         state = state,
         onBackClick = onBackClick,
+        onRunClick = onRunClick,
         onAction = viewModel::obtainAction,
     )
 }
@@ -104,6 +107,7 @@ fun SyncStatusScreen(
 fun SyncStatusContent(
     state: SyncStatusUiState,
     onBackClick: () -> Unit,
+    onRunClick: (Long) -> Unit = {},
     onAction: (SyncStatusUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -158,11 +162,13 @@ fun SyncStatusContent(
                             content = state,
                             activeWorkState = activeWorkState,
                             historyState = historyState,
+                            onRunClick = onRunClick,
                         )
                     } else {
                         SyncStatusSingleColumn(
                             content = state,
                             listState = singleColumnState,
+                            onRunClick = onRunClick,
                         )
                     }
                 }
@@ -175,6 +181,7 @@ fun SyncStatusContent(
 private fun SyncStatusSingleColumn(
     content: SyncStatusUiState.Content,
     listState: LazyListState,
+    onRunClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -188,7 +195,7 @@ private fun SyncStatusSingleColumn(
         verticalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
     ) {
         activeWorkItems(periodic = content.periodic, manual = content.manual, compact = false)
-        runItems(runs = content.runs, compact = false)
+        runItems(runs = content.runs, compact = false, onRunClick = onRunClick)
     }
 }
 
@@ -197,6 +204,7 @@ private fun SyncStatusPanes(
     content: SyncStatusUiState.Content,
     activeWorkState: LazyListState,
     historyState: LazyListState,
+    onRunClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -223,7 +231,7 @@ private fun SyncStatusPanes(
             contentPadding = PaddingValues(bottom = KursorDimens.sectionSpacing),
             verticalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
         ) {
-            runItems(runs = content.runs, compact = true)
+            runItems(runs = content.runs, compact = true, onRunClick = onRunClick)
         }
     }
 }
@@ -246,6 +254,7 @@ private fun LazyListScope.activeWorkItems(
 
 private fun LazyListScope.runItems(
     runs: List<SyncRun>,
+    onRunClick: (Long) -> Unit,
     compact: Boolean,
 ) {
     item(key = HistoryHeaderKey) {
@@ -261,7 +270,7 @@ private fun LazyListScope.runItems(
         }
     } else {
         items(items = runs, key = { run -> run.id }) { run ->
-            RunRow(run = run, compact = compact)
+            RunRow(run = run, compact = compact, onClick = { onRunClick(run.id) })
         }
     }
 }
@@ -380,9 +389,10 @@ private fun rememberCountdown(
 private fun RunRow(
     run: SyncRun,
     compact: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    StatusCard(compact = compact, modifier = modifier) {
+    StatusCard(compact = compact, modifier = modifier.clickable(onClick = onClick)) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = runTitleText(run),
@@ -552,28 +562,6 @@ private fun runDetailText(run: SyncRun): String {
 }
 
 @Composable
-private fun rememberRunTimeText(
-    instant: Instant,
-    clock: Clock = Clock.System,
-): String {
-    val configuration = LocalConfiguration.current
-    val zone = TimeZone.currentSystemDefault()
-
-    return remember(instant, configuration, clock, zone) {
-        val locale = configuration.locales[0]
-
-        formatRunTime(
-            instant = instant,
-            zone = zone,
-            locale = locale,
-            today = clock.todayIn(zone),
-            timePattern = DateFormat.getBestDateTimePattern(locale, TimeSkeleton),
-            dateTimePattern = DateFormat.getBestDateTimePattern(locale, DateTimeSkeleton),
-        )
-    }
-}
-
-@Composable
 private fun rememberDurationText(startedAt: Instant, finishedAt: Instant): String {
     val configuration = LocalConfiguration.current
     val millis = remember(startedAt, finishedAt) {
@@ -594,8 +582,8 @@ private fun rememberDurationText(startedAt: Instant, finishedAt: Instant): Strin
     return stringResource(R.string.sync_status_duration_seconds, seconds)
 }
 
-private const val TimeSkeleton = "Hm"
-private const val DateTimeSkeleton = "d MMM Hm"
+internal const val TimeSkeleton = "Hm"
+internal const val DateTimeSkeleton = "d MMM Hm"
 
 private val SyncStatusUiState.Content.isSyncing: Boolean
     get() = periodic.state == SyncState.Running || manual.state == SyncState.Running

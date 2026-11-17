@@ -66,6 +66,7 @@ internal fun lastUpdate(lastRun: SyncRun?, syncState: SyncState): LastUpdate = w
         updatedAt = lastRun.finishedAt,
         updatedCount = lastRun.updatedCount,
         requestedCount = lastRun.requestedCount,
+        runId = lastRun.id,
     )
     else -> LastUpdate.Failed(
         failedAttempts = lastRun.attempt,

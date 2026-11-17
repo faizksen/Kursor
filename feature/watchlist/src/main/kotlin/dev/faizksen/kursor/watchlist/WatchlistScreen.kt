@@ -90,6 +90,7 @@ fun WatchlistScreen(
     onAddPairClick: () -> Unit,
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
+    onRunClick: (Long) -> Unit,
     viewModel: WatchlistViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
@@ -98,6 +99,7 @@ fun WatchlistScreen(
         onAddPairClick = onAddPairClick,
         onPairClick = onPairClick,
         onSyncStatusClick = onSyncStatusClick,
+        onRunClick = onRunClick,
         onAction = viewModel::obtainAction,
     )
 }
@@ -108,6 +110,7 @@ fun WatchlistContent(
     onAddPairClick: () -> Unit,
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
+    onRunClick: (Long) -> Unit = {},
     onAction: (WatchlistUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -185,6 +188,7 @@ fun WatchlistContent(
                     gridState = gridState,
                     onPairClick = onPairClick,
                     onRetryClick = { onAction(WatchlistUiAction.RefreshClicked) },
+                    onRunClick = onRunClick,
                 )
             }
         }
@@ -245,6 +249,7 @@ private fun WatchlistResults(
     results: WatchlistUiState.Results,
     onPairClick: (Long) -> Unit,
     onRetryClick: () -> Unit,
+    onRunClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
@@ -265,6 +270,7 @@ private fun WatchlistResults(
             FreshnessRow(
                 lastUpdate = results.lastUpdate,
                 onRetryClick = onRetryClick,
+                onRunClick = onRunClick,
             )
         }
         items(items = results.pairs, key = { it.watchedPair.id }) { pairWithRate ->
@@ -280,6 +286,7 @@ private fun WatchlistResults(
 private fun FreshnessRow(
     lastUpdate: LastUpdate,
     onRetryClick: () -> Unit,
+    onRunClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (lastUpdate) {
@@ -312,7 +319,15 @@ private fun FreshnessRow(
             text = freshnessText(lastUpdate),
             style = KursorTheme.typography.labelMedium,
             color = KursorTheme.colorScheme.onSurfaceVariant,
-            modifier = modifier.padding(bottom = KursorDimens.sectionHeaderPaddingBottom),
+            modifier = modifier
+                .let { base ->
+                    val partial = (lastUpdate as? LastUpdate.Success)?.partialCount()
+
+                    if (partial == null) base else base.clickable {
+                        onRunClick(lastUpdate.runId)
+                    }
+                }
+                .padding(bottom = KursorDimens.sectionHeaderPaddingBottom),
         )
     }
 }
