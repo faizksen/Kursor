@@ -1,5 +1,8 @@
 package dev.faizksen.kursor.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -29,7 +32,11 @@ fun KursorNavHost(
     NavHost(
         navController = appState.navController,
         startDestination = WatchlistRoute,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { fadeIn(tween(ScreenFadeMillis)) },
+        exitTransition = { fadeOut(tween(ScreenFadeMillis)) },
+        popEnterTransition = { fadeIn(tween(ScreenFadeMillis)) },
+        popExitTransition = { fadeOut(tween(ScreenFadeMillis)) },
     ) {
         watchlistScreen(
             onPairClick = { /*open pair*/ },
@@ -43,6 +50,8 @@ fun KursorNavHost(
         composable<SettingsRoute> { PlaceholderScreen(stringResource(R.string.top_level_more)) }
     }
 }
+
+private const val ScreenFadeMillis = 100
 
 @Composable
 private fun PlaceholderScreen(name: String) {

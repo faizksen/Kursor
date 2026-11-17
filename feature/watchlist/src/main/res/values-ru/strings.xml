@@ -79,7 +79,6 @@
     <string name="add_pair_added">%1$s / %2$s добавлена</string>
     <string name="add_pair_nothing_found">Ничего не найдено по «%1$s»</string>
     <string name="add_pair_no_providers">Эту пару не отдаёт ни один провайдер</string>
-    <string name="add_pair_provider_meta">%1$s · %2$s</string>
     <string name="add_pair_cadence_daily">ежедневно</string>
     <string name="add_pair_cadence_weekly">раз в неделю</string>
     <string name="add_pair_cadence_monthly">раз в месяц</string>

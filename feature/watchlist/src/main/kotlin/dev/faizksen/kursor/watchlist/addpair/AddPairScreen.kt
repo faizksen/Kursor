@@ -357,15 +357,8 @@ private fun CurrencyPicker(
         }
     }
 
-    SectionHeader(
-        text = if (state.query.isBlank()) {
-            stringResource(R.string.add_pair_currencies_header)
-        } else {
-            stringResource(R.string.add_pair_matches, matches.size)
-        },
-    )
-
     if (matches.isEmpty()) {
+        SectionHeader(text = stringResource(R.string.add_pair_matches, matches.size))
         Note(text = stringResource(R.string.add_pair_nothing_found, state.query.trim()))
         return
     }
@@ -381,6 +374,16 @@ private fun CurrencyPicker(
         verticalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
         horizontalArrangement = Arrangement.spacedBy(KursorDimens.listItemSpacing),
     ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            SectionHeader(
+                text = if (state.query.isBlank()) {
+                    stringResource(R.string.add_pair_currencies_header)
+                } else {
+                    stringResource(R.string.add_pair_matches, matches.size)
+                },
+            )
+        }
+
         items(items = matches, key = { currency -> currency.code.code }) { currency ->
             RowCard(onClick = { onAction(AddPairUiAction.CurrencyPicked(currency.code)) }) {
                 Column {
@@ -507,7 +510,7 @@ private fun ProviderRow(
                 modifier = Modifier.padding(top = RowTitleSpacing),
             )
             Text(
-                text = providerMetaText(provider),
+                text = cadenceText(provider.cadence),
                 style = KursorTheme.typography.labelMedium,
                 color = KursorTheme.colorScheme.onSurfaceVariant,
             )

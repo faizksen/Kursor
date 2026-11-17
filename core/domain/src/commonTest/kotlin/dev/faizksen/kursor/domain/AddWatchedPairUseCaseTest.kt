@@ -7,6 +7,7 @@ import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.SyncQueue
 import dev.faizksen.kursor.model.SyncTrigger
+import dev.faizksen.kursor.model.WatchedPair
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -27,6 +28,10 @@ class AddWatchedPairUseCaseTest {
             addedProvider = provider
             return result
         }
+
+        override suspend fun withoutProvider(): List<WatchedPair> = emptyList()
+
+        override suspend fun setProvider(id: Long, provider: ProviderKey) = error("not used")
     }
 
     private val syncScheduler = object : SyncScheduler {

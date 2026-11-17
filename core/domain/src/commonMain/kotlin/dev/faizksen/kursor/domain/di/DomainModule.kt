@@ -18,6 +18,8 @@ import dev.faizksen.kursor.domain.PickableCurrenciesUseCaseImpl
 import dev.faizksen.kursor.domain.RecordSyncRunUseCase
 import dev.faizksen.kursor.domain.RefreshCatalogueUseCase
 import dev.faizksen.kursor.domain.RefreshCatalogueUseCaseImpl
+import dev.faizksen.kursor.domain.ResolveMissingProvidersUseCase
+import dev.faizksen.kursor.domain.ResolveMissingProvidersUseCaseImpl
 import dev.faizksen.kursor.domain.RefreshRatesUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCaseImpl
@@ -44,4 +46,5 @@ val domainModule = module {
     factoryOf(::RefreshCatalogueUseCaseImpl) bind RefreshCatalogueUseCase::class
     factoryOf(::AddWatchedPairUseCaseImpl) bind AddWatchedPairUseCase::class
     factoryOf(::SyncMissingRatesUseCaseImpl) bind SyncMissingRatesUseCase::class
+    factoryOf(::ResolveMissingProvidersUseCaseImpl) bind ResolveMissingProvidersUseCase::class
 }

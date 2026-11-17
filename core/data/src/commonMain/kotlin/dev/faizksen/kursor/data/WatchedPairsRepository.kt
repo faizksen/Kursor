@@ -4,10 +4,13 @@ import dev.faizksen.kursor.data.model.AddPairResult
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.ProviderKey
+import dev.faizksen.kursor.model.WatchedPair
 import kotlin.time.Clock
 
 interface WatchedPairsRepository {
     suspend fun add(pair: CurrencyPair, provider: ProviderKey): AddPairResult
+    suspend fun withoutProvider(): List<WatchedPair>
+    suspend fun setProvider(id: Long, provider: ProviderKey)
 }
 
 internal class WatchedPairsRepositoryImpl(
@@ -29,4 +32,12 @@ internal class WatchedPairsRepositoryImpl(
             AddPairResult.Added(inserted.id)
         }
     }
+
+    override suspend fun withoutProvider(): List<WatchedPair> = watchedPairsDao
+        .getAll()
+        .map { entity -> entity.toWatchedPair() }
+        .filter { watched -> watched.provider == null }
+
+    override suspend fun setProvider(id: Long, provider: ProviderKey) =
+        watchedPairsDao.setProvider(id = id, provider = provider.key)
 }
