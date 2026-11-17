@@ -43,7 +43,7 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
 @ConstructedBy(KursorDatabaseConstructor::class)
 abstract class KursorDatabase: RoomDatabase() {
     companion object {
-        const val VERSION = 3
+        const val VERSION = 4
     }
 
     abstract val watchedPairsDao: WatchedPairsDao

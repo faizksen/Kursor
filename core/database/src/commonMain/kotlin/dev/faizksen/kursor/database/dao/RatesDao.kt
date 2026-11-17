@@ -18,6 +18,7 @@ interface RatesDao {
                 quote = rate.quote,
                 date = rate.date,
                 sourceId = rate.sourceId,
+                provider = rate.provider,
                 value = rate.value,
                 fetchedAt = rate.fetchedAt,
             )
@@ -34,9 +35,9 @@ interface RatesDao {
     // so it is available even on the oldest Android we support, whose own SQLite is 3.22.
     @Query(
         """
-        INSERT INTO rate (base, quote, date, sourceId, value, fetchedAt)
-        VALUES (:base, :quote, :date, :sourceId, :value, :fetchedAt)
-        ON CONFLICT(base, quote, date, sourceId)
+        INSERT INTO rate (base, quote, date, sourceId, provider, value, fetchedAt)
+        VALUES (:base, :quote, :date, :sourceId, :provider, :value, :fetchedAt)
+        ON CONFLICT(base, quote, date, sourceId, provider)
         DO UPDATE SET value = excluded.value, fetchedAt = excluded.fetchedAt
     """
     )
@@ -45,6 +46,7 @@ interface RatesDao {
         quote: String,
         date: String,
         sourceId: SourceIdColumn,
+        provider: String,
         value: String,
         fetchedAt: Long,
     )
@@ -54,7 +56,8 @@ interface RatesDao {
         SELECT * FROM rate r
         WHERE r.fetchedAt = (
             SELECT MAX(fetchedAt) FROM rate
-            WHERE base = r.base AND quote = r.quote AND sourceId = r.sourceId
+            WHERE base = r.base AND quote = r.quote
+                AND sourceId = r.sourceId AND provider = r.provider
         )
     """
     )

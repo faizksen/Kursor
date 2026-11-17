@@ -6,7 +6,7 @@ import dev.faizksen.kursor.database.consts.SourceIdColumn
 
 @Entity(
     tableName = "rate",
-    primaryKeys = [ "base", "quote", "date", "sourceId" ],
+    primaryKeys = [ "base", "quote", "date", "sourceId", "provider" ],
     indices = [
         Index(
             value = ["base", "quote", "date"],
@@ -19,6 +19,7 @@ data class RateEntity(
     val quote: String,
     val date: String,
     val sourceId: SourceIdColumn,
+    val provider: String,
     val value: String,
     val fetchedAt: Long
 )

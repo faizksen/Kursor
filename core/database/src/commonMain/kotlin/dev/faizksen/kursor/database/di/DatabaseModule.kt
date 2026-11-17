@@ -4,6 +4,7 @@ import androidx.room3.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dev.faizksen.kursor.common.di.dispatchersModule
 import dev.faizksen.kursor.database.KursorDatabase
+import dev.faizksen.kursor.database.MigrateToProviderPerPair
 import dev.faizksen.kursor.database.SeedWatchedPairs
 import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.database.dao.RatesDao
@@ -32,6 +33,7 @@ internal fun kursorDatabase(
     queryContext: CoroutineContext,
 ): KursorDatabase = builder
     .addCallback(SeedWatchedPairs(clock))
+    .addMigrations(MigrateToProviderPerPair)
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(queryContext)
     .build()

@@ -5,5 +5,6 @@ import kotlinx.datetime.LocalDate
 data class RatePoint(
     val date: LocalDate,
     val value: Rate,
-    val sourceId: SourceId
+    val sourceId: SourceId,
+    val provider: ProviderKey?
 )

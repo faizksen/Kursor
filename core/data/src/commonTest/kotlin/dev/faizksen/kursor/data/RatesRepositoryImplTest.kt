@@ -72,8 +72,8 @@ class RatesRepositoryImplTest {
         val fetchedAt = clock.now().toEpochMilliseconds()
         assertEquals(
             setOf(
-                RateEntity(EUR, USD, DATE, SourceIdColumn.Frankfurter, RATE_EUR_USD, fetchedAt),
-                RateEntity(USD, PLN, DATE, SourceIdColumn.Frankfurter, RATE_USD_PLN, fetchedAt),
+                RateEntity(EUR, USD, DATE, SourceIdColumn.Frankfurter, NO_PROVIDER, RATE_EUR_USD, fetchedAt),
+                RateEntity(USD, PLN, DATE, SourceIdColumn.Frankfurter, NO_PROVIDER, RATE_USD_PLN, fetchedAt),
             ),
             ratesDao.observeLatestRates().first().toSet(),
         )
@@ -142,7 +142,7 @@ class RatesRepositoryImplTest {
 
     @Test
     fun observeWatchListOnePairWithTwoSources() = runTest {
-        watchedPairsDao.insertAtEnd(EUR, USD, 1_000L)
+        watchedPairsDao.insertAtEnd(EUR, USD, NO_PROVIDER, 1_000L)
 
         val frankfurter = frankfurterSource(REMOTE_RATES)
         val cbr = FakeRatesRemoteSource(
@@ -180,6 +180,7 @@ class RatesRepositoryImplTest {
                     quote = USD,
                     date = DATE,
                     sourceId = SourceIdColumn.Unrecognized("UNKNOWN_SOURCE"),
+                    provider = NO_PROVIDER,
                     value = RATE_EUR_USD,
                     fetchedAt = clock.now().toEpochMilliseconds(),
                 )
@@ -208,11 +209,12 @@ class RatesRepositoryImplTest {
     )
 
     private suspend fun putWatchedPairsIntoDatabase() {
-        watchedPairsDao.insertAtEnd(EUR, USD, 1_000L)
-        watchedPairsDao.insertAtEnd(USD, PLN, 1_000L)
+        watchedPairsDao.insertAtEnd(EUR, USD, NO_PROVIDER, 1_000L)
+        watchedPairsDao.insertAtEnd(USD, PLN, NO_PROVIDER, 1_000L)
     }
 
     private companion object {
+        const val NO_PROVIDER = ""
         const val EUR = "EUR"
         const val USD = "USD"
         const val PLN = "PLN"

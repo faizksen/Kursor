@@ -5,6 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.Rate
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncRun
@@ -48,12 +49,14 @@ class WatchlistViewModelTest {
             watchedPair = WatchedPair(
                 id = id,
                 pair = CurrencyPair(CurrencyCode(base), CurrencyCode(quote)),
+                provider = ProviderKey("CBR"),
                 position = 0
             ),
             rate = RatePoint(
                 date = LocalDate(2026, 10, 13),
                 value = Rate.parse("95.42")!!,
-                sourceId = SourceId.FRANKFURTER
+                sourceId = SourceId.FRANKFURTER,
+                provider = ProviderKey("CBR")
             )
         )
 

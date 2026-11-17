@@ -60,6 +60,7 @@ import dev.faizksen.kursor.designsystem.components.TopAppBarButton
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.Rate
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.WatchedPair
@@ -525,10 +526,12 @@ private fun previewPair(
     base: String,
     quote: String,
     value: String?,
+    provider: String = "ECB",
 ): WatchedPairWithRate = WatchedPairWithRate(
     watchedPair = WatchedPair(
         id = id,
         pair = CurrencyPair(base = CurrencyCode(base), quote = CurrencyCode(quote)),
+        provider = ProviderKey(provider),
         position = id.toInt(),
     ),
     rate = value?.let {
@@ -536,6 +539,7 @@ private fun previewPair(
             date = LocalDate.parse("2026-09-18"),
             value = Rate.parse(it)!!,
             sourceId = SourceId.FRANKFURTER,
+            provider = ProviderKey(provider),
         )
     },
 )

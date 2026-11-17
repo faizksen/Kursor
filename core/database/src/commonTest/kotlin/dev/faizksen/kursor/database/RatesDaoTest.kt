@@ -33,6 +33,7 @@ class RatesDaoTest {
             quote = "PLN",
             date = "2026-09-06",
             sourceId = SourceIdColumn.Frankfurter,
+            provider = "NBP",
             value = "4.3244",
             fetchedAt = 1_000L,
         )
@@ -64,6 +65,21 @@ class RatesDaoTest {
     }
 
     @Test
+    fun eachProviderKeepsItsOwnLatestRate() = runTest {
+        dao.upsertAll(
+            listOf(
+                rate(date = "2026-11-06", value = "4.3900", fetchedAt = 2_000L, provider = "NBP"),
+                rate(date = "2026-11-06", value = "4.4100", fetchedAt = 1_000L, provider = "ECB"),
+            )
+        )
+
+        val stored = dao.observeLatestRates().first()
+
+        assertEquals(2, stored.size)
+        assertEquals(setOf("NBP", "ECB"), stored.map { it.provider }.toSet())
+    }
+
+    @Test
     fun eachSourceKeepsItsOwnLatestRate() = runTest {
         dao.upsertAll(
             listOf(
@@ -91,11 +107,13 @@ class RatesDaoTest {
         value: String,
         fetchedAt: Long,
         sourceId: SourceIdColumn = SourceIdColumn.Frankfurter,
+        provider: String = "NBP",
     ) = RateEntity(
         base = "EUR",
         quote = "PLN",
         date = date,
         sourceId = sourceId,
+        provider = provider,
         value = value,
         fetchedAt = fetchedAt,
     )

@@ -6,13 +6,14 @@ import androidx.room3.PrimaryKey
 
 @Entity(
     tableName = "watched_pair",
-    indices = [Index(value = ["base", "quote"], unique = true)]
+    indices = [Index(value = ["base", "quote", "provider"], unique = true)]
 )
 data class WatchedPairEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val base: String,
     val quote: String,
+    val provider: String,
     val position: Int,
     val addedAt: Long
 )

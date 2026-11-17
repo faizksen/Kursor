@@ -28,8 +28,8 @@ class WatchedPairsDaoTest {
 
     @Test
     fun insertAtEndAssignsIncrementingPositions() = runTest {
-        watchedPairsDao.insertAtEnd(base = "EUR", quote = "USD", addedAt = 1_000L)
-        watchedPairsDao.insertAtEnd(base = "USD", quote = "PLN", addedAt = 2_000L)
+        watchedPairsDao.insertAtEnd(base = "EUR", quote = "USD", provider = "ECB", addedAt = 1_000L)
+        watchedPairsDao.insertAtEnd(base = "USD", quote = "PLN", provider = "ECB", addedAt = 2_000L)
 
         val results = watchedPairsDao.observeAll().first()
         assertEquals(2, results.size)
@@ -49,8 +49,8 @@ class WatchedPairsDaoTest {
 
     @Test
     fun addAtEndIgnoresDuplicateAndReportsExistingPair() = runTest {
-        val first = watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", addedAt = 1_000L)
-        val second = watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", addedAt = 2_000L)
+        val first = watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", provider = "ECB", addedAt = 1_000L)
+        val second = watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", provider = "ECB", addedAt = 2_000L)
 
         assertFalse(first.alreadyExisted)
         assertTrue(second.alreadyExisted)
@@ -67,8 +67,8 @@ class WatchedPairsDaoTest {
 
     @Test
     fun getAllReturnsSamePairsAsObserveAll() = runTest {
-        watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", addedAt = 1_000L)
-        watchedPairsDao.addAtEnd(base = "EUR", quote = "PLN", addedAt = 2_000L)
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", provider = "ECB", addedAt = 1_000L)
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "PLN", provider = "ECB", addedAt = 2_000L)
 
         val results = watchedPairsDao.observeAll().first()
         val resultsNotOrdered = watchedPairsDao.getAll()
@@ -77,9 +77,46 @@ class WatchedPairsDaoTest {
     }
 
     @Test
+    fun theSamePairThroughAnotherProviderIsASecondEntry() = runTest {
+        val first = watchedPairsDao.addAtEnd(
+            base = "EUR",
+            quote = "RUB",
+            provider = "CBR",
+            addedAt = 1_000L,
+        )
+        val second = watchedPairsDao.addAtEnd(
+            base = "EUR",
+            quote = "RUB",
+            provider = "ECB",
+            addedAt = 2_000L,
+        )
+
+        assertFalse(first.alreadyExisted)
+        assertFalse(second.alreadyExisted)
+
+        val results = watchedPairsDao.getAll()
+        assertEquals(2, results.size)
+        assertEquals(setOf("CBR", "ECB"), results.map { it.provider }.toSet())
+    }
+
+    @Test
+    fun setProviderMovesAPairToAnotherIssuer() = runTest {
+        val added = watchedPairsDao.addAtEnd(
+            base = "EUR",
+            quote = "PLN",
+            provider = "",
+            addedAt = 1_000L,
+        )
+
+        watchedPairsDao.setProvider(id = added.id, provider = "NBP")
+
+        assertEquals("NBP", watchedPairsDao.getAll().single().provider)
+    }
+
+    @Test
     fun getAllReturnsActualPairs() = runTest {
-        watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", addedAt = 1_000L)
-        watchedPairsDao.addAtEnd(base = "EUR", quote = "PLN", addedAt = 2_000L)
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "USD", provider = "ECB", addedAt = 1_000L)
+        watchedPairsDao.addAtEnd(base = "EUR", quote = "PLN", provider = "ECB", addedAt = 2_000L)
 
         val results = watchedPairsDao.getAll()
 

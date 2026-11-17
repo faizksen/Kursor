@@ -10,6 +10,7 @@ import dev.faizksen.kursor.database.entities.RateEntity
 import dev.faizksen.kursor.database.entities.WatchedPairEntity
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
@@ -61,7 +62,7 @@ internal class RatesRepositoryImpl(
         return try {
             val results = source.latest(pairs)
             val fetchedAt = clock.now().toEpochMilliseconds()
-            val rateEntities = results.map { it.toRateEntity(sourceId, fetchedAt) }
+            val rateEntities = results.map { it.toRateEntity(sourceId, null, fetchedAt) }
             ratesDao.upsertAll(rateEntities)
             SyncOutcome.Success(rateEntities.size)
         } catch (e: CancellationException) {
@@ -81,15 +82,21 @@ internal fun RateEntity.toRatePoint(): RatePoint? {
     return RatePoint(
         date = LocalDate.parse(date),
         value = parsed,
-        sourceId = source
+        sourceId = source,
+        provider = provider.toProviderKey()
     )
 }
 
-internal fun RemoteRate.toRateEntity(sourceId: SourceId, fetchedAt: Long) = RateEntity(
+internal fun RemoteRate.toRateEntity(
+    sourceId: SourceId,
+    provider: ProviderKey?,
+    fetchedAt: Long,
+) = RateEntity(
     base = base.code,
     quote = quote.code,
     date = date.toString(),
     sourceId = sourceId.toColumn(),
+    provider = provider.toColumn(),
     value = value.toPlainString(),
     fetchedAt = fetchedAt
 )
@@ -100,5 +107,10 @@ internal fun WatchedPairEntity.toWatchedPair() = WatchedPair(
         base = CurrencyCode(base),
         quote = CurrencyCode(quote),
     ),
+    provider = provider.toProviderKey(),
     position = position
 )
+
+internal fun String.toProviderKey(): ProviderKey? = takeIf { it.isNotBlank() }?.let(::ProviderKey)
+
+internal fun ProviderKey?.toColumn(): String = this?.key.orEmpty()

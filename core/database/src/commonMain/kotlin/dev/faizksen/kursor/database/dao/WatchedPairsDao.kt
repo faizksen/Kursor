@@ -19,27 +19,43 @@ interface WatchedPairsDao {
     fun observeAll(): Flow<List<WatchedPairEntity>>
 
     @Query("""
-        INSERT OR IGNORE INTO watched_pair (base, quote, position, addedAt)
+        INSERT OR IGNORE INTO watched_pair (base, quote, provider, position, addedAt)
         VALUES(
-            :base, :quote,
+            :base, :quote, :provider,
             (SELECT COALESCE(MAX(position), -1) + 1 FROM watched_pair),
             :addedAt
         )
     """)
-    suspend fun insertAtEnd(base: String, quote: String, addedAt: Long): Long
+    suspend fun insertAtEnd(
+        base: String,
+        quote: String,
+        provider: String,
+        addedAt: Long,
+    ): Long
 
     @Query("""
-        SELECT id FROM watched_pair WHERE base = :base AND quote = :quote
+        SELECT id FROM watched_pair
+        WHERE base = :base AND quote = :quote AND provider = :provider
     """)
-    suspend fun findId(base: String, quote: String): Long?
+    suspend fun findId(base: String, quote: String, provider: String): Long?
+
+    @Query("""
+        UPDATE watched_pair SET provider = :provider WHERE id = :id
+    """)
+    suspend fun setProvider(id: Long, provider: String)
 
     @Transaction
-    suspend fun addAtEnd(base: String, quote: String, addedAt: Long): PairInsertResult {
-        val rowId = insertAtEnd(base, quote, addedAt)
+    suspend fun addAtEnd(
+        base: String,
+        quote: String,
+        provider: String,
+        addedAt: Long,
+    ): PairInsertResult {
+        val rowId = insertAtEnd(base, quote, provider, addedAt)
         return if (rowId != IGNORED) {
             PairInsertResult(id = rowId, alreadyExisted = false)
         } else {
-            PairInsertResult(id = checkNotNull(findId(base, quote)), alreadyExisted = true)
+            PairInsertResult(id = checkNotNull(findId(base, quote, provider)), alreadyExisted = true)
         }
     }
 
