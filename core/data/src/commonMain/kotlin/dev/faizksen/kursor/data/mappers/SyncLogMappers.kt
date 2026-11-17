@@ -1,10 +1,15 @@
 package dev.faizksen.kursor.data.mappers
 
+import dev.faizksen.kursor.database.consts.AttemptResultColumn
 import dev.faizksen.kursor.database.consts.ErrorColumn
 import dev.faizksen.kursor.database.consts.SourceIdColumn
 import dev.faizksen.kursor.database.consts.SyncResultColumn
 import dev.faizksen.kursor.database.consts.TriggerColumn
+import dev.faizksen.kursor.database.entities.SyncAttemptEntity
 import dev.faizksen.kursor.database.entities.SyncLogEntity
+import dev.faizksen.kursor.model.AttemptResult
+import dev.faizksen.kursor.model.ProviderAttempt
+import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncErrorKind
 import dev.faizksen.kursor.model.SyncResult
@@ -104,4 +109,39 @@ internal fun ErrorColumn.toSyncErrorKind(): SyncErrorKind = when (this) {
     ErrorColumn.UnknownSource -> SyncErrorKind.UnknownSource
     ErrorColumn.Unknown -> SyncErrorKind.Unknown
     is ErrorColumn.Unrecognized -> SyncErrorKind.Unknown
+}
+
+internal fun ProviderAttempt.toEntity(runId: Long) = SyncAttemptEntity(
+    runId = runId,
+    provider = provider?.key.orEmpty(),
+    result = result.toColumn(),
+    errorKind = errorKind?.toColumn(),
+    requestedCount = requestedCount,
+    coveredCount = coveredCount,
+    startedAt = startedAt.toEpochMilliseconds(),
+    finishedAt = finishedAt.toEpochMilliseconds(),
+)
+
+internal fun SyncAttemptEntity.toProviderAttempt(): ProviderAttempt = ProviderAttempt(
+    id = id,
+    runId = runId,
+    provider = provider.takeIf { key -> key.isNotBlank() }?.let(::ProviderKey),
+    requestedCount = requestedCount,
+    coveredCount = coveredCount,
+    errorKind = errorKind?.toSyncErrorKind(),
+    startedAt = Instant.fromEpochMilliseconds(startedAt),
+    finishedAt = Instant.fromEpochMilliseconds(finishedAt),
+)
+
+internal fun AttemptResult.toColumn(): AttemptResultColumn = when (this) {
+    AttemptResult.Answered -> AttemptResultColumn.Answered
+    AttemptResult.Empty -> AttemptResultColumn.Empty
+    AttemptResult.Failed -> AttemptResultColumn.Failed
+}
+
+internal fun AttemptResultColumn.toAttemptResult(): AttemptResult? = when (this) {
+    AttemptResultColumn.Answered -> AttemptResult.Answered
+    AttemptResultColumn.Empty -> AttemptResult.Empty
+    AttemptResultColumn.Failed -> AttemptResult.Failed
+    is AttemptResultColumn.Unrecognized -> null
 }

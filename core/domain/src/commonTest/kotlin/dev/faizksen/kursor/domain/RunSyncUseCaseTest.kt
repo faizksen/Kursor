@@ -4,7 +4,9 @@ import dev.faizksen.kursor.data.RatesRepository
 import dev.faizksen.kursor.data.SyncLogRepository
 import dev.faizksen.kursor.model.PermanentKind
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.ProviderAttempt
 import dev.faizksen.kursor.model.SourceId
+import dev.faizksen.kursor.model.SyncReport
 import dev.faizksen.kursor.model.SyncErrorKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncResult
@@ -40,15 +42,16 @@ class RunSyncUseCaseTest {
     }
 
     private var refreshedPair: CurrencyPair? = null
+    private val recordedAttempts = mutableListOf<ProviderAttempt>()
 
     private val ratesRepository = object : RatesRepository {
         override fun observeWatchlist(): Flow<List<WatchedPairWithRate>> = emptyFlow()
 
-        override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncOutcome {
+        override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncReport {
             refreshedSource = sourceId
             refreshedPair = only
             now += 2.seconds
-            return outcome
+            return SyncReport(attempts = emptyList(), firstFailure = outcome)
         }
     }
 
@@ -57,11 +60,14 @@ class RunSyncUseCaseTest {
 
         override fun observeLastSuccess(): Flow<SyncRun?> = emptyFlow()
 
-        override suspend fun record(run: SyncRun): Long {
+        override suspend fun record(run: SyncRun, attempts: List<ProviderAttempt>): Long {
             recordFailure?.let { throw it }
             recorded += run
+            recordedAttempts += attempts
             return recorded.size.toLong()
         }
+
+        override fun observeAttempts(runId: Long): Flow<List<ProviderAttempt>> = emptyFlow()
 
         override suspend fun deleteOlderThan(threshold: Instant) = Unit
     }

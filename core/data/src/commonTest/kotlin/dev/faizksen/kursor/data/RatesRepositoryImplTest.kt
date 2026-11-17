@@ -56,7 +56,7 @@ class RatesRepositoryImplTest {
 
         val result = repository.refresh(fakeSource.id)
 
-        assertEquals(SyncOutcome.Success(0), result)
+        assertEquals(SyncOutcome.Success(0), result.outcome)
         assertEquals(0, fakeSource.callCount)
     }
 
@@ -68,7 +68,7 @@ class RatesRepositoryImplTest {
 
         val result = repository.refresh(fakeSource.id)
 
-        assertEquals(SyncOutcome.Success(2, 2), result)
+        assertEquals(SyncOutcome.Success(2, 2), result.outcome)
 
         val fetchedAt = clock.now().toEpochMilliseconds()
         assertEquals(
@@ -95,7 +95,7 @@ class RatesRepositoryImplTest {
             listOf(CurrencyPair(CurrencyCode(EUR), CurrencyCode(USD))),
             fakeSource.lastRequestedPairs,
         )
-        assertEquals(SyncOutcome.Success(1, 1), result)
+        assertEquals(SyncOutcome.Success(1, 1), result.outcome)
     }
 
     @Test
@@ -109,7 +109,7 @@ class RatesRepositoryImplTest {
             only = CurrencyPair(CurrencyCode("CHF"), CurrencyCode("JPY")),
         )
 
-        assertEquals(SyncOutcome.Success(0), result)
+        assertEquals(SyncOutcome.Success(0), result.outcome)
         assertEquals(0, fakeSource.callCount)
     }
 
@@ -120,7 +120,7 @@ class RatesRepositoryImplTest {
 
         val result = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Permanent(PermanentKind.UnknownSource), result)
+        assertEquals(SyncOutcome.Permanent(PermanentKind.UnknownSource), result.outcome)
     }
 
     @Test
@@ -134,7 +134,7 @@ class RatesRepositoryImplTest {
 
         val result = repository.refresh(fakeSource.id)
 
-        assertEquals(SyncOutcome.Transient(TransientKind.NoNetwork), result)
+        assertEquals(SyncOutcome.Transient(TransientKind.NoNetwork), result.outcome)
         assertEquals(0, ratesDao.observeLatestRates().first().size)
     }
 

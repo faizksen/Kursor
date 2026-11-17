@@ -3,11 +3,13 @@ package dev.faizksen.kursor.data
 import dev.faizksen.kursor.database.KursorDatabase
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
+import dev.faizksen.kursor.model.AttemptResult
 import dev.faizksen.kursor.model.CurrencyCode
 import dev.faizksen.kursor.model.CurrencyPair
 import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.SourceId
+import dev.faizksen.kursor.model.SyncErrorKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.TransientKind
 import dev.faizksen.kursor.network.model.RemoteRate
@@ -58,7 +60,7 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Success(2, 2), outcome)
+        assertEquals(SyncOutcome.Success(2, 2), outcome.outcome)
         assertEquals(setOf<ProviderKey?>(NBP, ECB), source.askedProviders.toSet())
     }
 
@@ -119,7 +121,7 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Success(1, 2), outcome)
+        assertEquals(SyncOutcome.Success(1, 2), outcome.outcome)
         assertEquals(listOf("PLN"), ratesDao.observeLatestRates().first().map { it.quote })
     }
 
@@ -134,7 +136,7 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Transient(TransientKind.ServerError), outcome)
+        assertEquals(SyncOutcome.Transient(TransientKind.ServerError), outcome.outcome)
     }
 
     @Test
@@ -151,13 +153,60 @@ class RefreshPerProviderTest {
 
         val outcome = repository.refresh(SourceId.FRANKFURTER)
 
-        assertEquals(SyncOutcome.Success(1, 2), outcome)
+        assertEquals(SyncOutcome.Success(1, 2), outcome.outcome)
         assertNull(
             repository.observeWatchlist()
                 .first()
                 .single { watched -> watched.watchedPair.pair.quote.code == "USD" }
                 .rate
         )
+    }
+
+    @Test
+    fun theReportNamesEachIssuerAndWhatItDid() = runTest {
+        watchPairs()
+        val repository = repository(
+            FakeRatesRemoteSource(
+                perProvider = mapOf(
+                    NBP to Result.success(listOf(remote("PLN", "4.4069"))),
+                    ECB to Result.success(emptyList()),
+                )
+            )
+        )
+
+        val report = repository.refresh(SourceId.FRANKFURTER)
+
+        assertEquals(
+            mapOf<ProviderKey?, AttemptResult>(
+                NBP to AttemptResult.Answered,
+                ECB to AttemptResult.Empty,
+            ),
+            report.attempts.associate { attempt -> attempt.provider to attempt.result },
+        )
+        assertEquals(2, report.requestedCount)
+        assertEquals(1, report.coveredCount)
+    }
+
+    @Test
+    fun aFailedIssuerKeepsItsReasonInTheReport() = runTest {
+        watchPairs()
+        val repository = repository(
+            FakeRatesRemoteSource(
+                perProvider = mapOf(
+                    NBP to Result.success(listOf(remote("PLN", "4.4069"))),
+                    ECB to Result.failure(
+                        RemoteSourceException.ServerError(500, RuntimeException())
+                    ),
+                )
+            )
+        )
+
+        val report = repository.refresh(SourceId.FRANKFURTER)
+
+        val ecb = report.attempts.single { it.provider == ECB }
+        assertEquals(AttemptResult.Failed, ecb.result)
+        assertEquals(SyncErrorKind.ServerError, ecb.errorKind)
+        assertEquals(1, ecb.requestedCount)
     }
 
     @Test

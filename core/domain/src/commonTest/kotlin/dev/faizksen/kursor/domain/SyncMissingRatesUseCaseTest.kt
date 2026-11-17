@@ -7,7 +7,7 @@ import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.Rate
 import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
-import dev.faizksen.kursor.model.SyncOutcome
+import dev.faizksen.kursor.model.SyncReport
 import dev.faizksen.kursor.model.SyncQueue
 import dev.faizksen.kursor.model.SyncTrigger
 import dev.faizksen.kursor.model.WatchedPair
@@ -27,7 +27,7 @@ class SyncMissingRatesUseCaseTest {
     private val ratesRepository = object : RatesRepository {
         override fun observeWatchlist(): Flow<List<WatchedPairWithRate>> = flowOf(watchlist)
 
-        override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncOutcome =
+        override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncReport =
             error("not used")
     }
 

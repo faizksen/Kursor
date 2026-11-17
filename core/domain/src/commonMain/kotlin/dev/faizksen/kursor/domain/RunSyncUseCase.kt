@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.domain
 
 import dev.faizksen.kursor.model.CurrencyPair
+import dev.faizksen.kursor.model.ProviderAttempt
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.model.SyncRun
@@ -22,25 +23,27 @@ class RunSyncUseCase(
         only: CurrencyPair? = null,
     ): SyncOutcome {
         val startedAt = clock.now()
-        val outcome = refreshRates(sourceId, only)
+        val report = refreshRates(sourceId, only)
+        val outcome = report.outcome
 
         record(
-            outcome.toSyncRun(
+            run = outcome.toSyncRun(
                 sourceId = sourceId,
                 trigger = trigger,
                 startedAt = startedAt,
                 finishedAt = clock.now(),
                 attempt = attempt,
                 canRetry = canRetry,
-            )
+            ),
+            attempts = report.attempts,
         )
 
         return outcome
     }
 
-    private suspend fun record(run: SyncRun) {
+    private suspend fun record(run: SyncRun, attempts: List<ProviderAttempt>) {
         try {
-            recordSyncRun(run)
+            recordSyncRun(run, attempts)
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (ignored: Throwable) {

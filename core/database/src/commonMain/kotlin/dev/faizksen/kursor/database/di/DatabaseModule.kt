@@ -9,6 +9,7 @@ import dev.faizksen.kursor.database.MigrateToProviderPerPair
 import dev.faizksen.kursor.database.dao.AppStateDao
 import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.database.dao.RatesDao
+import dev.faizksen.kursor.database.dao.SyncAttemptDao
 import dev.faizksen.kursor.database.dao.SyncLogDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
 import org.koin.core.module.Module
@@ -27,6 +28,7 @@ val databaseModule = module {
     factoryOf(::syncLogDao)
     factoryOf(::catalogueDao)
     factoryOf(::appStateDao)
+    factoryOf(::syncAttemptDao)
 }
 
 internal fun kursorDatabase(
@@ -48,5 +50,7 @@ internal fun syncLogDao(database: KursorDatabase): SyncLogDao = database.syncLog
 internal fun catalogueDao(database: KursorDatabase): CatalogueDao = database.catalogueDao
 
 internal fun appStateDao(database: KursorDatabase): AppStateDao = database.appStateDao
+
+internal fun syncAttemptDao(database: KursorDatabase): SyncAttemptDao = database.syncAttemptDao
 
 internal const val DATABASE_NAME = "kursor"

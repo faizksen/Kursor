@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.database
 
 import androidx.room3.ColumnTypeConverter
+import dev.faizksen.kursor.database.consts.AttemptResultColumn
 import dev.faizksen.kursor.database.consts.CadenceColumn
 import dev.faizksen.kursor.database.consts.CurrencyTypeColumn
 import dev.faizksen.kursor.database.consts.ErrorColumn
@@ -29,6 +30,17 @@ class SyncLogConverters {
         TriggerColumn.Manual.columnValue -> TriggerColumn.Manual
         TriggerColumn.PairAdded.columnValue -> TriggerColumn.PairAdded
         else -> TriggerColumn.Unrecognized(value)
+    }
+
+    @ColumnTypeConverter
+    fun fromAttemptResult(column: AttemptResultColumn): String = column.columnValue
+
+    @ColumnTypeConverter
+    fun toAttemptResultColumn(value: String): AttemptResultColumn = when (value) {
+        AttemptResultColumn.Answered.columnValue -> AttemptResultColumn.Answered
+        AttemptResultColumn.Empty.columnValue -> AttemptResultColumn.Empty
+        AttemptResultColumn.Failed.columnValue -> AttemptResultColumn.Failed
+        else -> AttemptResultColumn.Unrecognized(value)
     }
 
     @ColumnTypeConverter

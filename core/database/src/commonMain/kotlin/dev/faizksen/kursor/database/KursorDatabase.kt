@@ -9,6 +9,7 @@ import androidx.room3.RoomDatabaseConstructor
 import dev.faizksen.kursor.database.dao.AppStateDao
 import dev.faizksen.kursor.database.dao.CatalogueDao
 import dev.faizksen.kursor.database.dao.RatesDao
+import dev.faizksen.kursor.database.dao.SyncAttemptDao
 import dev.faizksen.kursor.database.dao.SyncLogDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
 import dev.faizksen.kursor.database.entities.AppStateEntity
@@ -17,6 +18,7 @@ import dev.faizksen.kursor.database.entities.CurrencyEntity
 import dev.faizksen.kursor.database.entities.ProviderCoverageEntity
 import dev.faizksen.kursor.database.entities.ProviderEntity
 import dev.faizksen.kursor.database.entities.RateEntity
+import dev.faizksen.kursor.database.entities.SyncAttemptEntity
 import dev.faizksen.kursor.database.entities.SyncLogEntity
 import dev.faizksen.kursor.database.entities.WatchedPairEntity
 
@@ -29,12 +31,14 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
         ProviderEntity::class,
         ProviderCoverageEntity::class,
         CatalogueMetaEntity::class,
-        AppStateEntity::class
+        AppStateEntity::class,
+        SyncAttemptEntity::class
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 4, to = 5)
+        AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 6, to = 7)
     ],
     version = KursorDatabase.VERSION,
     exportSchema = true
@@ -47,7 +51,7 @@ import dev.faizksen.kursor.database.entities.WatchedPairEntity
 @ConstructedBy(KursorDatabaseConstructor::class)
 abstract class KursorDatabase: RoomDatabase() {
     companion object {
-        const val VERSION = 6
+        const val VERSION = 7
     }
 
     abstract val watchedPairsDao: WatchedPairsDao
@@ -55,6 +59,8 @@ abstract class KursorDatabase: RoomDatabase() {
     abstract val ratesDao: RatesDao
 
     abstract val syncLogDao: SyncLogDao
+
+    abstract val syncAttemptDao: SyncAttemptDao
 
     abstract val catalogueDao: CatalogueDao
 

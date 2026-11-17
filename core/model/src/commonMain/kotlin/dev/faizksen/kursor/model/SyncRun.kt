@@ -61,7 +61,7 @@ private fun SyncOutcome.toSyncResult(canRetry: Boolean): SyncResult = when (this
     is SyncOutcome.Permanent -> SyncResult.Failed
 }
 
-private fun SyncOutcome.toSyncErrorKind(): SyncErrorKind? = when (this) {
+fun SyncOutcome.toSyncErrorKind(): SyncErrorKind? = when (this) {
     is SyncOutcome.Success -> null
     is SyncOutcome.Transient -> kind.toSyncErrorKind()
     is SyncOutcome.Permanent -> kind.toSyncErrorKind()

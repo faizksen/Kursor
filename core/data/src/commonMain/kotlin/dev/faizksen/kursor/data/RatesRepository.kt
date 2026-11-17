@@ -3,6 +3,10 @@ package dev.faizksen.kursor.data
 import dev.faizksen.kursor.data.mappers.toColumn
 import dev.faizksen.kursor.data.mappers.toSourceId
 import dev.faizksen.kursor.model.PermanentKind
+import dev.faizksen.kursor.model.ProviderAttempt
+import dev.faizksen.kursor.model.SyncErrorKind
+import dev.faizksen.kursor.model.SyncReport
+import dev.faizksen.kursor.model.toSyncErrorKind
 import dev.faizksen.kursor.model.SyncOutcome
 import dev.faizksen.kursor.database.dao.RatesDao
 import dev.faizksen.kursor.database.dao.WatchedPairsDao
@@ -26,7 +30,7 @@ import kotlin.time.Clock
 
 interface RatesRepository {
     fun observeWatchlist(): Flow<List<WatchedPairWithRate>>
-    suspend fun refresh(sourceId: SourceId, only: CurrencyPair? = null): SyncOutcome
+    suspend fun refresh(sourceId: SourceId, only: CurrencyPair? = null): SyncReport
 }
 
 internal class RatesRepositoryImpl(
@@ -51,33 +55,63 @@ internal class RatesRepositoryImpl(
             }
         }
 
-    override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncOutcome {
+    override suspend fun refresh(sourceId: SourceId, only: CurrencyPair?): SyncReport {
         val watched = watchedPairsDao.getAll().map { entity -> entity.toWatchedPair() }
         val selected = if (only == null) watched else watched.filter { it.pair == only }
         val source = sources[sourceId]
-            ?: return SyncOutcome.Permanent(PermanentKind.UnknownSource)
+            ?: return SyncReport(
+                attempts = emptyList(),
+                firstFailure = SyncOutcome.Permanent(PermanentKind.UnknownSource),
+            )
 
-        if (selected.isEmpty()) {
-            return SyncOutcome.Success(0)
-        }
+        val failures = mutableMapOf<SyncErrorKind, SyncOutcome>()
+        val attempts = selected
+            .groupBy({ it.provider }, { it.pair })
+            .map { (provider, pairs) -> attempt(source, sourceId, provider, pairs, failures) }
 
-        var updated = 0
-        var failure: Throwable? = null
+        return SyncReport(
+            attempts = attempts,
+            firstFailure = attempts
+                .firstNotNullOfOrNull { attempt -> attempt.errorKind }
+                ?.let { kind -> failures[kind] },
+        )
+    }
 
-        selected.groupBy({ it.provider }, { it.pair }).forEach { (provider, pairs) ->
-            try {
-                updated += fetch(source, sourceId, provider, pairs)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Throwable) {
-                failure = failure ?: e
-            }
-        }
+    private suspend fun attempt(
+        source: RatesRemoteSource,
+        sourceId: SourceId,
+        provider: ProviderKey?,
+        pairs: List<CurrencyPair>,
+        failures: MutableMap<SyncErrorKind, SyncOutcome>,
+    ): ProviderAttempt {
+        val startedAt = clock.now()
 
-        return when {
-            updated > 0 -> SyncOutcome.Success(updated, selected.size)
-            failure != null -> failure.toSyncOutcome()
-            else -> SyncOutcome.Success(0, selected.size)
+        return try {
+            val covered = fetch(source, sourceId, provider, pairs)
+
+            ProviderAttempt(
+                provider = provider,
+                requestedCount = pairs.size,
+                coveredCount = covered,
+                errorKind = null,
+                startedAt = startedAt,
+                finishedAt = clock.now(),
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            val outcome = e.toSyncOutcome()
+            val kind = outcome.toSyncErrorKind() ?: SyncErrorKind.Unknown
+            failures[kind] = outcome
+
+            ProviderAttempt(
+                provider = provider,
+                requestedCount = pairs.size,
+                coveredCount = 0,
+                errorKind = kind,
+                startedAt = startedAt,
+                finishedAt = clock.now(),
+            )
         }
     }
 
@@ -98,6 +132,7 @@ internal class RatesRepositoryImpl(
             returned.any { remote -> remote.base == pair.base && remote.quote == pair.quote }
         }
     }
+
 }
 
 internal fun RateEntity.describes(pair: WatchedPairEntity): Boolean =

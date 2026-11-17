@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
+import dev.faizksen.kursor.domain.PruneSyncLogUseCase
 import dev.faizksen.kursor.domain.RefreshCatalogueUseCase
 import dev.faizksen.kursor.domain.RunSyncUseCase
 import dev.faizksen.kursor.model.CurrencyCode
@@ -19,6 +20,7 @@ class FiatRatesSyncWorker(
     params: WorkerParameters,
     private val runSync: RunSyncUseCase,
     private val refreshCatalogue: RefreshCatalogueUseCase,
+    private val pruneSyncLog: PruneSyncLogUseCase,
 ): CoroutineWorker(appContext, params) {
 
     companion object {
@@ -33,7 +35,8 @@ class FiatRatesSyncWorker(
         val trigger = inputData.syncTrigger()
 
         if (trigger == SyncTrigger.Periodic) {
-            refreshCatalogueIgnoringFailure()
+            ignoringFailure { refreshCatalogue() }
+            ignoringFailure { pruneSyncLog() }
         }
 
         return runSync(
@@ -45,9 +48,9 @@ class FiatRatesSyncWorker(
         ).toWorkerResult(canRetry)
     }
 
-    private suspend fun refreshCatalogueIgnoringFailure() {
+    private suspend fun ignoringFailure(block: suspend () -> Unit) {
         try {
-            refreshCatalogue()
+            block()
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (ignored: Throwable) {
