@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -35,6 +36,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -56,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.faizksen.kursor.designsystem.KursorDimens
 import dev.faizksen.kursor.designsystem.KursorRadius
+import dev.faizksen.kursor.designsystem.KursorTextStyles
 import dev.faizksen.kursor.designsystem.KursorTheme
 import dev.faizksen.kursor.designsystem.components.DashedPlaceholder
 import dev.faizksen.kursor.designsystem.components.KursorButton
@@ -76,8 +79,7 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
-private const val SnackbarFitsBesideFabUpTo = 1f
-
+private val NoticeElevation = 6.dp
 private val CardColumnMinWidth = 320.dp
 private val FabClearance = KursorDimens.fabHeight + KursorDimens.sectionSpacing * 2
 private val CardContentSpacing = 12.dp
@@ -203,7 +205,7 @@ private fun BottomBar(
     onAddPairClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val cramped = LocalDensity.current.fontScale > SnackbarFitsBesideFabUpTo
+    val cramped = LocalDensity.current.fontScale >= CrampedFromFontScale
 
     Column(
         modifier = modifier
@@ -213,7 +215,7 @@ private fun BottomBar(
         horizontalAlignment = Alignment.End,
     ) {
         if (cramped) {
-            SnackbarHost(hostState = snackbarHostState)
+            DeleteNoticeHost(hostState = snackbarHostState)
         }
 
         Row(
@@ -224,9 +226,9 @@ private fun BottomBar(
             verticalAlignment = Alignment.Bottom,
         ) {
             if (!cramped) {
-                SnackbarHost(
+                DeleteNoticeHost(
                     hostState = snackbarHostState,
-                    modifier = Modifier.weight(1f, fill = false),
+                    modifier = Modifier.weight(1f),
                 )
             }
 
@@ -244,6 +246,40 @@ private fun WatchlistLoading(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator(color = KursorTheme.colorScheme.primary)
+    }
+}
+
+@Composable
+private fun DeleteNoticeHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
+    SnackbarHost(hostState = hostState, modifier = modifier) { data ->
+        Surface(
+            shape = RoundedCornerShape(KursorRadius.fab),
+            color = KursorTheme.colorScheme.inverseSurface,
+            contentColor = KursorTheme.colorScheme.inverseOnSurface,
+            shadowElevation = NoticeElevation,
+            modifier = Modifier.heightIn(min = KursorDimens.fabHeight),
+        ) {
+            Row(
+                modifier = Modifier.padding(start = KursorDimens.cardPaddingHorizontal),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = data.visuals.message,
+                    style = KursorTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+
+                data.visuals.actionLabel?.let { label ->
+                    TextButton(onClick = data::performAction) {
+                        Text(
+                            text = label,
+                            style = KursorTextStyles.buttonSmall,
+                            color = KursorTheme.colorScheme.inversePrimary,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
