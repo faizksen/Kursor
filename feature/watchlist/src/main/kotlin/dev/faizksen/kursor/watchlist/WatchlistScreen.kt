@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -74,9 +76,15 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyGridState
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val HeaderItems = 1
+
 private val NoticeElevation = 6.dp
+private val LiftedCardElevation = 8.dp
+private val NoElevation = 0.dp
 private val CardColumnMinWidth = 320.dp
 private val FabClearance = KursorDimens.fabHeight + KursorDimens.sectionSpacing * 2
 private val CardContentSpacing = 12.dp
@@ -182,6 +190,7 @@ fun WatchlistContent(
                     onPairClick = onPairClick,
                     onRetryClick = { onAction(WatchlistUiAction.RefreshClicked) },
                     onRunClick = onRunClick,
+                    onReordered = { ids -> onAction(WatchlistUiAction.PairsReordered(ids)) },
                 )
             }
 
@@ -328,8 +337,31 @@ private fun WatchlistResults(
     onRetryClick: () -> Unit,
     onRunClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    onReordered: (List<Long>) -> Unit = {},
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
+    var chosenOrder by remember { mutableStateOf<List<Long>?>(null) }
+    val pairs = remember(results.pairs, chosenOrder) {
+        results.pairs.inOrderOf(chosenOrder)
+    }
+
+    LaunchedEffect(pairs) {
+        if (chosenOrder == pairs.map { it.watchedPair.id } &&
+            results.pairs.map { it.watchedPair.id } == chosenOrder
+        ) {
+            chosenOrder = null
+        }
+    }
+
+    val reorder = rememberReorderableLazyGridState(
+        lazyGridState = gridState,
+        scrollThresholdPadding = WindowInsets.systemBars.asPaddingValues(),
+    ) { from, to ->
+        chosenOrder = pairs
+            .map { watched -> watched.watchedPair.id }
+            .moved(from = from.index - HeaderItems, to = to.index - HeaderItems)
+    }
+
     LazyVerticalGrid(
         state = gridState,
         columns = GridCells.Adaptive(minSize = CardColumnMinWidth),
@@ -350,11 +382,19 @@ private fun WatchlistResults(
                 onRunClick = onRunClick,
             )
         }
-        items(items = results.pairs, key = { it.watchedPair.id }) { pairWithRate ->
-            RateCard(
-                pairWithRate = pairWithRate,
-                onClick = { onPairClick(pairWithRate.watchedPair.id) },
-            )
+        items(items = pairs, key = { it.watchedPair.id }) { pairWithRate ->
+            val id = pairWithRate.watchedPair.id
+
+            ReorderableItem(state = reorder, key = id) { lifted ->
+                RateCard(
+                    pairWithRate = pairWithRate,
+                    onClick = { onPairClick(id) },
+                    lifted = lifted,
+                    modifier = Modifier.longPressDraggableHandle(
+                        onDragStopped = { chosenOrder?.let(onReordered) },
+                    ),
+                )
+            }
         }
     }
 }
@@ -485,6 +525,7 @@ private fun RateCard(
     pairWithRate: WatchedPairWithRate,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    lifted: Boolean = false,
 ) {
     val rate = pairWithRate.rate
     val shown = pairWithRate.watchedPair.displayedPair()
@@ -495,6 +536,7 @@ private fun RateCard(
         color = KursorTheme.colorScheme.surface,
         contentColor = KursorTheme.colorScheme.onSurface,
         border = BorderStroke(CardBorderWidth, KursorTheme.colorScheme.outlineVariant),
+        shadowElevation = if (lifted) LiftedCardElevation else NoElevation,
     ) {
         Row(
             modifier = Modifier

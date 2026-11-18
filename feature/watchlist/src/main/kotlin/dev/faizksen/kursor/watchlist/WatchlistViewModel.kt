@@ -7,6 +7,7 @@ import dev.faizksen.kursor.domain.ObserveDeletedPairUseCase
 import dev.faizksen.kursor.domain.ObserveSyncLogUseCase
 import dev.faizksen.kursor.domain.ObserveSyncStateUseCase
 import dev.faizksen.kursor.domain.ObserveWatchlistUseCase
+import dev.faizksen.kursor.domain.ReorderPairsUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.UndoDeletedPairUseCase
 import dev.faizksen.kursor.model.CurrencyPair
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 class WatchlistViewModel(
     private val watchlistUseCase: ObserveWatchlistUseCase,
     private val requestManualSync: RequestManualSyncUseCase,
+    private val reorderPairs: ReorderPairsUseCase,
     private val undoDeletedPair: UndoDeletedPairUseCase,
     private val forgetDeletedPair: ForgetDeletedPairUseCase,
     observeDeletedPair: ObserveDeletedPairUseCase,
@@ -58,6 +60,8 @@ class WatchlistViewModel(
             WatchlistUiAction.RefreshClicked -> requestManualSync()
             WatchlistUiAction.UndoDeleteClicked -> viewModelScope.launch { undoDeletedPair() }
             WatchlistUiAction.DeleteNoticeDismissed -> forgetDeletedPair()
+            is WatchlistUiAction.PairsReordered ->
+                viewModelScope.launch { reorderPairs(action.ids) }
         }
     }
 

@@ -35,6 +35,8 @@ class ResolveMissingProvidersUseCaseTest {
 
         override suspend fun flipDirection(id: Long) = error("not used")
 
+        override suspend fun reorder(ids: List<Long>) = error("not used")
+
         override suspend fun delete(id: Long): CurrencyPair? = error("not used")
 
         override suspend fun undoDelete(): Boolean = error("not used")

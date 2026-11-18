@@ -39,6 +39,7 @@ class WatchlistViewModelTest {
     private val deleted = MutableStateFlow<CurrencyPair?>(null)
     private var undoCalls = 0
     private var forgetCalls = 0
+    private var reordered: List<Long>? = null
 
     @Test
     fun `a deleted pair is offered back until something decides`() = runTest {
@@ -72,6 +73,7 @@ class WatchlistViewModelTest {
     private fun viewModel() = WatchlistViewModel(
         watchlistUseCase = { pairs },
         requestManualSync = { manualSyncCalls++ },
+        reorderPairs = { ids -> reordered = ids },
         undoDeletedPair = {
             undoCalls++
             true

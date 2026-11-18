@@ -51,6 +51,16 @@ interface WatchedPairsDao {
     suspend fun flipDirection(id: Long)
 
     @Query("""
+        UPDATE watched_pair SET position = :position WHERE id = :id
+    """)
+    suspend fun setPosition(id: Long, position: Int)
+
+    @Transaction
+    suspend fun reorder(ids: List<Long>) {
+        ids.forEachIndexed { position, id -> setPosition(id = id, position = position) }
+    }
+
+    @Query("""
         DELETE FROM watched_pair WHERE id = :id
     """)
     suspend fun deleteById(id: Long)

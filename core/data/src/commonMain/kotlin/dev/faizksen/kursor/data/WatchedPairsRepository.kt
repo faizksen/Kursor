@@ -20,6 +20,7 @@ interface WatchedPairsRepository {
     suspend fun byId(id: Long): WatchedPair?
     suspend fun setProvider(id: Long, provider: ProviderKey)
     suspend fun flipDirection(id: Long)
+    suspend fun reorder(ids: List<Long>)
     suspend fun delete(id: Long): CurrencyPair?
     suspend fun undoDelete(): Boolean
     fun forgetDeleted()
@@ -65,6 +66,8 @@ internal class WatchedPairsRepositoryImpl(
         watchedPairsDao.setProvider(id = id, provider = provider.key)
 
     override suspend fun flipDirection(id: Long) = watchedPairsDao.flipDirection(id)
+
+    override suspend fun reorder(ids: List<Long>) = watchedPairsDao.reorder(ids)
 
     override suspend fun delete(id: Long): CurrencyPair? {
         val entity = entityById(id) ?: return null

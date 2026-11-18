@@ -41,6 +41,8 @@ import dev.faizksen.kursor.domain.RefreshCatalogueUseCaseImpl
 import dev.faizksen.kursor.domain.ResolveMissingProvidersUseCase
 import dev.faizksen.kursor.domain.ResolveMissingProvidersUseCaseImpl
 import dev.faizksen.kursor.domain.RefreshRatesUseCase
+import dev.faizksen.kursor.domain.ReorderPairsUseCase
+import dev.faizksen.kursor.domain.ReorderPairsUseCaseImpl
 import dev.faizksen.kursor.domain.RequestManualSyncUseCase
 import dev.faizksen.kursor.domain.RequestManualSyncUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveDefaultsSeededUseCase
@@ -67,6 +69,7 @@ val domainModule = module {
     factoryOf(::ObservePairDetailUseCaseImpl) bind ObservePairDetailUseCase::class
     factoryOf(::DeletePairUseCaseImpl) bind DeletePairUseCase::class
     factoryOf(::FlipPairUseCaseImpl) bind FlipPairUseCase::class
+    factoryOf(::ReorderPairsUseCaseImpl) bind ReorderPairsUseCase::class
     factoryOf(::UndoDeletedPairUseCaseImpl) bind UndoDeletedPairUseCase::class
     factoryOf(::ForgetDeletedPairUseCaseImpl) bind ForgetDeletedPairUseCase::class
     factoryOf(::ObserveDeletedPairUseCaseImpl) bind ObserveDeletedPairUseCase::class

@@ -37,6 +37,7 @@ sealed interface WatchlistUiAction: UiAction {
     data object RefreshClicked: WatchlistUiAction
     data object UndoDeleteClicked: WatchlistUiAction
     data object DeleteNoticeDismissed: WatchlistUiAction
+    data class PairsReordered(val ids: List<Long>): WatchlistUiAction
 }
 
 sealed interface WatchlistUiEffect: UiEffect {
