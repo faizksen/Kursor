@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -134,7 +135,6 @@ fun WatchlistContent(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
         containerColor = KursorTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             RootTopBar(
                 title = stringResource(R.string.watchlist_title),
@@ -167,15 +167,6 @@ fun WatchlistContent(
                 },
             )
         },
-        floatingActionButton = {
-            AnimatedVisibility(
-                visible = results != null && rememberScrollingUp(gridState),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                AddPairFab(onClick = onAddPairClick)
-            }
-        },
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (state) {
@@ -189,7 +180,55 @@ fun WatchlistContent(
                     onPairClick = onPairClick,
                     onRetryClick = { onAction(WatchlistUiAction.RefreshClicked) },
                     onRunClick = onRunClick,
-                            )
+                )
+            }
+
+            BottomBar(
+                snackbarHostState = snackbarHostState,
+                fabVisible = results != null && rememberScrollingUp(gridState),
+                onAddPairClick = onAddPairClick,
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomBar(
+    snackbarHostState: SnackbarHostState,
+    fabVisible: Boolean,
+    onAddPairClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val cramped = LocalDensity.current.fontScale >= CrampedFromFontScale
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(KursorDimens.sectionSpacing),
+        verticalArrangement = Arrangement.spacedBy(KursorDimens.sectionSpacing),
+        horizontalAlignment = Alignment.End,
+    ) {
+        if (cramped) {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = KursorDimens.sectionSpacing,
+                alignment = Alignment.End,
+            ),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            if (!cramped) {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
+
+            AnimatedVisibility(visible = fabVisible, enter = fadeIn(), exit = fadeOut()) {
+                AddPairFab(onClick = onAddPairClick)
             }
         }
     }
