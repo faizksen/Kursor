@@ -83,4 +83,14 @@
     <string name="change_provider_subtitle">%1$s / %2$s is watched through</string>
     <string name="change_provider_confirm">Switch source</string>
     <string name="change_provider_gone">This pair is no longer on the list</string>
+
+    <string name="pair_detail_menu">More</string>
+    <string name="pair_detail_change_provider">Change source</string>
+    <string name="pair_detail_source">Source: %1$s · rate as of %2$s</string>
+    <string name="pair_detail_source_unknown">No source yet</string>
+    <string name="pair_detail_no_rate">No rate yet</string>
+    <string name="pair_detail_quiet">%1$s has published nothing since %2$s — pick another source for this pair.</string>
+    <string name="pair_detail_added">Watched since %1$s</string>
+    <string name="pair_detail_cadence">Publishes %1$s</string>
+    <string name="pair_detail_gone">This pair is no longer on the list</string>
 </resources>

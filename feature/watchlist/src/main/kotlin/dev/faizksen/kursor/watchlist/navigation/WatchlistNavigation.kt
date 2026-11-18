@@ -17,7 +17,6 @@ fun NavGraphBuilder.watchlistScreen(
     onAddPairClick: () -> Unit,
     onSyncStatusClick: () -> Unit,
     onRunClick: (Long) -> Unit,
-    onChangeProviderClick: (Long) -> Unit,
 ) {
     composable<WatchlistRoute> {
         WatchlistScreen(
@@ -25,7 +24,6 @@ fun NavGraphBuilder.watchlistScreen(
             onAddPairClick = onAddPairClick,
             onSyncStatusClick = onSyncStatusClick,
             onRunClick = onRunClick,
-            onChangeProviderClick = onChangeProviderClick,
         )
     }
 }

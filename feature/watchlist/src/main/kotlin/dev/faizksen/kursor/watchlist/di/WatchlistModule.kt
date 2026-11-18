@@ -5,7 +5,9 @@ import androidx.navigation.toRoute
 import dev.faizksen.kursor.watchlist.WatchlistViewModel
 import dev.faizksen.kursor.watchlist.addpair.AddPairViewModel
 import dev.faizksen.kursor.watchlist.changeprovider.ChangeProviderViewModel
+import dev.faizksen.kursor.watchlist.pairdetail.PairDetailViewModel
 import dev.faizksen.kursor.watchlist.navigation.ChangeProviderRoute
+import dev.faizksen.kursor.watchlist.navigation.PairDetailRoute
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -20,6 +22,13 @@ val watchlistModule = module {
             watchedPair = get(),
             providerCandidates = get(),
             changeProvider = get(),
+        )
+    }
+
+    viewModel { (handle: SavedStateHandle) ->
+        PairDetailViewModel(
+            pairId = handle.toRoute<PairDetailRoute>().pairId,
+            observePairDetail = get(),
         )
     }
 }

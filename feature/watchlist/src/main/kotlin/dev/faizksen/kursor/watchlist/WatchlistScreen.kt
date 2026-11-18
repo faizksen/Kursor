@@ -66,8 +66,6 @@ import dev.faizksen.kursor.model.RatePoint
 import dev.faizksen.kursor.model.SourceId
 import dev.faizksen.kursor.model.WatchedPair
 import dev.faizksen.kursor.model.WatchedPairWithRate
-import java.math.RoundingMode
-import java.text.NumberFormat
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -89,7 +87,6 @@ fun WatchlistScreen(
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
     onRunClick: (Long) -> Unit,
-    onChangeProviderClick: (Long) -> Unit,
     viewModel: WatchlistViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
@@ -99,7 +96,6 @@ fun WatchlistScreen(
         onPairClick = onPairClick,
         onSyncStatusClick = onSyncStatusClick,
         onRunClick = onRunClick,
-        onChangeProviderClick = onChangeProviderClick,
         onAction = viewModel::obtainAction,
     )
 }
@@ -111,7 +107,6 @@ fun WatchlistContent(
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
     onRunClick: (Long) -> Unit = {},
-    onChangeProviderClick: (Long) -> Unit = {},
     onAction: (WatchlistUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -179,8 +174,7 @@ fun WatchlistContent(
                     onPairClick = onPairClick,
                     onRetryClick = { onAction(WatchlistUiAction.RefreshClicked) },
                     onRunClick = onRunClick,
-                    onChangeProviderClick = onChangeProviderClick,
-                )
+                            )
             }
         }
     }
@@ -241,7 +235,6 @@ private fun WatchlistResults(
     onPairClick: (Long) -> Unit,
     onRetryClick: () -> Unit,
     onRunClick: (Long) -> Unit,
-    onChangeProviderClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
@@ -268,13 +261,7 @@ private fun WatchlistResults(
         items(items = results.pairs, key = { it.watchedPair.id }) { pairWithRate ->
             RateCard(
                 pairWithRate = pairWithRate,
-                onClick = {
-                    if (pairWithRate.quiet) {
-                        onChangeProviderClick(pairWithRate.watchedPair.id)
-                    } else {
-                        onPairClick(pairWithRate.watchedPair.id)
-                    }
-                },
+                onClick = { onPairClick(pairWithRate.watchedPair.id) },
             )
         }
     }
@@ -550,19 +537,6 @@ private fun rememberFreshness(updatedAt: Instant, clock: Clock): Freshness {
     }
 
     return freshness
-}
-
-@Composable
-private fun rememberRateValueText(value: Rate): String {
-    val configuration = LocalConfiguration.current
-
-    return remember(value, configuration) {
-        NumberFormat.getNumberInstance(configuration.locales[0]).apply {
-            minimumFractionDigits = 2
-            maximumFractionDigits = 4
-            roundingMode = RoundingMode.HALF_UP
-        }.format(value.toPlainString().toBigDecimal())
-    }
 }
 
 private val SourceId.labelRes: Int

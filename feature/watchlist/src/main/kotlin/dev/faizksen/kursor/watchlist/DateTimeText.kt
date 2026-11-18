@@ -29,6 +29,18 @@ fun rememberShortDateText(date: LocalDate): String {
 }
 
 @Composable
+fun rememberLongDateText(date: LocalDate): String {
+    val configuration = LocalConfiguration.current
+
+    return remember(date, configuration) {
+        val locale = configuration.locales[0]
+        val pattern = DateFormat.getBestDateTimePattern(locale, "d MMMM y")
+
+        DateTimeFormatter.ofPattern(pattern, locale).format(date.toJavaLocalDate())
+    }
+}
+
+@Composable
 fun rememberShortDateTimeText(
     instant: Instant,
     clock: Clock = Clock.System,

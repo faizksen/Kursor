@@ -93,4 +93,14 @@
     <string name="change_provider_subtitle">%1$s / %2$s отслеживается через</string>
     <string name="change_provider_confirm">Сменить источник</string>
     <string name="change_provider_gone">Этой пары уже нет в списке</string>
+
+    <string name="pair_detail_menu">Ещё</string>
+    <string name="pair_detail_change_provider">Сменить источник</string>
+    <string name="pair_detail_source">Источник: %1$s · курс на %2$s</string>
+    <string name="pair_detail_source_unknown">Источник ещё не выбран</string>
+    <string name="pair_detail_no_rate">Курса пока нет</string>
+    <string name="pair_detail_quiet">%1$s ничего не публикует с %2$s — выберите для этой пары другой источник.</string>
+    <string name="pair_detail_added">Отслеживаем с %1$s</string>
+    <string name="pair_detail_cadence">Публикует %1$s</string>
+    <string name="pair_detail_gone">Этой пары больше нет в списке</string>
 </resources>

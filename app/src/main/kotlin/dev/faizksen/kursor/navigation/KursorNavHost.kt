@@ -26,6 +26,8 @@ import dev.faizksen.kursor.watchlist.navigation.addPairScreen
 import dev.faizksen.kursor.watchlist.navigation.changeProviderScreen
 import dev.faizksen.kursor.watchlist.navigation.navigateToChangeProvider
 import dev.faizksen.kursor.watchlist.navigation.navigateToAddPair
+import dev.faizksen.kursor.watchlist.navigation.navigateToPairDetail
+import dev.faizksen.kursor.watchlist.navigation.pairDetailScreen
 import dev.faizksen.kursor.watchlist.navigation.watchlistScreen
 
 @Composable
@@ -43,10 +45,13 @@ fun KursorNavHost(
         popExitTransition = { fadeOut(tween(ScreenFadeMillis)) },
     ) {
         watchlistScreen(
-            onPairClick = { /*open pair*/ },
+            onPairClick = appState.navController::navigateToPairDetail,
             onAddPairClick = appState.navController::navigateToAddPair,
             onSyncStatusClick = appState.navController::navigateToSyncStatus,
             onRunClick = appState.navController::navigateToRunDetail,
+        )
+        pairDetailScreen(
+            onBackClick = appState.navController::popBackStack,
             onChangeProviderClick = appState.navController::navigateToChangeProvider,
         )
         addPairScreen(onClose = { appState.navController.popBackStack() })
