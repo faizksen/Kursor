@@ -17,7 +17,7 @@ internal fun DeletedPairSnackbar(
 ) {
     if (pair == null) return
 
-    val message = stringResource(R.string.watchlist_pair_deleted)
+    val message = stringResource(R.string.watchlist_pair_deleted, pair.base.code, pair.quote.code)
     val undo = stringResource(R.string.watchlist_undo)
 
     LaunchedEffect(pair) {

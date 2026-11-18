@@ -42,7 +42,6 @@
     <string name="watchlist_action_refresh">Refresh</string>
     <string name="watchlist_action_more">More</string>
     <string name="watchlist_add_pair">Add pair</string>
-    <string name="watchlist_add_pair_label">Pair</string>
 
     <string name="watchlist_pair">%1$s → %2$s</string>
     <string name="watchlist_rate_unavailable">No data yet</string>
@@ -94,7 +93,7 @@
     <string name="pair_detail_cadence">Publishes %1$s</string>
     <string name="pair_detail_gone">This pair is no longer on the list</string>
     <string name="pair_detail_delete">Delete pair</string>
-    <string name="watchlist_pair_deleted">Pair deleted</string>
+    <string name="watchlist_pair_deleted">%1$s / %2$s deleted</string>
     <string name="watchlist_undo">Undo</string>
     <string name="pair_detail_flip">Flip</string>
 </resources>

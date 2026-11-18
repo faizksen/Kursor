@@ -28,7 +28,6 @@ object KursorDimens {
     val iconSize = 24.dp
 
     val fabHeight = 56.dp
-    val fabContentSpacing = 10.dp
     val bottomNavigationHeight = 80.dp
     val topAppBarHeight = 64.dp
     val bottomButtonHeight = 52.dp

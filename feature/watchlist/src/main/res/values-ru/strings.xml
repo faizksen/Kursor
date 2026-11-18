@@ -52,7 +52,6 @@
     <string name="watchlist_action_refresh">Обновить</string>
     <string name="watchlist_action_more">Ещё</string>
     <string name="watchlist_add_pair">Добавить пару</string>
-    <string name="watchlist_add_pair_label">Пара</string>
 
     <string name="watchlist_pair">%1$s → %2$s</string>
     <string name="watchlist_rate_unavailable">Нет данных</string>
@@ -104,7 +103,7 @@
     <string name="pair_detail_cadence">Публикует %1$s</string>
     <string name="pair_detail_gone">Этой пары больше нет в списке</string>
     <string name="pair_detail_delete">Удалить пару</string>
-    <string name="watchlist_pair_deleted">Пара удалена</string>
+    <string name="watchlist_pair_deleted">%1$s / %2$s удалена</string>
     <string name="watchlist_undo">Отменить</string>
     <string name="pair_detail_flip">Перевернуть</string>
 </resources>
