@@ -8,4 +8,5 @@ data class WatchedPair(
     val provider: ProviderKey?,
     val position: Int,
     val addedAt: Instant,
+    val inverted: Boolean = false,
 )

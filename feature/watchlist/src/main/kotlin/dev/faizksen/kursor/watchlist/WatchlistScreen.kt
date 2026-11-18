@@ -410,6 +410,7 @@ private fun RateCard(
     modifier: Modifier = Modifier,
 ) {
     val rate = pairWithRate.rate
+    val shown = pairWithRate.watchedPair.displayedPair()
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -432,8 +433,8 @@ private fun RateCard(
                 Text(
                     text = stringResource(
                         R.string.watchlist_pair,
-                        pairWithRate.watchedPair.pair.base.code,
-                        pairWithRate.watchedPair.pair.quote.code,
+                        shown.base.code,
+                        shown.quote.code,
                     ),
                     style = KursorTheme.typography.titleMedium,
                 )
@@ -452,7 +453,7 @@ private fun RateCard(
                 )
             }
             Text(
-                text = rateValueText(rate),
+                text = rateValueText(pairWithRate.displayedValue()),
                 style = KursorTheme.typography.titleLarge,
             )
         }
@@ -480,10 +481,10 @@ private fun rateMetaText(
 }
 
 @Composable
-private fun rateValueText(rate: RatePoint?): String = if (rate == null) {
+private fun rateValueText(value: Rate?): String = if (value == null) {
     stringResource(R.string.watchlist_rate_placeholder)
 } else {
-    rememberRateValueText(rate.value)
+    rememberRateValueText(value)
 }
 
 @Composable

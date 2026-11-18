@@ -30,6 +30,7 @@ val watchlistModule = module {
             pairId = handle.toRoute<PairDetailRoute>().pairId,
             observePairDetail = get(),
             deletePair = get(),
+            flipPair = get(),
         )
     }
 }

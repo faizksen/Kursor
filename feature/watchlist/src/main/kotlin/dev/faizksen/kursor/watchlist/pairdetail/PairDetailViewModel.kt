@@ -2,6 +2,7 @@ package dev.faizksen.kursor.watchlist.pairdetail
 
 import androidx.lifecycle.viewModelScope
 import dev.faizksen.kursor.domain.DeletePairUseCase
+import dev.faizksen.kursor.domain.FlipPairUseCase
 import dev.faizksen.kursor.domain.ObservePairDetailUseCase
 import dev.faizksen.kursor.ui.BaseMviViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -12,6 +13,7 @@ class PairDetailViewModel(
     private val pairId: Long,
     observePairDetail: ObservePairDetailUseCase,
     private val deletePair: DeletePairUseCase,
+    private val flipPair: FlipPairUseCase,
 ): BaseMviViewModel<PairDetailUiState, PairDetailUiAction, PairDetailUiEffect>(
     PairDetailUiState.Loading
 ) {
@@ -34,6 +36,7 @@ class PairDetailViewModel(
 
     override fun handleActions(action: PairDetailUiAction) {
         when (action) {
+            PairDetailUiAction.FlipClicked -> viewModelScope.launch { flipPair(pairId) }
             PairDetailUiAction.DeleteClicked -> delete()
         }
     }

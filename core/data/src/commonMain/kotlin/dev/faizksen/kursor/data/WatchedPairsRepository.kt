@@ -19,6 +19,7 @@ interface WatchedPairsRepository {
     suspend fun withoutProvider(): List<WatchedPair>
     suspend fun byId(id: Long): WatchedPair?
     suspend fun setProvider(id: Long, provider: ProviderKey)
+    suspend fun flipDirection(id: Long)
     suspend fun delete(id: Long): CurrencyPair?
     suspend fun undoDelete(): Boolean
     fun forgetDeleted()
@@ -62,6 +63,8 @@ internal class WatchedPairsRepositoryImpl(
 
     override suspend fun setProvider(id: Long, provider: ProviderKey) =
         watchedPairsDao.setProvider(id = id, provider = provider.key)
+
+    override suspend fun flipDirection(id: Long) = watchedPairsDao.flipDirection(id)
 
     override suspend fun delete(id: Long): CurrencyPair? {
         val entity = entityById(id) ?: return null

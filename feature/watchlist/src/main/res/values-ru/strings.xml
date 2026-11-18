@@ -106,4 +106,5 @@
     <string name="pair_detail_delete">Удалить пару</string>
     <string name="watchlist_pair_deleted">%1$s / %2$s удалена</string>
     <string name="watchlist_undo">Отменить</string>
+    <string name="pair_detail_flip">Перевернуть</string>
 </resources>

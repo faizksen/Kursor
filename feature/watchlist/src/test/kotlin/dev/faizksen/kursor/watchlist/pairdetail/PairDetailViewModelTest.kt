@@ -30,6 +30,7 @@ class PairDetailViewModelTest {
 
     private val detail = MutableStateFlow<WatchedPairDetail?>(null)
     private var deletedId: Long? = null
+    private var flippedId: Long? = null
 
     @Before
     fun setUp() {
@@ -120,6 +121,18 @@ class PairDetailViewModelTest {
     }
 
     @Test
+    fun `flipping from the menu reaches the pair that is open`() = runTest {
+        detail.value = WatchedPairDetail(watched = watched(), provider = NBP)
+
+        val viewModel = viewModel()
+
+        viewModel.obtainAction(PairDetailUiAction.FlipClicked)
+        runCurrent()
+
+        assertThat(flippedId).isEqualTo(1L)
+    }
+
+    @Test
     fun `a pair whose issuer went quiet says so on the detail screen too`() = runTest {
         detail.value = WatchedPairDetail(
             watched = watched().copy(quiet = true),
@@ -141,6 +154,7 @@ class PairDetailViewModelTest {
             detail.value = null
             PAIR
         },
+        flipPair = { id -> flippedId = id },
     )
 
     private fun watched(value: String = "4.4032") = WatchedPairWithRate(

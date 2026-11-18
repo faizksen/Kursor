@@ -46,6 +46,11 @@ interface WatchedPairsDao {
     suspend fun setProvider(id: Long, provider: String)
 
     @Query("""
+        UPDATE watched_pair SET inverted = NOT inverted WHERE id = :id
+    """)
+    suspend fun flipDirection(id: Long)
+
+    @Query("""
         DELETE FROM watched_pair WHERE id = :id
     """)
     suspend fun deleteById(id: Long)

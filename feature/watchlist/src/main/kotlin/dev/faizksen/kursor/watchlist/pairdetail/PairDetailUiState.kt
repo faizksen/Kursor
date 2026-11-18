@@ -18,6 +18,7 @@ sealed interface PairDetailUiState: UiState {
 }
 
 sealed interface PairDetailUiAction: UiAction {
+    data object FlipClicked: PairDetailUiAction
     data object DeleteClicked: PairDetailUiAction
 }
 

@@ -21,6 +21,17 @@ value class Rate(val units: Long) {
         return if (fraction.isEmpty()) "$sign$whole" else "$sign$whole.$fraction"
     }
 
+    fun inverted(): Rate? {
+        if (units == 0L) return null
+
+        val magnitude = units.absoluteValue
+        val scaled = UNITS_PER_WHOLE * UNITS_PER_WHOLE
+        val quotient = scaled / magnitude
+        val rounded = if (scaled % magnitude * 2 >= magnitude) quotient + 1 else quotient
+
+        return Rate(if (units < 0) -rounded else rounded)
+    }
+
     companion object {
         const val SCALE = 8
         const val UNITS_PER_WHOLE = 100_000_000L

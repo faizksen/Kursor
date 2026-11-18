@@ -43,6 +43,8 @@ import dev.faizksen.kursor.model.WatchedPair
 import dev.faizksen.kursor.model.WatchedPairWithRate
 import dev.faizksen.kursor.watchlist.R
 import dev.faizksen.kursor.watchlist.addpair.cadenceText
+import dev.faizksen.kursor.watchlist.displayedPair
+import dev.faizksen.kursor.watchlist.displayedValue
 import dev.faizksen.kursor.watchlist.rememberLongDateText
 import dev.faizksen.kursor.watchlist.rememberRateValueText
 import kotlinx.datetime.LocalDate
@@ -87,6 +89,7 @@ internal fun PairDetailContent(
                     if (state is PairDetailUiState.Watching) {
                         PairMenu(
                             onChangeProviderClick = onChangeProviderClick,
+                            onFlipClick = { onAction(PairDetailUiAction.FlipClicked) },
                             onDeleteClick = { onAction(PairDetailUiAction.DeleteClicked) },
                         )
                     }
@@ -114,6 +117,7 @@ internal fun PairDetailContent(
 @Composable
 private fun Watching(state: PairDetailUiState.Watching, onChangeProviderClick: () -> Unit) {
     val rate = state.watched.rate
+    val value = state.watched.displayedValue()
     val issuer = state.issuerName()
 
     Column(
@@ -126,7 +130,7 @@ private fun Watching(state: PairDetailUiState.Watching, onChangeProviderClick: (
             ),
         verticalArrangement = Arrangement.spacedBy(KursorDimens.sectionSpacing),
     ) {
-        if (rate == null) {
+        if (value == null) {
             Text(
                 text = stringResource(R.string.pair_detail_no_rate),
                 style = KursorTheme.typography.bodyLarge,
@@ -134,7 +138,7 @@ private fun Watching(state: PairDetailUiState.Watching, onChangeProviderClick: (
             )
         } else {
             Text(
-                text = rememberRateValueText(rate.value),
+                text = rememberRateValueText(value),
                 style = KursorTheme.typography.displaySmall,
                 color = KursorTheme.colorScheme.onBackground,
             )
@@ -197,7 +201,11 @@ private fun QuietNote(issuer: String, observedOn: LocalDate, onClick: () -> Unit
 }
 
 @Composable
-private fun PairMenu(onChangeProviderClick: () -> Unit, onDeleteClick: () -> Unit) {
+private fun PairMenu(
+    onChangeProviderClick: () -> Unit,
+    onFlipClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBarButton(
@@ -212,6 +220,13 @@ private fun PairMenu(onChangeProviderClick: () -> Unit, onDeleteClick: () -> Uni
             onClick = {
                 expanded = false
                 onChangeProviderClick()
+            },
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(R.string.pair_detail_flip)) },
+            onClick = {
+                expanded = false
+                onFlipClick()
             },
         )
         DropdownMenuItem(
@@ -267,11 +282,9 @@ private fun Centred(content: @Composable () -> Unit) {
 
 @Composable
 private fun PairDetailUiState.titleText(): String = if (this is PairDetailUiState.Watching) {
-    stringResource(
-        R.string.watchlist_pair,
-        watched.watchedPair.pair.base.code,
-        watched.watchedPair.pair.quote.code,
-    )
+    watched.watchedPair.displayedPair().let { shown ->
+        stringResource(R.string.watchlist_pair, shown.base.code, shown.quote.code)
+    }
 } else {
     ""
 }

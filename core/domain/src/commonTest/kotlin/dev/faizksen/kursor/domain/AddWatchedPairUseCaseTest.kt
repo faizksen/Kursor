@@ -35,6 +35,8 @@ class AddWatchedPairUseCaseTest {
 
         override suspend fun setProvider(id: Long, provider: ProviderKey) = error("not used")
 
+        override suspend fun flipDirection(id: Long) = error("not used")
+
         override suspend fun delete(id: Long): CurrencyPair? = error("not used")
 
         override suspend fun undoDelete(): Boolean = error("not used")

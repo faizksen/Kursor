@@ -11,6 +11,8 @@ import dev.faizksen.kursor.domain.WatchedPairUseCase
 import dev.faizksen.kursor.domain.WatchedPairUseCaseImpl
 import dev.faizksen.kursor.domain.DeletePairUseCase
 import dev.faizksen.kursor.domain.DeletePairUseCaseImpl
+import dev.faizksen.kursor.domain.FlipPairUseCase
+import dev.faizksen.kursor.domain.FlipPairUseCaseImpl
 import dev.faizksen.kursor.domain.ForgetDeletedPairUseCase
 import dev.faizksen.kursor.domain.ForgetDeletedPairUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveDeletedPairUseCase
@@ -64,6 +66,7 @@ val domainModule = module {
     factoryOf(::ObserveRunUseCaseImpl) bind ObserveRunUseCase::class
     factoryOf(::ObservePairDetailUseCaseImpl) bind ObservePairDetailUseCase::class
     factoryOf(::DeletePairUseCaseImpl) bind DeletePairUseCase::class
+    factoryOf(::FlipPairUseCaseImpl) bind FlipPairUseCase::class
     factoryOf(::UndoDeletedPairUseCaseImpl) bind UndoDeletedPairUseCase::class
     factoryOf(::ForgetDeletedPairUseCaseImpl) bind ForgetDeletedPairUseCase::class
     factoryOf(::ObserveDeletedPairUseCaseImpl) bind ObserveDeletedPairUseCase::class

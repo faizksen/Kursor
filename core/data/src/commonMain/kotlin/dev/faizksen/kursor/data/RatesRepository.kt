@@ -174,6 +174,7 @@ internal fun WatchedPairEntity.toWatchedPair() = WatchedPair(
     provider = provider.toProviderKey(),
     position = position,
     addedAt = Instant.fromEpochMilliseconds(addedAt),
+    inverted = inverted,
 )
 
 internal fun String.toProviderKey(): ProviderKey? = takeIf { it.isNotBlank() }?.let(::ProviderKey)

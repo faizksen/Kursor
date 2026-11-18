@@ -1,5 +1,6 @@
 package dev.faizksen.kursor.database.entities
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
@@ -15,5 +16,7 @@ data class WatchedPairEntity(
     val quote: String,
     val provider: String,
     val position: Int,
-    val addedAt: Long
+    val addedAt: Long,
+    @ColumnInfo(defaultValue = "0")
+    val inverted: Boolean = false
 )
