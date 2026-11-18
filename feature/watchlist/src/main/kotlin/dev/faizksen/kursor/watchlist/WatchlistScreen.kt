@@ -31,6 +31,8 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,8 +92,11 @@ fun WatchlistScreen(
     viewModel: WatchlistViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
+    val deletedPair by viewModel.deletedPair.collectAsStateWithLifecycle()
+
     WatchlistContent(
         state = state,
+        deletedPair = deletedPair,
         onAddPairClick = onAddPairClick,
         onPairClick = onPairClick,
         onSyncStatusClick = onSyncStatusClick,
@@ -103,6 +108,7 @@ fun WatchlistScreen(
 @Composable
 fun WatchlistContent(
     state: WatchlistUiState,
+    deletedPair: CurrencyPair? = null,
     onAddPairClick: () -> Unit,
     onPairClick: (Long) -> Unit,
     onSyncStatusClick: () -> Unit,
@@ -115,11 +121,20 @@ fun WatchlistContent(
         derivedStateOf { gridState.firstVisibleItemIndex > 0 }
     }
     val results = state as? WatchlistUiState.Results
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    DeletedPairSnackbar(
+        pair = deletedPair,
+        hostState = snackbarHostState,
+        onUndo = { onAction(WatchlistUiAction.UndoDeleteClicked) },
+        onDismiss = { onAction(WatchlistUiAction.DeleteNoticeDismissed) },
+    )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
         containerColor = KursorTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             RootTopBar(
                 title = stringResource(R.string.watchlist_title),

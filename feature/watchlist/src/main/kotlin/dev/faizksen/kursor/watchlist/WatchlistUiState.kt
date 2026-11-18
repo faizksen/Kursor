@@ -35,6 +35,8 @@ sealed interface LastUpdate {
 
 sealed interface WatchlistUiAction: UiAction {
     data object RefreshClicked: WatchlistUiAction
+    data object UndoDeleteClicked: WatchlistUiAction
+    data object DeleteNoticeDismissed: WatchlistUiAction
 }
 
 sealed interface WatchlistUiEffect: UiEffect {

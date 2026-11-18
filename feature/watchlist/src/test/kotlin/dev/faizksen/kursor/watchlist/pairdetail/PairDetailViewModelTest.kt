@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
@@ -28,6 +29,7 @@ import kotlin.time.Instant
 class PairDetailViewModelTest {
 
     private val detail = MutableStateFlow<WatchedPairDetail?>(null)
+    private var deletedId: Long? = null
 
     @Before
     fun setUp() {
@@ -92,6 +94,32 @@ class PairDetailViewModelTest {
     }
 
     @Test
+    fun `deleting from the menu removes the pair that was open`() = runTest {
+        detail.value = WatchedPairDetail(watched = watched(), provider = NBP)
+
+        val viewModel = viewModel()
+
+        viewModel.screenState.test { skipItems(2) }
+        viewModel.obtainAction(PairDetailUiAction.DeleteClicked)
+        runCurrent()
+
+        assertThat(deletedId).isEqualTo(1L)
+    }
+
+    @Test
+    fun `the screen asks to be closed once the pair is gone`() = runTest {
+        detail.value = WatchedPairDetail(watched = watched(), provider = NBP)
+
+        val viewModel = viewModel()
+
+        viewModel.effect.test {
+            viewModel.obtainAction(PairDetailUiAction.DeleteClicked)
+
+            assertThat(awaitItem()).isEqualTo(PairDetailUiEffect.Deleted)
+        }
+    }
+
+    @Test
     fun `a pair whose issuer went quiet says so on the detail screen too`() = runTest {
         detail.value = WatchedPairDetail(
             watched = watched().copy(quiet = true),
@@ -108,6 +136,11 @@ class PairDetailViewModelTest {
     private fun viewModel() = PairDetailViewModel(
         pairId = 1,
         observePairDetail = { detail },
+        deletePair = { id ->
+            deletedId = id
+            detail.value = null
+            PAIR
+        },
     )
 
     private fun watched(value: String = "4.4032") = WatchedPairWithRate(
@@ -127,6 +160,8 @@ class PairDetailViewModelTest {
     )
 
     private companion object {
+        val PAIR = CurrencyPair(CurrencyCode("EUR"), CurrencyCode("PLN"))
+
         val NBP = Provider(
             key = ProviderKey("NBP"),
             name = "Narodowy Bank Polski",

@@ -30,6 +30,15 @@ class SeedDefaultPairsUseCaseTest {
         override suspend fun withoutProvider(): List<WatchedPair> = error("not used")
 
         override suspend fun setProvider(id: Long, provider: ProviderKey) = error("not used")
+
+        override suspend fun delete(id: Long): CurrencyPair? = error("not used")
+
+        override suspend fun undoDelete(): Boolean = error("not used")
+
+        override fun forgetDeleted() = error("not used")
+
+        override fun observeDeleted(): Flow<CurrencyPair?> = error("not used")
+
     }
 
     private val appStateRepository = object : AppStateRepository {

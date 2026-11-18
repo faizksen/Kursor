@@ -9,6 +9,12 @@ import dev.faizksen.kursor.domain.ObserveRunAttemptsUseCase
 import dev.faizksen.kursor.domain.ObserveRunAttemptsUseCaseImpl
 import dev.faizksen.kursor.domain.WatchedPairUseCase
 import dev.faizksen.kursor.domain.WatchedPairUseCaseImpl
+import dev.faizksen.kursor.domain.DeletePairUseCase
+import dev.faizksen.kursor.domain.DeletePairUseCaseImpl
+import dev.faizksen.kursor.domain.ForgetDeletedPairUseCase
+import dev.faizksen.kursor.domain.ForgetDeletedPairUseCaseImpl
+import dev.faizksen.kursor.domain.ObserveDeletedPairUseCase
+import dev.faizksen.kursor.domain.ObserveDeletedPairUseCaseImpl
 import dev.faizksen.kursor.domain.ObservePairDetailUseCase
 import dev.faizksen.kursor.domain.ObservePairDetailUseCaseImpl
 import dev.faizksen.kursor.domain.ObserveRunUseCase
@@ -42,6 +48,8 @@ import dev.faizksen.kursor.domain.SeedDefaultPairsUseCase
 import dev.faizksen.kursor.domain.SeedDefaultPairsUseCaseImpl
 import dev.faizksen.kursor.domain.SyncMissingRatesUseCase
 import dev.faizksen.kursor.domain.SyncMissingRatesUseCaseImpl
+import dev.faizksen.kursor.domain.UndoDeletedPairUseCase
+import dev.faizksen.kursor.domain.UndoDeletedPairUseCaseImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -55,6 +63,10 @@ val domainModule = module {
     factoryOf(::ObserveSyncQueueUseCaseImpl) bind ObserveSyncQueueUseCase::class
     factoryOf(::ObserveRunUseCaseImpl) bind ObserveRunUseCase::class
     factoryOf(::ObservePairDetailUseCaseImpl) bind ObservePairDetailUseCase::class
+    factoryOf(::DeletePairUseCaseImpl) bind DeletePairUseCase::class
+    factoryOf(::UndoDeletedPairUseCaseImpl) bind UndoDeletedPairUseCase::class
+    factoryOf(::ForgetDeletedPairUseCaseImpl) bind ForgetDeletedPairUseCase::class
+    factoryOf(::ObserveDeletedPairUseCaseImpl) bind ObserveDeletedPairUseCase::class
     factoryOf(::ObserveRunAttemptsUseCaseImpl) bind ObserveRunAttemptsUseCase::class
     factoryOf(::RequestManualSyncUseCaseImpl) bind RequestManualSyncUseCase::class
     factoryOf(::RefreshRatesUseCase)

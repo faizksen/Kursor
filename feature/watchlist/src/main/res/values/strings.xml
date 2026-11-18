@@ -93,4 +93,7 @@
     <string name="pair_detail_added">Watched since %1$s</string>
     <string name="pair_detail_cadence">Publishes %1$s</string>
     <string name="pair_detail_gone">This pair is no longer on the list</string>
+    <string name="pair_detail_delete">Delete pair</string>
+    <string name="watchlist_pair_deleted">%1$s / %2$s deleted</string>
+    <string name="watchlist_undo">Undo</string>
 </resources>

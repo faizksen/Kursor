@@ -17,6 +17,10 @@ sealed interface PairDetailUiState: UiState {
     ): PairDetailUiState
 }
 
-sealed interface PairDetailUiAction: UiAction
+sealed interface PairDetailUiAction: UiAction {
+    data object DeleteClicked: PairDetailUiAction
+}
 
-sealed interface PairDetailUiEffect: UiEffect
+sealed interface PairDetailUiEffect: UiEffect {
+    data object Deleted: PairDetailUiEffect
+}

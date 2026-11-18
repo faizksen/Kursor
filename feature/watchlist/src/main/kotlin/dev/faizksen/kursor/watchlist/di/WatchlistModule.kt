@@ -29,6 +29,7 @@ val watchlistModule = module {
         PairDetailViewModel(
             pairId = handle.toRoute<PairDetailRoute>().pairId,
             observePairDetail = get(),
+            deletePair = get(),
         )
     }
 }

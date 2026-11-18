@@ -1,6 +1,7 @@
 package dev.faizksen.kursor.database.dao
 
 import androidx.room3.Dao
+import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
 import dev.faizksen.kursor.database.entities.WatchedPairEntity
@@ -43,6 +44,14 @@ interface WatchedPairsDao {
         UPDATE watched_pair SET provider = :provider WHERE id = :id
     """)
     suspend fun setProvider(id: Long, provider: String)
+
+    @Query("""
+        DELETE FROM watched_pair WHERE id = :id
+    """)
+    suspend fun deleteById(id: Long)
+
+    @Insert
+    suspend fun insert(pair: WatchedPairEntity)
 
     @Transaction
     suspend fun addAtEnd(

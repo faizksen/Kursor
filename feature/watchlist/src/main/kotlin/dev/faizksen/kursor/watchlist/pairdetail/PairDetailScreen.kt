@@ -55,14 +55,18 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PairDetailScreen(
     onBackClick: () -> Unit,
     onChangeProviderClick: () -> Unit,
+    onDeleted: () -> Unit,
     viewModel: PairDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
+
+    PairDetailEffects(effects = viewModel.effect, onDeleted = onDeleted)
 
     PairDetailContent(
         state = state,
         onBackClick = onBackClick,
         onChangeProviderClick = onChangeProviderClick,
+        onAction = viewModel::obtainAction,
     )
 }
 
@@ -71,6 +75,7 @@ internal fun PairDetailContent(
     state: PairDetailUiState,
     onBackClick: () -> Unit,
     onChangeProviderClick: () -> Unit,
+    onAction: (PairDetailUiAction) -> Unit,
 ) {
     Scaffold(
         containerColor = KursorTheme.colorScheme.background,
@@ -80,7 +85,10 @@ internal fun PairDetailContent(
                 title = state.titleText(),
                 actions = {
                     if (state is PairDetailUiState.Watching) {
-                        PairMenu(onChangeProviderClick = onChangeProviderClick)
+                        PairMenu(
+                            onChangeProviderClick = onChangeProviderClick,
+                            onDeleteClick = { onAction(PairDetailUiAction.DeleteClicked) },
+                        )
                     }
                 },
             )
@@ -189,7 +197,7 @@ private fun QuietNote(issuer: String, observedOn: LocalDate, onClick: () -> Unit
 }
 
 @Composable
-private fun PairMenu(onChangeProviderClick: () -> Unit) {
+private fun PairMenu(onChangeProviderClick: () -> Unit, onDeleteClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBarButton(
@@ -204,6 +212,18 @@ private fun PairMenu(onChangeProviderClick: () -> Unit) {
             onClick = {
                 expanded = false
                 onChangeProviderClick()
+            },
+        )
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = stringResource(R.string.pair_detail_delete),
+                    color = KursorTheme.colorScheme.error,
+                )
+            },
+            onClick = {
+                expanded = false
+                onDeleteClick()
             },
         )
     }
@@ -273,6 +293,7 @@ private fun PairDetailPreview() {
             ),
             onBackClick = {},
             onChangeProviderClick = {},
+            onAction = {},
         )
     }
 }
@@ -288,6 +309,7 @@ private fun PairDetailQuietPreview() {
             ),
             onBackClick = {},
             onChangeProviderClick = {},
+            onAction = {},
         )
     }
 }

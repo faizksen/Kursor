@@ -15,6 +15,7 @@ fun NavController.navigateToPairDetail(pairId: Long) = navigate(PairDetailRoute(
 fun NavGraphBuilder.pairDetailScreen(
     onBackClick: () -> Unit,
     onChangeProviderClick: (Long) -> Unit,
+    onDeleted: () -> Unit,
 ) {
     composable<PairDetailRoute> { entry ->
         val pairId = entry.toRoute<PairDetailRoute>().pairId
@@ -22,6 +23,7 @@ fun NavGraphBuilder.pairDetailScreen(
         PairDetailScreen(
             onBackClick = onBackClick,
             onChangeProviderClick = { onChangeProviderClick(pairId) },
+            onDeleted = onDeleted,
         )
     }
 }

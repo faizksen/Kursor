@@ -103,4 +103,7 @@
     <string name="pair_detail_added">Отслеживаем с %1$s</string>
     <string name="pair_detail_cadence">Публикует %1$s</string>
     <string name="pair_detail_gone">Этой пары больше нет в списке</string>
+    <string name="pair_detail_delete">Удалить пару</string>
+    <string name="watchlist_pair_deleted">%1$s / %2$s удалена</string>
+    <string name="watchlist_undo">Отменить</string>
 </resources>

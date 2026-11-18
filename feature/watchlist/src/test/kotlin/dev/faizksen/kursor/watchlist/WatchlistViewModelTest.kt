@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
@@ -35,10 +36,48 @@ class WatchlistViewModelTest {
     private var manualSyncCalls = 0
     private var logLimit: Int? = null
     private val seeded = MutableStateFlow(true)
+    private val deleted = MutableStateFlow<CurrencyPair?>(null)
+    private var undoCalls = 0
+    private var forgetCalls = 0
+
+    @Test
+    fun `a deleted pair is offered back until something decides`() = runTest {
+        deleted.value = CurrencyPair(CurrencyCode("EUR"), CurrencyCode("PLN"))
+
+        viewModel().deletedPair.test {
+            assertThat(awaitItem()?.quote).isEqualTo(CurrencyCode("PLN"))
+        }
+    }
+
+    @Test
+    fun `tapping undo restores the pair`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.obtainAction(WatchlistUiAction.UndoDeleteClicked)
+        runCurrent()
+
+        assertThat(undoCalls).isEqualTo(1)
+    }
+
+    @Test
+    fun `letting the snackbar go makes the deletion final`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.obtainAction(WatchlistUiAction.DeleteNoticeDismissed)
+
+        assertThat(forgetCalls).isEqualTo(1)
+        assertThat(undoCalls).isEqualTo(0)
+    }
 
     private fun viewModel() = WatchlistViewModel(
         watchlistUseCase = { pairs },
         requestManualSync = { manualSyncCalls++ },
+        undoDeletedPair = {
+            undoCalls++
+            true
+        },
+        forgetDeletedPair = { forgetCalls++ },
+        observeDeletedPair = { deleted },
         observeSyncState = { syncState },
         observeSyncLog = { limit ->
             logLimit = limit

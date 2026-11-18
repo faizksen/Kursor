@@ -62,4 +62,20 @@ interface RatesDao {
     """
     )
     fun observeLatestRates(): Flow<List<RateEntity>>
+
+    @Query(
+        """
+        SELECT * FROM rate
+        WHERE base = :base AND quote = :quote AND provider = :provider
+    """
+    )
+    suspend fun ratesOf(base: String, quote: String, provider: String): List<RateEntity>
+
+    @Query(
+        """
+        DELETE FROM rate
+        WHERE base = :base AND quote = :quote AND provider = :provider
+    """
+    )
+    suspend fun deleteRatesOf(base: String, quote: String, provider: String)
 }

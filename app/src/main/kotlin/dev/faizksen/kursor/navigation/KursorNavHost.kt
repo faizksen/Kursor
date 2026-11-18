@@ -53,6 +53,7 @@ fun KursorNavHost(
         pairDetailScreen(
             onBackClick = appState.navController::popBackStack,
             onChangeProviderClick = appState.navController::navigateToChangeProvider,
+            onDeleted = { appState.navController.popBackStack() },
         )
         addPairScreen(onClose = { appState.navController.popBackStack() })
         changeProviderScreen(onClose = { appState.navController.popBackStack() })

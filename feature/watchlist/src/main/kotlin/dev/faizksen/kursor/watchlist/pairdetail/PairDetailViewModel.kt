@@ -1,18 +1,20 @@
 package dev.faizksen.kursor.watchlist.pairdetail
 
 import androidx.lifecycle.viewModelScope
+import dev.faizksen.kursor.domain.DeletePairUseCase
 import dev.faizksen.kursor.domain.ObservePairDetailUseCase
 import dev.faizksen.kursor.ui.BaseMviViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class PairDetailViewModel(
-    pairId: Long,
+    private val pairId: Long,
     observePairDetail: ObservePairDetailUseCase,
+    private val deletePair: DeletePairUseCase,
 ): BaseMviViewModel<PairDetailUiState, PairDetailUiAction, PairDetailUiEffect>(
     PairDetailUiState.Loading
 ) {
-
     init {
         observePairDetail(pairId)
             .onEach { detail ->
@@ -30,5 +32,16 @@ class PairDetailViewModel(
             .launchIn(viewModelScope)
     }
 
-    override fun handleActions(action: PairDetailUiAction) = Unit
+    override fun handleActions(action: PairDetailUiAction) {
+        when (action) {
+            PairDetailUiAction.DeleteClicked -> delete()
+        }
+    }
+
+    private fun delete() {
+        viewModelScope.launch {
+            deletePair(pairId)
+            sendEffect(PairDetailUiEffect.Deleted)
+        }
+    }
 }

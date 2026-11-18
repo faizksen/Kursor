@@ -8,6 +8,7 @@ import dev.faizksen.kursor.model.Provider
 import dev.faizksen.kursor.model.ProviderKey
 import dev.faizksen.kursor.model.PublishCadence
 import dev.faizksen.kursor.model.WatchedPair
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -31,6 +32,15 @@ class ResolveMissingProvidersUseCaseTest {
         override suspend fun setProvider(id: Long, provider: ProviderKey) {
             written[id] = provider
         }
+
+        override suspend fun delete(id: Long): CurrencyPair? = error("not used")
+
+        override suspend fun undoDelete(): Boolean = error("not used")
+
+        override fun forgetDeleted() = error("not used")
+
+        override fun observeDeleted(): Flow<CurrencyPair?> = error("not used")
+
     }
 
     private val resolveMissingProviders = ResolveMissingProvidersUseCaseImpl(
