@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -74,6 +75,8 @@ import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val SnackbarFitsBesideFabUpTo = 1f
 
 private val CardColumnMinWidth = 320.dp
 private val FabClearance = KursorDimens.fabHeight + KursorDimens.sectionSpacing * 2
@@ -200,7 +203,7 @@ private fun BottomBar(
     onAddPairClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val cramped = LocalDensity.current.fontScale >= CrampedFromFontScale
+    val cramped = LocalDensity.current.fontScale > SnackbarFitsBesideFabUpTo
 
     Column(
         modifier = modifier
@@ -269,11 +272,13 @@ private fun WatchlistEmpty(
                 text = stringResource(R.string.watchlist_empty_title),
                 style = KursorTheme.typography.titleMedium,
                 color = KursorTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
             )
             Text(
                 text = stringResource(R.string.watchlist_empty_subtitle),
                 style = KursorTheme.typography.bodyMedium,
                 color = KursorTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
             )
         }
         KursorButton(

@@ -21,7 +21,7 @@ import dev.faizksen.kursor.designsystem.KursorRadius
 import dev.faizksen.kursor.designsystem.KursorTextStyles
 import dev.faizksen.kursor.designsystem.KursorTheme
 
-internal const val CrampedFromFontScale = 1.5f
+private const val LabelDroppedAtFontScale = 1.5f
 
 @Composable
 internal fun AddPairFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -29,7 +29,7 @@ internal fun AddPairFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(KursorRadius.fab)
     val named = modifier.semantics { contentDescription = description }
 
-    if (LocalDensity.current.fontScale >= CrampedFromFontScale) {
+    if (LocalDensity.current.fontScale >= LabelDroppedAtFontScale) {
         FloatingActionButton(
             onClick = onClick,
             modifier = named,
