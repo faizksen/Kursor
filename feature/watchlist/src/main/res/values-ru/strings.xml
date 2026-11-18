@@ -52,6 +52,7 @@
     <string name="watchlist_action_refresh">Обновить</string>
     <string name="watchlist_action_more">Ещё</string>
     <string name="watchlist_add_pair">Добавить пару</string>
+    <string name="watchlist_add_pair_label">Пара</string>
 
     <string name="watchlist_pair">%1$s → %2$s</string>
     <string name="watchlist_rate_unavailable">Нет данных</string>

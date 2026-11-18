@@ -42,6 +42,7 @@
     <string name="watchlist_action_refresh">Refresh</string>
     <string name="watchlist_action_more">More</string>
     <string name="watchlist_add_pair">Add pair</string>
+    <string name="watchlist_add_pair_label">Pair</string>
 
     <string name="watchlist_pair">%1$s → %2$s</string>
     <string name="watchlist_rate_unavailable">No data yet</string>

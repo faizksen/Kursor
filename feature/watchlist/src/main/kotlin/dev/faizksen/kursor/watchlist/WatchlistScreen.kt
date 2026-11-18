@@ -26,11 +26,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -165,18 +163,7 @@ fun WatchlistContent(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                FloatingActionButton(
-                    onClick = onAddPairClick,
-                    shape = RoundedCornerShape(KursorRadius.button),
-                    containerColor = KursorTheme.colorScheme.primary,
-                    contentColor = KursorTheme.colorScheme.onPrimary,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.watchlist_add_pair),
-                        modifier = Modifier.size(KursorDimens.iconSize),
-                    )
-                }
+                AddPairFab(onClick = onAddPairClick)
             }
         },
     ) { innerPadding ->
